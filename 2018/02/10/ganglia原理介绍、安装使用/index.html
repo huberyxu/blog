@@ -119,7 +119,7 @@
 <meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/gmetad-ha.png">
 <meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/gmetad-hie.png">
 <meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/gmetad-cache.png">
-<meta property="og:updated_time" content="2018-02-10T04:38:00.702Z">
+<meta property="og:updated_time" content="2018-02-10T07:37:10.457Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ganglia原理介绍、安装使用">
 <meta name="twitter:description" content="Ganglia简介：Ganglia是UC Berkeley发起的一个开源集群监视项目，设计用于测量数以千计的节点。Ganglia的核心包含gmond、gmetad以及一个Web前端。主要是用来监控系统性能，如：cpu 、mem、硬盘利用率， I/O负载、网络流量情况等，通过曲线很容易见到每个节点的工作状态，对合理调整、分配系统资源，提高系统整体性能起到重要作用。 每台计算机都运行一个收集和发送度">
@@ -364,6 +364,7 @@
 <p>gmetad可以部署在集群内任一台节点或者通过网络连接到集群的独立主机，它通过单播路由的方式与gmond通信，收集区域内节点的状态信息，并以XML数据的形式，保存在数据库中。由RRDTool工具处理数据，并生成相应的的图形显示，以Web方式直观的提供给客户端。</p>
 <p>工作原理：<br>    Ganglia包括如下几个程序，他们之间通过XDR(xml的压缩格式)或者XML格式传递监控数据，达到监控效果。集群内的节点，通过运行gmond收集发布节点状态信息，然后gmetad周期性的轮询gmond收集到的信息，然后存入rrd数据库，通过web服务器可以对其进行查询展示。</p>
 <img src="/2018/02/10/ganglia原理介绍、安装使用/ganglia.jpg">
+<p>&lt; !– more –&gt;</p>
 <hr>
 <h2 id="安装ganglia"><a href="#安装ganglia" class="headerlink" title="安装ganglia"></a>安装ganglia</h2><p>网上示例很多，对该部分的翻译后续再跟进。</p>
 <h2 id="配置ganglia"><a href="#配置ganglia" class="headerlink" title="配置ganglia"></a>配置ganglia</h2><p>默认的配置仅仅能使ganglia工作，如果了解更多的配置项，能帮助你更好的使用ganglia做监控部署。</p>
