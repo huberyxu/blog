@@ -107,30 +107,30 @@
 <meta name="keywords" content="监控,ganglia">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ganglia原理介绍、安装使用">
-<meta property="og:url" content="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/index.html">
+<meta property="og:url" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="Ganglia简介：Ganglia是UC Berkeley发起的一个开源集群监视项目，设计用于测量数以千计的节点。Ganglia的核心包含gmond、gmetad以及一个Web前端。主要是用来监控系统性能，如：cpu 、mem、硬盘利用率， I/O负载、网络流量情况等，通过曲线很容易见到每个节点的工作状态，对合理调整、分配系统资源，提高系统整体性能起到重要作用。 每台计算机都运行一个收集和发送度量">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/ganglia.jpg">
-<meta property="og:image" content="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/multicast.png">
-<meta property="og:image" content="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/deaf-mute-multicast.png">
-<meta property="og:image" content="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/unicast.png">
-<meta property="og:image" content="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/gmetad.png">
-<meta property="og:image" content="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/gmetad-ha.png">
-<meta property="og:image" content="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/gmetad-hie.png">
-<meta property="og:image" content="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/gmetad-cache.png">
+<meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/ganglia.jpg">
+<meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/multicast.png">
+<meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/deaf-mute-multicast.png">
+<meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/unicast.png">
+<meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/gmetad.png">
+<meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/gmetad-ha.png">
+<meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/gmetad-hie.png">
+<meta property="og:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/gmetad-cache.png">
 <meta property="og:updated_time" content="2018-02-12T15:31:51.135Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ganglia原理介绍、安装使用">
 <meta name="twitter:description" content="Ganglia简介：Ganglia是UC Berkeley发起的一个开源集群监视项目，设计用于测量数以千计的节点。Ganglia的核心包含gmond、gmetad以及一个Web前端。主要是用来监控系统性能，如：cpu 、mem、硬盘利用率， I/O负载、网络流量情况等，通过曲线很容易见到每个节点的工作状态，对合理调整、分配系统资源，提高系统整体性能起到重要作用。 每台计算机都运行一个收集和发送度量">
-<meta name="twitter:image" content="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/ganglia.jpg">
+<meta name="twitter:image" content="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/ganglia.jpg">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/"/>
+  <link rel="canonical" href="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/"/>
 
 
 
@@ -333,7 +333,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xuhaibin">
@@ -421,20 +421,20 @@
 <p>每台计算机都运行一个收集和发送度量数据的名为 gmond 的守护进程。接收所有度量数据的主机可以显示这些数据并且可以将这些数据的精简表单传递到层次结构中。正因为有这种层次结构模式，才使得 Ganglia 可以实现良好的扩展。gmond 带来的系统负载非常少，这使得它成为在集群中各台计算机上运行的一段代码，而不会影响用户性能。所有这些数据多次收集会影响节点性能。网络中的 “抖动”发生在大量小消息同时出现时，可以通过将节点时钟保持一致，来避免这个问题。</p>
 <p>gmetad可以部署在集群内任一台节点或者通过网络连接到集群的独立主机，它通过单播路由的方式与gmond通信，收集区域内节点的状态信息，并以XML数据的形式，保存在数据库中。由RRDTool工具处理数据，并生成相应的的图形显示，以Web方式直观的提供给客户端。</p>
 <p>工作原理：<br>    Ganglia包括如下几个程序，他们之间通过XDR(xml的压缩格式)或者XML格式传递监控数据，达到监控效果。集群内的节点，通过运行gmond收集发布节点状态信息，然后gmetad周期性的轮询gmond收集到的信息，然后存入rrd数据库，通过web服务器可以对其进行查询展示。</p>
-<img src="/2018/02/10/Ganglia原理介绍、安装使用/ganglia.jpg">
+<img src="/2018/02/10/ganglia原理介绍、安装使用/ganglia.jpg">
 <a id="more"></a>
 <hr>
 <h2 id="安装ganglia"><a href="#安装ganglia" class="headerlink" title="安装ganglia"></a>安装ganglia</h2><p>网上示例很多，对该部分的翻译后续再跟进。</p>
 <h2 id="配置ganglia"><a href="#配置ganglia" class="headerlink" title="配置ganglia"></a>配置ganglia</h2><p>默认的配置仅仅能使ganglia工作，如果了解更多的配置项，能帮助你更好的使用ganglia做监控部署。</p>
 <h3 id="gmod"><a href="#gmod" class="headerlink" title="gmod"></a>gmod</h3><p>安装在每个想监控的节点上，与操作系统交互获取度量信息（cpu使用率、内存、网络以及其他可通过自定义拓展的度量）并与集群内其他节点共享。每个在集群内的gmod实例知晓所有gmond所在节点的度量值，并通过XML格式的dump对外提供访问，gmetad通过gmond的连接端口连接。</p>
 <h4 id="拓扑结构"><a href="#拓扑结构" class="headerlink" title="拓扑结构"></a>拓扑结构</h4><p>gmond的默认拓扑结构采用广播的方式(multicast)，意味着所有集群内节点发送并接受度量信息，并以hash table的结构保存到各自的内存数据库中，包括所有集群节点的度量信息。如下图所示：</p>
-<img src="/2018/02/10/Ganglia原理介绍、安装使用/multicast.png">
+<img src="/2018/02/10/ganglia原理介绍、安装使用/multicast.png">
 <p>上图图解最重要的是与gmond deamon全然不同的性质。在内部，gmond发送和接受两种行为是无关联的（正如图中垂直虚线所示）。gmond不会自我交互，它只会向网络中发送度量信息。任何本地节点的信息获取都会经过sender传输到网络中，再由receiver从网络中收集。</p>
 <p>这种拓扑对大多数场景适用，但某些案例下，指定少数监听者比每个节点都监听集群内度量信息要更行之有效，因为每个节点都监听会浪费额外的cpu，更多细节详见第三章。</p>
 <p>通过“聋哑”模式，如下图，可以消除大集群内的过度联系。聋人模式和哑人模式使一些gmond按特定的模式工作，如收集或者发送。哑人模式意味着节点不对外传输数据，但收集集群内其他节点的度量信息。聋人模式意味着该实例不接受网络中的度量信息，但它不是哑巴，它会持续向网络中的其他监听节点发送度量信息。</p>
-<img src="/2018/02/10/Ganglia原理介绍、安装使用/deaf-mute-multicast.png">
+<img src="/2018/02/10/ganglia原理介绍、安装使用/deaf-mute-multicast.png">
 <p>并非所有的拓扑模型都要求使用广播。当广播不是第一选择的时候，聋哑模式的拓扑可由UDP单播实现:</p>
-<img src="/2018/02/10/Ganglia原理介绍、安装使用/unicast.png">
+<img src="/2018/02/10/ganglia原理介绍、安装使用/unicast.png">
 <p>或者，可以混合使用“聋哑”模式和默认的拓扑创建适合你环境的系统架构。唯一的拓扑要求如下所述：</p>
 <ol>
 <li>在集群内至少有一个gmond实例负责接收网络中的所有度量信息。</li>
@@ -516,13 +516,13 @@
 <h3 id="gmetad"><a href="#gmetad" class="headerlink" title="gmetad"></a>gmetad</h3><p>gmetad,the Ganlia Meta Daemon，安装在运行了收集度量信息的gmond节点之上，负责度量信息的收集和聚合。默认情况下，gmetad收集并聚合度量信息存储到RRD文件，但可以配置gmetad向其他系统汇总数据，如Graphite。</p>
 <p>gmetad监听tcp端口8651，连接远程的gmetad并提供授权节点的xml dump状态文件。通过8652tcp端口响应其他节点的请求。交互的设备接受简易的子树和xml网格状态的总览。gweb通过使用这些查询在展现不适合存储在RRD中的数据，比如操作系统版本信息。</p>
 <h4 id="gmetad拓扑"><a href="#gmetad拓扑" class="headerlink" title="gmetad拓扑"></a>gmetad拓扑</h4><p>一个最简单的拓扑结构如下图所示，只存在一个gmetad负责轮训多个gmond实例:</p>
-<img src="/2018/02/10/Ganglia原理介绍、安装使用/gmetad.png">
+<img src="/2018/02/10/ganglia原理介绍、安装使用/gmetad.png">
 <p>高可用性是通常的需求也比较容易实现。如下图所示，两个gmetad和多个gmond实例。gmetad如果从node1拉取不到，将会从node2拉取。两个gmetad也会同时工作:</p>
-<img src="/2018/02/10/Ganglia原理介绍、安装使用/gmetad-ha.png">
+<img src="/2018/02/10/ganglia原理介绍、安装使用/gmetad-ha.png">
 <p>gmetad并未限制轮训gmond，也可以拉取gmetad以创造另一个gmetad层级。如下图：</p>
-<img src="/2018/02/10/Ganglia原理介绍、安装使用/gmetad-hie.png">
+<img src="/2018/02/10/ganglia原理介绍、安装使用/gmetad-hie.png">
 <p>在更大的集群中，IO成为性能瓶颈，rrdcached作为gmetad和RRD文件的中间缓存，如图:</p>
-<img src="/2018/02/10/Ganglia原理介绍、安装使用/gmetad-cache.png">
+<img src="/2018/02/10/ganglia原理介绍、安装使用/gmetad-cache.png">
 <h4 id="gmetad-conf"><a href="#gmetad-conf" class="headerlink" title="gmetad.conf"></a>gmetad.conf</h4><p>gmetad.conf配置文件由单行属性和相对应的值组成。名称大小写不敏感，但value不同。如下所示属性表示的是相同的名称：</p>
 <pre><code>name NAME Name NaMe
 </code></pre><p>大多数属性是可选的；另外的是必须的。有些可被定义多次，有些只能被定义一次。</p>

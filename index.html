@@ -935,7 +935,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xuhaibin">
@@ -954,7 +954,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/02/10/Ganglia原理介绍、安装使用/" itemprop="url">ganglia原理介绍、安装使用</a></h1>
+                <a class="post-title-link" href="/2018/02/10/ganglia原理介绍、安装使用/" itemprop="url">ganglia原理介绍、安装使用</a></h1>
         
 
         <div class="post-meta">
@@ -1026,10 +1026,10 @@
 <p>每台计算机都运行一个收集和发送度量数据的名为 gmond 的守护进程。接收所有度量数据的主机可以显示这些数据并且可以将这些数据的精简表单传递到层次结构中。正因为有这种层次结构模式，才使得 Ganglia 可以实现良好的扩展。gmond 带来的系统负载非常少，这使得它成为在集群中各台计算机上运行的一段代码，而不会影响用户性能。所有这些数据多次收集会影响节点性能。网络中的 “抖动”发生在大量小消息同时出现时，可以通过将节点时钟保持一致，来避免这个问题。</p>
 <p>gmetad可以部署在集群内任一台节点或者通过网络连接到集群的独立主机，它通过单播路由的方式与gmond通信，收集区域内节点的状态信息，并以XML数据的形式，保存在数据库中。由RRDTool工具处理数据，并生成相应的的图形显示，以Web方式直观的提供给客户端。</p>
 <p>工作原理：<br>    Ganglia包括如下几个程序，他们之间通过XDR(xml的压缩格式)或者XML格式传递监控数据，达到监控效果。集群内的节点，通过运行gmond收集发布节点状态信息，然后gmetad周期性的轮询gmond收集到的信息，然后存入rrd数据库，通过web服务器可以对其进行查询展示。</p>
-<img src="/2018/02/10/Ganglia原理介绍、安装使用/ganglia.jpg">
+<img src="/2018/02/10/ganglia原理介绍、安装使用/ganglia.jpg">
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/02/10/Ganglia原理介绍、安装使用/#more" rel="contents">
+            <a class="btn" href="/2018/02/10/ganglia原理介绍、安装使用/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
