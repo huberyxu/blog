@@ -77,7 +77,7 @@
     root: '/',
     scheme: 'Muse',
     version: '6.0.3',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":true},
     fancybox: false,
     fastclick: false,
     lazyload: false,
@@ -111,7 +111,7 @@
 <meta property="og:description" content="About me">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://haibin.work/about/index/joey-pilgrim-251356.jpg">
-<meta property="og:updated_time" content="2018-02-10T09:10:57.295Z">
+<meta property="og:updated_time" content="2018-02-12T15:33:20.244Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hubery&#39;s Polaris">
 <meta name="twitter:description" content="About me">
@@ -328,8 +328,9 @@
       <div class="post-body">
         
         
-          <p><br><br><blockquote class="blockquote-center"><p>About me </p>
-</blockquote><br><br></p>
+          <blockquote class="blockquote-center"><p>About me </p>
+</blockquote>
+<p><br></p>
 <span itemprop="image" itemscope="" itemtype="http://schema.org/ImageObject"><img itemprop="url image" src="/about/index/joey-pilgrim-251356.jpg" class="full-image" alt="alt" title="title"><meta itemprop="width" content="auto"><meta itemprop="height" content="auto"></span>
 
         
@@ -364,6 +365,8 @@
   </div>
 
   <aside id="sidebar" class="sidebar">
+    
+      <div id="sidebar-dimmer"></div>
     
     <div class="sidebar-inner">
 
@@ -401,7 +404,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">1</span>
+                      
+                    
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -534,6 +539,8 @@
     
       <div class="back-to-top">
         <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
         
       </div>
     

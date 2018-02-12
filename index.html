@@ -77,7 +77,7 @@
     root: '/',
     scheme: 'Muse',
     version: '6.0.3',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":true},
     fancybox: false,
     fastclick: false,
     lazyload: false,
@@ -682,7 +682,7 @@
 
       
         
-          <h2 id="提出问题"><a href="#提出问题" class="headerlink" title="提出问题"></a>提出问题</h2><p>Druid最初的设计目的是解决围绕数据注入和探索大量事务事件(日志数据)的问题。这种形式的timeseries数据通常在OLAP工作流中出现，而数据的性质往往非常复杂。例如，考虑表1所示的数据。表1包含在Wikipedia上发生的编辑的数据。每次用户编辑Wikipedia中的页面时，都会生成一个关于”编辑”的元数据的事件。</p>
+          <h2 id="提出问题"><a href="#提出问题" class="headerlink" title="提出问题"></a>提出问题</h2><p>Druid最初的设计目的是解决围绕数据注入和探索大量事务事件(日志数据)的问题。这种timeseries形式的数据通常在OLAP中出现，而数据的性质往往非常复杂。例如，考虑表1所示的数据。表1包含在Wikipedia上发生编辑的数据。每次用户编辑Wikipedia中的页面时，都会生成一个关于”编辑”的元数据的事件。</p>
 <table>
 <thead>
 <tr>
@@ -734,7 +734,7 @@
 </tr>
 </tbody>
 </table>
-<p>此元数据由3个不同的部分组成。首先，有一个时间戳列，指示何时进行编辑。接下来，有一个设置的维度列，指示编辑器(例如编辑的页面、编辑的用户和用户的位置)的各种属性。最后，有一组度量列包含可以聚合的值(通常是数值)，例如在编辑中添加或删除的字符数。<br>我们的目标是快速地对这些数据的下钻和聚集。我们想回答这样的问题:“在旧金山，贾斯汀·比伯在页面上做了多少编辑?”以及“在一个月的时间里，来自Calgary的人们添加的字符的平均数量是多少?”我们还希望对任意维度的任意组合进行查询，以亚秒级延迟返回。</p>
+<p>此元数据由3个不同的部分组成。首先，有一个时间戳列，指示何时进行编辑。接下来，有一个维度列，指示编辑器(例如编辑的页面、编辑的用户和用户的位置)的各种属性。最后，有一组度量列包含可以聚合的值(通常是数值)，例如在编辑中添加或删除的字符数。<br>我们的目标是快速地对这些数据的下钻和聚集。我们想回答这样的问题:“在旧金山，贾斯汀·比伯在页面上做了多少编辑?”以及“在一个月的时间里，来自Calgary的人们添加的字符的平均数量是多少?”我们还希望对任意维度的任意组合进行查询，以亚秒级延迟返回。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/02/12/Druid-背景/#more" rel="contents">
@@ -877,9 +877,9 @@
 
       
         
-          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Druid是一个用于大规模数据集的实时分析处理的数据存储。该系统结合了列存储、分布式的、无共享的体系结构，高效的索引能够支持10亿行数据分析查询的亚秒级响应。在本文中，我们描述了Druid的架构，以及它如何支持快速聚合，灵活的过滤器，以及低延迟的数据注入。<br>Categories and Subject Descriptors<br>H.2.4 [Database Management]: Systems—Distributed databases<br>关键字<br>distributed; real-time; fault-tolerant; highly available; open source; analytics; column-oriented; OLAP</p>
+          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Druid是一个用于大规模数据集的实时分析处理的数据存储系统。该系统结合了列存储、分布式的、无共享的体系结构，高效的索引能够支持10亿行数据分析查询的亚秒级响应。在本文中，我们描述了Druid的架构，以及它如何支持快速聚合，灵活的过滤器，以及低延迟的数据注入。<br>Categories and Subject Descriptors<br>H.2.4 [Database Management]: Systems—Distributed databases<br>关键字<br>distributed; real-time; fault-tolerant; highly available; open source; analytics; column-oriented; OLAP</p>
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>近年来，互联网技术的迅猛发展使机器生成的事件激增。单独来说，这些事件包含的有用信息非常少，而且价值很低。考虑到从大量数据中提取有价值的数据所需的时间和资源，许多公司愿意放弃这些数据。尽管已经建立了基础设施来处理基于事件的数据(例如IBM的Netezza[37]、HP的Vertica[5]和EMC的Greenplum[29])，但它们在很大程度上以高价出售，而且只针对那些能够支付得起的公司。</p>
-<p>几年前，谷歌引入了MapReduce[11]作为其利用商品硬件的机制来索引网络和分析日志。Hadoop[36]项目很快就完成了，并且很大程度上是基于最初的MapReduce理论而形成的。Hadoop目前部署在许多组织中，以存储和分析大量的日志数据。Hadoop帮助公司将其低价值的事件流转化为高价值的聚合，用于各种应用程序，如商业智能和a- b测试。</p>
+<p>几年前，谷歌引入了MapReduce[11]作为其利用商品硬件的机制来索引网络和分析日志。Hadoop[36]项目很快就完成了，并且很大程度上是基于最初的MapReduce理论而形成的。Hadoop目前部署在许多组织中，以存储和分析大量的日志数据。Hadoop帮助公司将其低价值的事件流转化为高价值的聚合，用于各种应用程序，如商业智能和测试。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/02/12/Druid-概述/#more" rel="contents">
@@ -935,7 +935,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xuhaibin">
@@ -954,7 +954,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/02/10/ganglia原理介绍、安装使用/" itemprop="url">ganglia原理介绍、安装使用</a></h1>
+                <a class="post-title-link" href="/2018/02/10/Ganglia原理介绍、安装使用/" itemprop="url">ganglia原理介绍、安装使用</a></h1>
         
 
         <div class="post-meta">
@@ -975,6 +975,24 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Ganglia/" itemprop="url" rel="index"><span itemprop="name">Ganglia</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -1008,10 +1026,10 @@
 <p>每台计算机都运行一个收集和发送度量数据的名为 gmond 的守护进程。接收所有度量数据的主机可以显示这些数据并且可以将这些数据的精简表单传递到层次结构中。正因为有这种层次结构模式，才使得 Ganglia 可以实现良好的扩展。gmond 带来的系统负载非常少，这使得它成为在集群中各台计算机上运行的一段代码，而不会影响用户性能。所有这些数据多次收集会影响节点性能。网络中的 “抖动”发生在大量小消息同时出现时，可以通过将节点时钟保持一致，来避免这个问题。</p>
 <p>gmetad可以部署在集群内任一台节点或者通过网络连接到集群的独立主机，它通过单播路由的方式与gmond通信，收集区域内节点的状态信息，并以XML数据的形式，保存在数据库中。由RRDTool工具处理数据，并生成相应的的图形显示，以Web方式直观的提供给客户端。</p>
 <p>工作原理：<br>    Ganglia包括如下几个程序，他们之间通过XDR(xml的压缩格式)或者XML格式传递监控数据，达到监控效果。集群内的节点，通过运行gmond收集发布节点状态信息，然后gmetad周期性的轮询gmond收集到的信息，然后存入rrd数据库，通过web服务器可以对其进行查询展示。</p>
-<img src="/2018/02/10/ganglia原理介绍、安装使用/ganglia.jpg">
+<img src="/2018/02/10/Ganglia原理介绍、安装使用/ganglia.jpg">
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/02/10/ganglia原理介绍、安装使用/#more" rel="contents">
+            <a class="btn" href="/2018/02/10/Ganglia原理介绍、安装使用/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1071,6 +1089,8 @@
 
   <aside id="sidebar" class="sidebar">
     
+      <div id="sidebar-dimmer"></div>
+    
     <div class="sidebar-inner">
 
       
@@ -1107,7 +1127,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">1</span>
+                      
+                    
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1240,6 +1262,8 @@
     
       <div class="back-to-top">
         <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
         
       </div>
     
