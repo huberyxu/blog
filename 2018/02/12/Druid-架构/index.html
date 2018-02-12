@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="架构体系Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。 为了解决复杂的数据分析问题，不同的节点类型聚在一起形成一个完整的工作系统。Druid这个名字来自于许多角色扮演游戏中的德鲁伊，它是一个变形者，能够在一个群体中扮">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-12T10:49:37.112Z">
+<meta property="og:updated_time" content="2018-02-12T10:51:12.856Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Druid-架构">
 <meta name="twitter:description" content="架构体系Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。 为了解决复杂的数据分析问题，不同的节点类型聚在一起形成一个完整的工作系统。Druid这个名字来自于许多角色扮演游戏中的德鲁伊，它是一个变形者，能够在一个群体中扮">
@@ -380,6 +380,7 @@
         <h2 id="架构体系"><a href="#架构体系" class="headerlink" title="架构体系"></a>架构体系</h2><p>Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。</p>
 <p>为了解决复杂的数据分析问题，不同的节点类型聚在一起形成一个完整的工作系统。Druid这个名字来自于许多角色扮演游戏中的德鲁伊，它是一个变形者，能够在一个群体中扮演各种不同的角色。德鲁伊集群中数据的组成和数据流如图1所示。</p>
 
+<a id="more"></a>
 <h3 id="Real-time-Nodes"><a href="#Real-time-Nodes" class="headerlink" title="Real-time Nodes"></a>Real-time Nodes</h3><p>Real-time Nodes的功能是”数据注入”和”查询事件流”。Event通过这些节点创建索引并立即用于查询。这些节点只关心一些小的时间范围内的Event，并且周期性地将它们在这个小时间范围内收集到的”不可变数据集”并传递给Druid集群中的其他节点，这些节点专门处理一些”不可变数据集”。实时节点利用Zookeeper[19]与其他Druid节点进行协调。这些节点宣告它们的在线状态和它们在Zookeeper中服务的数据。</p>
 <p>Real-time Nodes为所有注入的事件在内存中维护的索引缓冲区。这些索引随着事件的注入而递增，索引也可以直接查询。Druid的行为像是基于JVM堆内存的行式存储。为了避免堆溢出问题，Real-time Nodes会周期性地或在达到某个最大行限制后将内存索引持久化到磁盘。这个持久化过程将存储在内存缓冲区中的数据转换为第4节中描述的面向列存储格式。每个持久的索引都是不可变的，Real-time Nodes将持久的索引加载到堆外内存中，这样它们仍然可以被查询。这个过程在[33]中被详细描述，如图2所示。</p>
 
