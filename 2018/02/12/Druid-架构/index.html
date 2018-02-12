@@ -100,26 +100,28 @@
 
 
   
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="OLAP,Druid," />
 
 
-<meta name="description" content="I do not know go where, but I have been on the road.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hubery&#39;s Polaris">
-<meta property="og:url" content="https://haibin.work/index.html">
+<meta name="description" content="架构体系Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。 为了解决复杂的数据分析问题，不同的节点类型聚在一起形成一个完整的工作系统。Druid这个名字来自于许多角色扮演游戏中的德鲁伊，它是一个变形者，能够在一个群体中扮">
+<meta name="keywords" content="OLAP,Druid">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Druid-架构">
+<meta property="og:url" content="https://haibin.work/2018/02/12/Druid-架构/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="I do not know go where, but I have been on the road.">
+<meta property="og:description" content="架构体系Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。 为了解决复杂的数据分析问题，不同的节点类型聚在一起形成一个完整的工作系统。Druid这个名字来自于许多角色扮演游戏中的德鲁伊，它是一个变形者，能够在一个群体中扮">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-12T10:49:37.112Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hubery&#39;s Polaris">
-<meta name="twitter:description" content="I do not know go where, but I have been on the road.">
+<meta name="twitter:title" content="Druid-架构">
+<meta name="twitter:description" content="架构体系Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。 为了解决复杂的数据分析问题，不同的节点类型聚在一起形成一个完整的工作系统。Druid这个名字来自于许多角色扮演游戏中的德鲁伊，它是一个变形者，能够在一个群体中扮">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/"/>
+  <link rel="canonical" href="https://haibin.work/2018/02/12/Druid-架构/"/>
 
 
 
@@ -128,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title>Hubery's Polaris</title>
+  <title>Druid-架构 | Hubery's Polaris</title>
   
 
 
@@ -185,8 +187,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -275,9 +276,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -309,9 +310,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/12/Druid-架构/" itemprop="url">Druid-架构</a></h1>
+          <h1 class="post-title" itemprop="name headline">Druid-架构</h1>
         
 
         <div class="post-meta">
@@ -378,9 +377,7 @@
       
 
       
-        
-          
-            <h2 id="架构体系"><a href="#架构体系" class="headerlink" title="架构体系"></a>架构体系</h2><p>Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。</p>
+        <h2 id="架构体系"><a href="#架构体系" class="headerlink" title="架构体系"></a>架构体系</h2><p>Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。</p>
 <p>为了解决复杂的数据分析问题，不同的节点类型聚在一起形成一个完整的工作系统。Druid这个名字来自于许多角色扮演游戏中的德鲁伊，它是一个变形者，能够在一个群体中扮演各种不同的角色。德鲁伊集群中数据的组成和数据流如图1所示。</p>
 
 <h3 id="Real-time-Nodes"><a href="#Real-time-Nodes" class="headerlink" title="Real-time Nodes"></a>Real-time Nodes</h3><p>Real-time Nodes的功能是”数据注入”和”查询事件流”。Event通过这些节点创建索引并立即用于查询。这些节点只关心一些小的时间范围内的Event，并且周期性地将它们在这个小时间范围内收集到的”不可变数据集”并传递给Druid集群中的其他节点，这些节点专门处理一些”不可变数据集”。实时节点利用Zookeeper[19]与其他Druid节点进行协调。这些节点宣告它们的在线状态和它们在Zookeeper中服务的数据。</p>
@@ -413,8 +410,6 @@
 <h4 id="可靠性-1"><a href="#可靠性-1" class="headerlink" title="可靠性"></a>可靠性</h4><p>Druid协调节点将Zookeeper和MySQL作为外部依赖关系。协调节点依赖于Zookeeper来确定集群中已经存在的历史节点。如果Zookeeper是不可用的，那么协调器将不再能够发送指令来分配、平衡和删除部分。然而，这些操作并不影响数据的可用性。</p>
 <p>对MySQL和Zookeeper失败的响应的设计原则是相同的:如果一个负责协作的外部依赖项失败，集群将维持现状。Druid使用MySQL存储操作管理信息和段元数据信息，了解哪些片段应该存在于集群中。如果MySQL宕机，则此信息将无法用于协调节点。然而，这并不意味着数据本身是不可用的。如果协调节点无法与MySQL通信，它们将停止分配新的段并删除过时的部分。在MySQL中断期间，代理、历史和实时节点仍然可以查询。</p>
 
-          
-        
       
     </div>
     
@@ -429,607 +424,38 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/12/Druid-背景/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/12/Druid-背景/" itemprop="url">Druid-背景</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-12T18:45:30+08:00">2018-02-12</time>
-            
-
-            
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Druid/" itemprop="url" rel="index"><span itemprop="name">Druid</span></a></span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/OLAP/" rel="tag"># OLAP</a>
           
-
+            <a href="/tags/Druid/" rel="tag"># Druid</a>
           
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="提出问题"><a href="#提出问题" class="headerlink" title="提出问题"></a>提出问题</h2><p>Druid最初的设计目的是解决围绕数据注入和探索大量事务事件(日志数据)的问题。这种形式的timeseries数据通常在OLAP工作流中出现，而数据的性质往往非常复杂。例如，考虑表1所示的数据。表1包含在Wikipedia上发生的编辑的数据。每次用户编辑Wikipedia中的页面时，都会生成一个关于”编辑”的元数据的事件。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">Timestamp</th>
-<th style="text-align:center">Page</th>
-<th style="text-align:center">Username</th>
-<th style="text-align:center">Gender</th>
-<th style="text-align:center">City</th>
-<th style="text-align:center">Characters Added</th>
-<th style="text-align:center">Characters Removed</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">2011-01-01T01:00:00Z</td>
-<td style="text-align:center">Justin Bieber</td>
-<td style="text-align:center">Boxer</td>
-<td style="text-align:center">Male</td>
-<td style="text-align:center">San</td>
-<td style="text-align:center">Francisco</td>
-<td style="text-align:center">1800</td>
-<td>25</td>
-</tr>
-<tr>
-<td style="text-align:center">2011-01-01T01:00:00Z</td>
-<td style="text-align:center">Justin Bieber</td>
-<td style="text-align:center">Reach</td>
-<td style="text-align:center">Male</td>
-<td style="text-align:center">Waterloo</td>
-<td style="text-align:center">2912</td>
-<td style="text-align:center">42</td>
-</tr>
-<tr>
-<td style="text-align:center">2011-01-01T02:00:00Z</td>
-<td style="text-align:center">Ke$ha</td>
-<td style="text-align:center">Helz</td>
-<td style="text-align:center">Male</td>
-<td style="text-align:center">Calgary</td>
-<td style="text-align:center">1953</td>
-<td style="text-align:center">17</td>
-</tr>
-<tr>
-<td style="text-align:center">2011-01-01T02:00:00Z</td>
-<td style="text-align:center">Ke$ha</td>
-<td style="text-align:center">Xeno</td>
-<td style="text-align:center">Male</td>
-<td style="text-align:center">Taiyuan</td>
-<td style="text-align:center">3194</td>
-<td style="text-align:center">170</td>
-</tr>
-</tbody>
-</table>
-<p>此元数据由3个不同的部分组成。首先，有一个时间戳列，指示何时进行编辑。接下来，有一个设置的维度列，指示编辑器(例如编辑的页面、编辑的用户和用户的位置)的各种属性。最后，有一组度量列包含可以聚合的值(通常是数值)，例如在编辑中添加或删除的字符数。<br>我们的目标是快速地对这些数据的下钻和聚集。我们想回答这样的问题:“在旧金山，贾斯汀·比伯在页面上做了多少编辑?”以及“在一个月的时间里，来自Calgary的人们添加的字符的平均数量是多少?”我们还希望对任意维度的任意组合进行查询，以亚秒级延迟返回。</p>
-<p>由于现有的开源关系数据库管理系统(RDBMS)和NoSQL键/值存储无法为交互式应用程序提供低延迟的数据输入和查询平台[40]，因此需要使用Druid。在Metamarkets的早期，我们专注于构建一个托管的仪表板，允许用户任意地探索和可视化事件流。数据存储为仪表板提供了强大的支持，使其能够快速返回查询，使数据可视化能够为用户提供交互式体验。</p>
-<p>除了查询延迟需求之外，系统还必须是多租户和高可用的。在高度并发的环境中使用了Metamarkets产品。如果一个系统在软件升级或网络故障的情况下无法使用，停机时间将会非常昂贵，而且许多企业不愿意等待。创业公司通常缺乏适当的内部运营管理，因此，宕机可以决定企业的成败。</p>
-<p>最后，Metamarkets在早期面临的另一个挑战是允许用户和警报系统在“实时”中做出业务决策。当”一个事件被创建”到”该事件是可查询”的时候，时延就决定了跨部门的各方能够对其系统中潜在的灾难性情况作出反应。流行的开源数据仓库系统，如Hadoop，无法提供我们需要的亚秒数据注入延迟。</p>
-<p>多个行业面临数据挖掘、注入和可用性的问题。自从Druid在2012年10月开源之后，它就被作为一个视频、网络监控、操作监控和在线广告分析平台在多个公司中部署。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
       
 
       
       
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
       
 
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/12/Druid-概述/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/12/Druid-概述/" itemprop="url">Druid-概述</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-12T18:45:04+08:00">2018-02-12</time>
+              <a href="/2018/02/12/Druid-背景/" rel="next" title="Druid-背景">
+                <i class="fa fa-chevron-left"></i> Druid-背景
+              </a>
             
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Druid/" itemprop="url" rel="index"><span itemprop="name">Druid</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Druid是一个用于大规模数据集的实时分析处理的数据存储。该系统结合了列存储、分布式的、无共享的体系结构，高效的索引能够支持10亿行数据分析查询的亚秒级响应。在本文中，我们描述了Druid的架构，以及它如何支持快速聚合，灵活的过滤器，以及低延迟的数据注入。<br>Categories and Subject Descriptors<br>H.2.4 [Database Management]: Systems—Distributed databases<br>关键字<br>distributed; real-time; fault-tolerant; highly available; open source; analytics; column-oriented; OLAP</p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>近年来，互联网技术的迅猛发展使机器生成的事件激增。单独来说，这些事件包含的有用信息非常少，而且价值很低。考虑到从大量数据中提取有价值的数据所需的时间和资源，许多公司愿意放弃这些数据。尽管已经建立了基础设施来处理基于事件的数据(例如IBM的Netezza[37]、HP的Vertica[5]和EMC的Greenplum[29])，但它们在很大程度上以高价出售，而且只针对那些能够支付得起的公司。<br>几年前，谷歌引入了MapReduce[11]作为其利用商品硬件的机制来索引网络和分析日志。Hadoop[36]项目很快就完成了，并且很大程度上是基于最初的MapReduce理论而形成的。Hadoop目前部署在许多组织中，以存储和分析大量的日志数据。Hadoop帮助公司将其低价值的事件流转化为高价值的聚合，用于各种应用程序，如商业智能和a- b测试。<br>与许多伟大的系统一样，Hadoop已经打开了我们的视野，也让我们看到新的问题。具体来说，Hadoop擅长存储和提供大量数据，但是它不能保证数据访问的速度有多快。此外，尽管Hadoop是一个高度可用的系统，但是在大量并发负载下性能会降低。最后，尽管Hadoop可以很好地存储数据，但它并没有对数据进行优化，使数据立即可读。<br>在开发Metamarkets产品的早期，我们遇到了这些问题，并认识到Hadoop是一个很好的后台处理、批处理和数据仓库系统。但是，作为一个在高度一致的租户环境(1000+用户)中具有产品级保证的公司，查询性能和数据可用性方面，Hadoop并不能满足我们的需求。<br>我们探索了不同的解决方案，在尝试了关系数据库管理系统和NoSQL技术架构之后，我们得出了这样的结论:在开源世界中没有任何东西可以完全满足我们的需求。我们最终创建了Druid，一个开源的、分布式的、基于列的、实时的分析数据存储。在许多方面，Druid与其他OLAP系统(30、35、22)、在交互查询系统[28]、内存数据库[14]以及广为人知的分布式数据存储(7、12、23)有相似之处。在分布式和查询模型上也借鉴了当前的生成搜索基础结构[25,3,4]。<br>本文描述了Druid的架构，探索了在创建系统的过程中所做的各种决策设计，它为托管服务提供了动力，并试图帮助任何一个面临类似问题的人。Druid被部署在几个技术公司的生产环境中中。本文的结构如下:首先第2节中描述Druid解决的问题。接下来，第3节我们将从数据流角度详细介绍系统架构。在第4节中，我们讨论如何以及为什么数据转换成二进制格式。第5节中简要描述了查询API，并在第6节中展示了性能结果。最后，我们将从第7节中运行Druid、第8节中总结经验。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/10/序-INTRO/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/10/序-INTRO/" itemprop="url">序 / INTRO</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-10T14:31:10+08:00">2018-02-10</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote class="blockquote-center"><center>我们要有最朴素的生活  与最遥远的梦想</center><center>即使明日天寒地冻  路远马亡</center> </blockquote>
-<p><center>WELCOME HUBERY’S POLARIS </center></p>
-<p><center>这里是徐海滨的博客</center></p>
-<p><center>主要更新一些技术文章、个人作品</center></p>
-<p><center>请持续关注哟~~~</center><br><br><br><br></p>
-<p><center>比心</center><br><br></p>
-<img src="/2018/02/10/序-INTRO/bixin.jpg">
-<p><br><br><br></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/10/ganglia原理介绍、安装使用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/10/ganglia原理介绍、安装使用/" itemprop="url">ganglia原理介绍、安装使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-10T11:29:32+08:00">2018-02-10</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>Ganglia简介：<br>Ganglia是UC Berkeley发起的一个开源集群监视项目，设计用于测量数以千计的节点。Ganglia的核心包含gmond、gmetad以及一个Web前端。主要是用来监控系统性能，如：cpu 、mem、硬盘利用率， I/O负载、网络流量情况等，通过曲线很容易见到每个节点的工作状态，对合理调整、分配系统资源，提高系统整体性能起到重要作用。</p>
-<p>每台计算机都运行一个收集和发送度量数据的名为 gmond 的守护进程。接收所有度量数据的主机可以显示这些数据并且可以将这些数据的精简表单传递到层次结构中。正因为有这种层次结构模式，才使得 Ganglia 可以实现良好的扩展。gmond 带来的系统负载非常少，这使得它成为在集群中各台计算机上运行的一段代码，而不会影响用户性能。所有这些数据多次收集会影响节点性能。网络中的 “抖动”发生在大量小消息同时出现时，可以通过将节点时钟保持一致，来避免这个问题。</p>
-<p>gmetad可以部署在集群内任一台节点或者通过网络连接到集群的独立主机，它通过单播路由的方式与gmond通信，收集区域内节点的状态信息，并以XML数据的形式，保存在数据库中。由RRDTool工具处理数据，并生成相应的的图形显示，以Web方式直观的提供给客户端。</p>
-<p>工作原理：<br>    Ganglia包括如下几个程序，他们之间通过XDR(xml的压缩格式)或者XML格式传递监控数据，达到监控效果。集群内的节点，通过运行gmond收集发布节点状态信息，然后gmetad周期性的轮询gmond收集到的信息，然后存入rrd数据库，通过web服务器可以对其进行查询展示。</p>
-<img src="/2018/02/10/ganglia原理介绍、安装使用/ganglia.jpg">
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/10/ganglia原理介绍、安装使用/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
           </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
 
-    
+          <span class="post-nav-divider"></span>
 
-    
-
-    
-
-    <footer class="post-footer">
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
       
 
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -1039,14 +465,19 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -1067,8 +498,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -1174,6 +614,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#架构体系"><span class="nav-number">1.</span> <span class="nav-text">架构体系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Real-time-Nodes"><span class="nav-number">1.1.</span> <span class="nav-text">Real-time Nodes</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#可用性和可伸缩性"><span class="nav-number">1.1.1.</span> <span class="nav-text">可用性和可伸缩性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Historical-Nodes"><span class="nav-number">1.2.</span> <span class="nav-text">Historical Nodes</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Tiers机制"><span class="nav-number">1.2.1.</span> <span class="nav-text">Tiers机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#可用性"><span class="nav-number">1.2.2.</span> <span class="nav-text">可用性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Broker-Nodes"><span class="nav-number">1.3.</span> <span class="nav-text">Broker Nodes</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#缓存"><span class="nav-number">1.3.1.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#可靠性"><span class="nav-number">1.3.2.</span> <span class="nav-text">可靠性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Coordinator-Nodes"><span class="nav-number">1.4.</span> <span class="nav-text">Coordinator Nodes</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Rules"><span class="nav-number">1.4.1.</span> <span class="nav-text">Rules</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Load-Balancing"><span class="nav-number">1.4.2.</span> <span class="nav-text">Load Balancing</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Replication"><span class="nav-number">1.4.3.</span> <span class="nav-text">Replication</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#可靠性-1"><span class="nav-number">1.4.4.</span> <span class="nav-text">可靠性</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1308,6 +764,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
 
   
 
