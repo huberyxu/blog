@@ -111,10 +111,17 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="架构体系Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。 为了解决复杂的数据分析问题，不同的节点类型聚在一起形成一个完整的工作系统。Druid这个名字来自于许多角色扮演游戏中的德鲁伊，它是一个变形者，能够在一个群体中扮">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-12T10:51:12.856Z">
+<meta property="og:image" content="https://haibin.work/2018/02/12/Druid-架构/druid-f1.jpg">
+<meta property="og:image" content="https://haibin.work/2018/02/12/Druid-架构/druid-f2.jpg">
+<meta property="og:image" content="https://haibin.work/2018/02/12/Druid-架构/druid-f3.jpg">
+<meta property="og:image" content="https://haibin.work/2018/02/12/Druid-架构/druid-f4.png">
+<meta property="og:image" content="https://haibin.work/2018/02/12/Druid-架构/druid-f5.png">
+<meta property="og:image" content="https://haibin.work/2018/02/12/Druid-架构/druid-f6.png">
+<meta property="og:updated_time" content="2018-02-13T07:26:38.750Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Druid-架构">
 <meta name="twitter:description" content="架构体系Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。 为了解决复杂的数据分析问题，不同的节点类型聚在一起形成一个完整的工作系统。Druid这个名字来自于许多角色扮演游戏中的德鲁伊，它是一个变形者，能够在一个群体中扮">
+<meta name="twitter:image" content="https://haibin.work/2018/02/12/Druid-架构/druid-f1.jpg">
 
 
 
@@ -431,26 +438,27 @@
       
         <h2 id="架构体系"><a href="#架构体系" class="headerlink" title="架构体系"></a>架构体系</h2><p>Druid集群由不同类型的节点组成，每个节点类型被设计用于执行特定的一组事情。我们认为，这种设计将关注点分离，简化了整个系统的复杂性，不同的节点类型之间相互独立，而且它们之间的交互很少。因此，集群内通信故障对数据可用性的影响最小。</p>
 <p>为了解决复杂的数据分析问题，不同的节点类型聚在一起形成一个完整的工作系统。Druid这个名字来自于许多角色扮演游戏中的德鲁伊，它是一个变形者，能够在一个群体中扮演各种不同的角色。德鲁伊集群中数据的组成和数据流如图1所示。</p>
-
+<img src="/2018/02/12/Druid-架构/druid-f1.jpg">
 <a id="more"></a>
 <h3 id="Real-time-Nodes"><a href="#Real-time-Nodes" class="headerlink" title="Real-time Nodes"></a>Real-time Nodes</h3><p>Real-time Nodes的功能是”数据注入”和”查询事件流”。Event通过这些节点创建索引并立即用于查询。这些节点只关心一些小的时间范围内的Event，并且周期性地将它们在这个小时间范围内收集到的”不可变数据集”并传递给Druid集群中的其他节点，这些节点专门处理一些”不可变数据集”。实时节点利用Zookeeper[19]与其他Druid节点进行协调。这些节点宣告它们的在线状态和它们在Zookeeper中服务的数据。</p>
 <p>Real-time Nodes为所有注入的事件在内存中维护的索引缓冲区。这些索引随着事件的注入而递增，索引也可以直接查询。Druid的行为像是基于JVM堆内存的行式存储。为了避免堆溢出问题，Real-time Nodes会周期性地或在达到某个最大行限制后将内存索引持久化到磁盘。这个持久化过程将存储在内存缓冲区中的数据转换为第4节中描述的面向列存储格式。每个持久的索引都是不可变的，Real-time Nodes将持久的索引加载到堆外内存中，这样它们仍然可以被查询。这个过程在[33]中被详细描述，如图2所示。</p>
-
+<img src="/2018/02/12/Druid-架构/druid-f2.jpg">
 <p>定期地，每个Real-time Node将调度一个后台任务，搜索所有本地持久化的索引。该任务将这些索引合并在一起，并构建一个不可变的数据块，该数据块包含一个实时节点在一定时间内所接收到的所有事件。我们将此数据块称为“segment”。在转换阶段，实时节点将此段上传至永久备份存储，通常是一个分布式文件系统，如S3[12]或HDFS[36]，而Druid将其称为“deep storage”。ingest、persist、merge和handoff步骤都是流畅的;在任何过程中都没有数据丢失。</p>
 <p>图3说明了Real-time Node的操作。节点从13:37开始，只接受当前小时或下一个小时的事件。当事件被注入时，该节点宣布它将从13:00到14:00的时间段内服务一个数据段。每10分钟(持久化周期是可配置的)，节点将刷新并将其内存缓冲区保存到磁盘。在临近结束时，节点很可能会在看到14:00到15:00之间的事件。当出现这种情况时，节点准备为下一个小时提供数据，并创建一个新的内存索引。然后，节点宣布它也从14:00到15:00服务一个段。从13:00到14:00，节点不会立即合并持久索引，而是等待从13:00到14:00的离散事件的可配置窗口期。这个窗口期最小化了在事件交付过程中数据丢失的风险。当窗口期结束，节点合并从13:00到14:00的所有索引到一个不变的段(segment)。一旦这个段在其他Druid集群中被加载并可查询时，实时节点将”下架”13:00到14:00的数据。</p>
-
+<img src="/2018/02/12/Druid-架构/druid-f3.jpg">
 <h4 id="可用性和可伸缩性"><a href="#可用性和可伸缩性" class="headerlink" title="可用性和可伸缩性"></a>可用性和可伸缩性</h4><p>Real-time nodes是数据的使用者，需要一个对应的生产者来提供数据流。一般来说，对于数据耐用性的目的，位于生产者和实时节点之间会有一个像Kafka[21]这样的消息总线，如图4所示，实时节点通过从消息总线中读取事件来获取数据，从事件创建到事件消耗的时间通常为数百毫秒。</p>
-
+<img src="/2018/02/12/Druid-架构/druid-f4.png">
 <p>图4中的消息总线有两个目的。首先，消息总线充当传入事件的缓冲区。像Kafka这样的消息总线维护了位置偏移量——表明了在事件流中，一个消费者(一个实时节点)已经读取了多少。消费者可以通过编程方式更新这些偏移量。实时节点在每次将内存缓冲区保存到磁盘时更新此偏移量。在失败和恢复场景中，如果一个节点没有丢失磁盘，它可以从磁盘重新加载所有持久的索引，并从它所提交的最后偏移量中继续读取事件。从最近的提交点注入事件可以大大减少一个节点的恢复时间。在实践中，我们发现节点在几秒钟内便从这些失败场景中恢复过来。</p>
 <p>消息总线的第二个目的是充当单个端点，多个实时节点可以从该端点读取事件。多个实时节点可以从总线上接收相同的事件集合，从而创建事件的复制。在一个场景中，一个节点commit失败并丢失磁盘，复制的流确保没有数据丢失。单个注入端点还允许对数据流进行分区，从而使多个实时节点都能接收到流的一部分。这允许无缝地添加额外的实时节点。在实践中，该模型使最大的Druid生产集群能够以大约500 MB/s(15万Event/s或2 TB/小时)的速度消耗原始数据。</p>
 <h3 id="Historical-Nodes"><a href="#Historical-Nodes" class="headerlink" title="Historical Nodes"></a>Historical Nodes</h3><p>Historical Nodes功能是加载和服务由实时节点创建的不可变数据块(段)。在许多实际的工作流中，在Druid集群中加载的大多数数据是不可变的，因此，Historical Nodes通常是Druid集群的主要工作人员。Historical Nodes遵循无中心架构，节点之间没有独立的连接点。节点之间没有相互了解，操作上也很简单;它们只知道如何加载、删除和服务“不可变段”。</p>
 <p>类似于实时节点，历史节点在Zookeeper声明它们的在线状态和它们服务中的数据。加载和下架段的指令被发送到Zookeeper上，其中包含该segment位于deep storage的位置信息，以及如何解压缩和处理该segment。在历史节点从深度存储中下载特定的段之前，它首先检查一个本地缓存，该缓存维护节点上已经存在的段的信息。如果缓存中不存在某个段的信息，那么历史节点将继续从深度存储中下载该段。这个过程如图5所示。一旦成功完成，该部分将在zookeeper中宣布。此时，该段是可查询的。本地缓存还允许快速更新和重新启动历史节点。在启动时，节点检查它的缓存并立即提供它找到的任何数据。</p>
-
+<img src="/2018/02/12/Druid-架构/druid-f5.png">
 <p>历史节点可以支持读取一致性，因为它们只处理不可变数据。不可变数据块还支持简单并行化模型:历史节点可以同时扫描和聚合不可变块，而不会阻塞。</p>
 <h4 id="Tiers机制"><a href="#Tiers机制" class="headerlink" title="Tiers机制"></a>Tiers机制</h4><p>历史节点可以分在不同的tiers中，其中给定tiers中的所有节点都是相同配置的。可以为每一tier设置不同的性能和容错参数。节点分层的目的是根据segment的重要性，分配高、低优先级。例如，可以创建一个“hot”级的历史节点，这些节点具有高的内核数和较大的内存容量。可以将“hot”集群配置为更频繁下载访问的数据。一个并行的“cold”集群也可以用不太强大的支持硬件来创建。“cold”集群只包含较少被访问的部分。</p>
 <h4 id="可用性"><a href="#可用性" class="headerlink" title="可用性"></a>可用性</h4><p>历史节点依赖于Zookeeper的段“加载”和“下架”指令。如果Zookeeper变得不可用，那么历史节点就不再能够提供新的数据或删除过时的数据，因为查询是通过HTTP提供的，而历史节点仍然能够响应查询请求，以获取当前服务的数据。这意味着，Zookeeper中断不会影响历史节点上的当前数据可用性。</p>
 <h3 id="Broker-Nodes"><a href="#Broker-Nodes" class="headerlink" title="Broker Nodes"></a>Broker Nodes</h3><p>Broker nodes充当历史和实时节点的查询路由器。Broker节点知晓在Zookeeper中发布的关于哪些段是可查询的以及这些段所在位置的元数据。代理路由传入的查询，这样查询就会命中正确的历史节点或实时节点。Broker节点还将历史和实时节点的部分结果合并，然后将最终合并结果返回给调用者。</p>
 <h4 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h4><p>Broker nodes包含一个LRU[31, 20]失效策略的缓存。缓存可以使用本地堆内存或外部分布式key/value存储[16]。每当一个broker节点接收到一个查询时，它首先将查询映射到一组segments。某些段的结果可能已经存在于缓存中，不需要重新计算它们。对于缓存中不存在的任何结果，broker节点将向正确的历史和实时节点转发查询。一旦历史节点返回其结果，代理将会将这些结果缓存到一个基础段中以供将来使用。这个过程如图6所示。实时数据永远不会被缓存，因此实时数据的请求将被转发到实时节点。实时数据永远在变化，缓存结果是不可靠的。</p>
+<img src="/2018/02/12/Druid-架构/druid-f6.png">
 <p>缓存还可以额外作为数据可靠性级别。在所有历史节点都失败的情况下，如果缓存中已经存在这些结果，仍然可以查询结果。</p>
 <h4 id="可靠性"><a href="#可靠性" class="headerlink" title="可靠性"></a>可靠性</h4><p>在整个Zookeeper中断的情况下，数据仍然是可查询的。如果broker节点无法与Zookeeper进行通信，它们将使用集群的最后一个memory，并继续将查询转发到实时和历史节点。broker节点假定集群的结构与中断前的结构相同。在实践中，这个可用性模型允许我们的Druid集群在诊断Zookeeper宕机的时候继续为查询服务。</p>
 <h3 id="Coordinator-Nodes"><a href="#Coordinator-Nodes" class="headerlink" title="Coordinator Nodes"></a>Coordinator Nodes</h3><p>Druid Coordinator Nodes（协调节点）主要负责历史节点的数据管理和分配。协调器节点告诉历史节点加载新数据、删除过时数据、复制数据，并将数据移动到负载平衡。Druid使用多版本并发控制交换协议来管理不可变段，以保持稳定的视图。如果任何不可变的segment包含被完全废弃的数据，那么过时的片段就会从集群中删除。协调节点经历了一个领导选举过程，决定运行协调功能的节点。其余的协调节点充当冗余备份。</p>
@@ -503,6 +511,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/13/Druid-存储格式/" rel="prev" title="Druid-存储格式">
+                Druid-存储格式 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -581,7 +593,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

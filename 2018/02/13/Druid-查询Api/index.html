@@ -100,26 +100,28 @@
 
 
   
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="OLAP,Druid," />
 
 
-<meta name="description" content="I do not know go where, but I have been on the road.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hubery&#39;s Polaris">
-<meta property="og:url" content="https://haibin.work/archives/2018/02/index.html">
+<meta name="description" content="查询ApiDruid有自己的查询语言，通过POST请求。Broker, historical, 和real-time nodes都共享相同的查询API。POST请求的主体是一个JSON对象，其中包含各种查询参数的键值对。一个典型的查询将包含数据源名称、结果数据的粒度、时间范围、请求的类型以及需要聚合的metric。结果也将是一个JSON对象，其中包含在时间段内的聚合指标。 大多数查询类型还支持一个">
+<meta name="keywords" content="OLAP,Druid">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Druid-查询Api">
+<meta property="og:url" content="https://haibin.work/2018/02/13/Druid-查询Api/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="I do not know go where, but I have been on the road.">
+<meta property="og:description" content="查询ApiDruid有自己的查询语言，通过POST请求。Broker, historical, 和real-time nodes都共享相同的查询API。POST请求的主体是一个JSON对象，其中包含各种查询参数的键值对。一个典型的查询将包含数据源名称、结果数据的粒度、时间范围、请求的类型以及需要聚合的metric。结果也将是一个JSON对象，其中包含在时间段内的聚合指标。 大多数查询类型还支持一个">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-13T07:48:40.834Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hubery&#39;s Polaris">
-<meta name="twitter:description" content="I do not know go where, but I have been on the road.">
+<meta name="twitter:title" content="Druid-查询Api">
+<meta name="twitter:description" content="查询ApiDruid有自己的查询语言，通过POST请求。Broker, historical, 和real-time nodes都共享相同的查询API。POST请求的主体是一个JSON对象，其中包含各种查询参数的键值对。一个典型的查询将包含数据源名称、结果数据的粒度、时间范围、请求的类型以及需要聚合的metric。结果也将是一个JSON对象，其中包含在时间段内的聚合指标。 大多数查询类型还支持一个">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/archives/2018/02/"/>
+  <link rel="canonical" href="https://haibin.work/2018/02/13/Druid-查询Api/"/>
 
 
 
@@ -128,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title>归档 | Hubery's Polaris</title>
+  <title>Druid-查询Api | Hubery's Polaris</title>
   
 
 
@@ -185,7 +187,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -306,376 +308,242 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
+  <div id="posts" class="posts-expand">
+    
 
-      
-      <span class="archive-page-counter">
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/13/Druid-查询Api/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
         
         
+          <h1 class="post-title" itemprop="name headline">Druid-查询Api</h1>
         
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-13T14:05:15+08:00">2018-02-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
           
-        
-        um..! 目前共计 9 篇日志。 继续努力。
-      </span>
-      
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Druid/" itemprop="url" rel="index"><span itemprop="name">Druid</span></a></span>
 
-      
-
-        
-        
-        
-
-        
+                
+                
+              
+            </span>
           
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2018">2018</h1>
-          </div>
-        
-        
 
-        
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/02/13/Druid-查询Api/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/13/Druid-查询Api/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+          
+          
+             <span id="/2018/02/13/Druid-查询Api/" class="leancloud_visitors" data-flag-title="Druid-查询Api">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
 
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-生产部署/" itemprop="url">
-              
-                <span itemprop="name">Druid-生产部署</span>
-              
-            </a>
-        
-      </h2>
+          
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:16:54+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
+          
 
-    </header>
-  </article>
+          
 
+        </div>
+      </header>
+    
 
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-性能/" itemprop="url">
-              
-                <span itemprop="name">Druid-性能</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:10:47+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-查询Api/" itemprop="url">
-              
-                <span itemprop="name">Druid-查询Api</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:05:15+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
 
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-存储格式/" itemprop="url">
-              
-                <span itemprop="name">Druid-存储格式</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T13:14:28+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+      
+        <h2 id="查询Api"><a href="#查询Api" class="headerlink" title="查询Api"></a>查询Api</h2><p>Druid有自己的查询语言，通过POST请求。Broker, historical, 和real-time nodes都共享相同的查询API。<br>POST请求的主体是一个JSON对象，其中包含各种查询参数的键值对。一个典型的查询将包含数据源名称、结果数据的粒度、时间范围、请求的类型以及需要聚合的metric。结果也将是一个JSON对象，其中包含在时间段内的聚合指标。</p>
+<p>大多数查询类型还支持一个过滤器集合。过滤器包括维度名和维度值的Boolean表达式，可以指定多个维和值的组合。当提供一个过滤器时，只有符合过滤器数据的子集将会被扫描。Druid有处理复杂的嵌套过滤器的能力，能够深入进行数据钻取。</p>
+<p>确切的查询语法取决于查询类型和请求的输入。查询一周的数据样本语法如下:</p>
+<pre><code>{
+    &quot;queryType&quot;: &quot;timeseries&quot;,
+    &quot;dataSource&quot;: &quot;wikipedia&quot;,
+    &quot;intervals&quot;: &quot;2013-01-01/2013-01-08&quot;,
+    &quot;filter&quot;: {
+        &quot;type&quot;: &quot;selector&quot;,
+        &quot;dimension&quot;: &quot;page&quot;, 
+        &quot;value&quot;: &quot;Ke$ha&quot;},
+    &quot;granularity&quot;: &quot;day&quot;, 
+    &quot;aggregations&quot;: [{&quot;type&quot;:&quot;count&quot;, &quot;name&quot;:&quot;rows&quot;}]
+}
+</code></pre><p>上面所示的查询将返回从2013-01-01到2013-01-08的Wikipedia数据源中行数统计，只对那些“page”维度的值等于“Ke$ha”的行进行filter计算。结果将按天进行分桶，并且将是一个JSON数组的形式:</p>
+<pre><code>[
+    {
+    &quot;timestamp&quot;: &quot;2012-01-01T00:00:00.000Z&quot;,
+    &quot;result&quot;: {&quot;rows&quot;:393298}
+    }
+    {
+    &quot;timestamp&quot;: &quot;2012-01-02T00:00:00.000Z&quot;,
+    &quot;result&quot;: {&quot;rows&quot;:382932}
+    }
+    ...
+    {
+    &quot;timestamp&quot;: &quot;2012-01-07T00:00:00.000Z&quot;,
+    &quot;result&quot;: {&quot;rows&quot;: 1337} 
+    }
+]
+</code></pre><a id="more"></a>
+<p>Druid支持多种类型的聚合，包括对浮点数和整数类型的sum、最小值、最大值和复杂聚合，如基数估计和近似分位数估计。聚合的结果可以结合在数学表达式中，形成其他的聚合。这篇文章的主旨是查询API，更多的信息可以在网上找到。</p>
+<p>在撰写本文时，还没有实现对德鲁伊的join查询。这是一个工程资源分配和用例决策的功能，而不是技术价值驱动的决策。事实上，Druid的存储格式将允许实现连接(这并不意味着失去了维度列)并且为了实现它我们交流了几个月。到目前为止，我们已经做出了这样的选择:实施成本不值得投资于我们的产品。做出这一决定有两方面原因。</p>
+<ol>
+<li>在我们的实践中，join连接查询在分布式数据库中有不可抗的瓶颈。</li>
+<li>添加繁重join查询功能的收益比提升高并发的问题要小。</li>
+</ol>
+<p>join查询实质上是基于一组共享key的两个或多个数据流的合并。对于我们所知道的连接查询，主要基于hash策略或排序合并策略。基于哈希的策略要求，除了一个数据集之外，所有的数据集看起来都像一个散列表，然后在这个哈希表上对“主”流中的每一行执行查找操作。排序合并策略假定每个流都由连接键进行排序，从而允许流的加入。然而，每一种策略都需要以排序顺序或散列表形式实现一些具体化的流。</p>
+<p>当连接的都是明显的大表(&gt; 10亿条记录)时，实现流join需要复杂的分布式内存管理。内存管理的复杂性会因为我们“高度并发的多租户”目标而被放大。就我们所知，这是一个积极的学术研究问题，我们愿意以可扩展的方式帮助解决这个问题。</p>
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/12/Druid-架构/" itemprop="url">
-              
-                <span itemprop="name">Druid-架构</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-12T18:45:38+08:00"
-              content="2018-02-12" >
-          02-12
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/12/Druid-背景/" itemprop="url">
-              
-                <span itemprop="name">Druid-背景</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-12T18:45:30+08:00"
-              content="2018-02-12" >
-          02-12
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/12/Druid-概述/" itemprop="url">
-              
-                <span itemprop="name">Druid-概述</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-12T18:45:04+08:00"
-              content="2018-02-12" >
-          02-12
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/10/序-INTRO/" itemprop="url">
-              
-                <span itemprop="name">序 / INTRO</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-10T14:31:10+08:00"
-              content="2018-02-10" >
-          02-10
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/10/Ganglia原理介绍、安装使用/" itemprop="url">
-              
-                <span itemprop="name">Ganglia原理介绍、安装使用</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-10T11:29:32+08:00"
-              content="2018-02-10" >
-          02-10
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
     </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/OLAP/" rel="tag"># OLAP</a>
+          
+            <a href="/tags/Druid/" rel="tag"># Druid</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/13/Druid-存储格式/" rel="next" title="Druid-存储格式">
+                <i class="fa fa-chevron-left"></i> Druid-存储格式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/13/Druid-性能/" rel="prev" title="Druid-性能">
+                Druid-性能 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -698,8 +566,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -807,6 +684,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查询Api"><span class="nav-number">1.</span> <span class="nav-text">查询Api</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -951,6 +844,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
 
   
 

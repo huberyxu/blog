@@ -100,26 +100,28 @@
 
 
   
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="OLAP,Druid," />
 
 
-<meta name="description" content="I do not know go where, but I have been on the road.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hubery&#39;s Polaris">
-<meta property="og:url" content="https://haibin.work/archives/2018/02/index.html">
+<meta name="description" content="存储格式Druid的数据表(称为数据源)是事件的集合，并划分为一组segment，其中每个段通常为5 - 1000万行。形式上，我们将segment定义为一组数据的集合，这些数据跨越了一定时间周期。Segments是Druid基本存储单元，并在其上进行分配和备份。 Druid需要一个时间戳列来简化数据分配策略、数据保留策略和首要查询优化策略。Druid根据时间间隔划分数据源，通常为一个小时或一天，">
+<meta name="keywords" content="OLAP,Druid">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Druid-存储格式">
+<meta property="og:url" content="https://haibin.work/2018/02/13/Druid-存储格式/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="I do not know go where, but I have been on the road.">
+<meta property="og:description" content="存储格式Druid的数据表(称为数据源)是事件的集合，并划分为一组segment，其中每个段通常为5 - 1000万行。形式上，我们将segment定义为一组数据的集合，这些数据跨越了一定时间周期。Segments是Druid基本存储单元，并在其上进行分配和备份。 Druid需要一个时间戳列来简化数据分配策略、数据保留策略和首要查询优化策略。Druid根据时间间隔划分数据源，通常为一个小时或一天，">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-13T07:48:22.443Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hubery&#39;s Polaris">
-<meta name="twitter:description" content="I do not know go where, but I have been on the road.">
+<meta name="twitter:title" content="Druid-存储格式">
+<meta name="twitter:description" content="存储格式Druid的数据表(称为数据源)是事件的集合，并划分为一组segment，其中每个段通常为5 - 1000万行。形式上，我们将segment定义为一组数据的集合，这些数据跨越了一定时间周期。Segments是Druid基本存储单元，并在其上进行分配和备份。 Druid需要一个时间戳列来简化数据分配策略、数据保留策略和首要查询优化策略。Druid根据时间间隔划分数据源，通常为一个小时或一天，">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/archives/2018/02/"/>
+  <link rel="canonical" href="https://haibin.work/2018/02/13/Druid-存储格式/"/>
 
 
 
@@ -128,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title>归档 | Hubery's Polaris</title>
+  <title>Druid-存储格式 | Hubery's Polaris</title>
   
 
 
@@ -185,7 +187,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -306,376 +308,228 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
+  <div id="posts" class="posts-expand">
+    
 
-      
-      <span class="archive-page-counter">
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/13/Druid-存储格式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
         
         
+          <h1 class="post-title" itemprop="name headline">Druid-存储格式</h1>
         
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-13T13:14:28+08:00">2018-02-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
           
-        
-        um..! 目前共计 9 篇日志。 继续努力。
-      </span>
-      
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Druid/" itemprop="url" rel="index"><span itemprop="name">Druid</span></a></span>
 
-      
-
-        
-        
-        
-
-        
+                
+                
+              
+            </span>
           
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2018">2018</h1>
-          </div>
-        
-        
 
-        
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/02/13/Druid-存储格式/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/13/Druid-存储格式/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+          
+          
+             <span id="/2018/02/13/Druid-存储格式/" class="leancloud_visitors" data-flag-title="Druid-存储格式">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
 
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-生产部署/" itemprop="url">
-              
-                <span itemprop="name">Druid-生产部署</span>
-              
-            </a>
-        
-      </h2>
+          
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:16:54+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
+          
 
-    </header>
-  </article>
+          
 
+        </div>
+      </header>
+    
 
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-性能/" itemprop="url">
-              
-                <span itemprop="name">Druid-性能</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:10:47+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-查询Api/" itemprop="url">
-              
-                <span itemprop="name">Druid-查询Api</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:05:15+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
 
-        
-        
-        
+      
+        <h2 id="存储格式"><a href="#存储格式" class="headerlink" title="存储格式"></a>存储格式</h2><p>Druid的数据表(称为数据源)是事件的集合，并划分为一组segment，其中每个段通常为5 - 1000万行。形式上，我们将segment定义为一组数据的集合，这些数据跨越了一定时间周期。Segments是Druid基本存储单元，并在其上进行分配和备份。</p>
+<p>Druid需要一个时间戳列来简化数据分配策略、数据保留策略和首要查询优化策略。Druid根据时间间隔划分数据源，通常为一个小时或一天，并可以进一步其他列分割以实现所需的段大小。划分segment的时间粒度是数据量和时间范围的函数。跨年的时间粒度会比天级的粒度被更好的划分，跨天的时间粒度会比小时级更优。</p>
+<p>段是由数据源标识符、数据的时间标示和在创建新段时增加的版本字符串来联合标识的（唯一）。版本字符串表示段数据的最新程度;具有较晚版本的片段(在一定时间范围内)比较老版本的片段具有更新的数据视图。此段元数据被系统用于并发控制;特定的时间范围内的读取操作总是访问最新版本的数据。</p>
+<p>Druid段以列存储存储。考虑到Druid最适合聚合事件流(所有进入Druid的数据都必须有时间戳)，将聚合信息作为列而不是行存储的优势具有较好的文档记录[1]。列存储允许更高效的利用CPU，因为只需要加载和扫描所需的列的内容。在面向行的数据存储中，与行关联的所有列必须作为聚合的一部分进行扫描。附加扫描时间会引起性能下降[1]。</p>
+<p>Druid有多个列类型来表示各种数据。根据列类型不同，使用不同的压缩算法来降低内存和磁盘的存储成本。在表1给出的示例中，页面、用户、性别和城市列仅包含字符串。直接存储字符串是不必要的开销，而字符串列可以是字典编码的。字典编码是一种常用的压缩数据的方法，它已经被广泛用于其他的数据存储如PowerDrill[17]。在表1中的示例中，我们可以将每个page字段映射到一个惟一的整数标识符。</p>
+<pre><code>Justin Bieber -&gt; 0
+Ke$ha -&gt; 1
+</code></pre><p>这个映射允许我们将page列表示为一个integer数组，数组索引对应于原始数据集的行。</p>
+<pre><code>[0, 0, 1, 1]
+</code></pre><p>所得到的Integer数组很适合压缩算法。关于编码的通用压缩算法在列存储中非常常见。Druid使用LZF [24] 压缩算法。</p>
+<p>类似压缩方法可以应用于数值列。例如，在表1中Characters Added|Characters Removed列也可以表示为单个数组。</p>
+<pre><code>Characters Added   -&gt; [1800, 2912, 1953, 3194]
+Characters Removed -&gt; [25, 42, 17, 170]
+</code></pre><p>在这种情况下，我们压缩原始值而不是它们的字典表示值。</p>
+<a id="more"></a>
+<h3 id="索引、过滤数据"><a href="#索引、过滤数据" class="headerlink" title="索引、过滤数据"></a>索引、过滤数据</h3><p>在许多现实的OLAP工作流中，依据某些特定维度聚合指标数值的结果。举例来说:“在旧金山的用户中，有多少编辑维基百科的人是男性的?”这个查询基于一个维度值的布尔表达式来过滤表1中的Wikipedia数据集合。在许多真实的数据集中，维度列通常是字符串，而度量列通常是数值。Druid为字符串列创建额外的查询索引，这样就只扫描那些与特定查询筛选相关的行。</p>
+<p>让我们考虑前面章节表1中的page列。对于表1中的每个独一无二的page，我们可以创建一些特定页面的标示。我们可以将这些信息存储在一个二进制数组中，其中数组索引表示我们的行。如果某个特定的页面出现在某个行中，那么该数组索引将被标记为1。例如:</p>
+<pre><code>Justin Bieber -&gt; rows [0, 1] -&gt; [1][1][0][0]
+Ke$ha         -&gt; rows [2, 3] -&gt; [0][0][1][1]
+</code></pre><p>Justin Bieber在第0和第1行。这个由列值映射到行索引的映射形成了一个反向索引[39]。要知道是哪条记录包含Justin Bieber和Ke$ha，将两个数组进行OR运算。</p>
+<p>这种在大型位图集合上执行布尔操作的方法通常用于搜索引擎。OLAP的位图索引在[32]中详细描述。位图压缩算法常用于搜索领域[2,44,42]以及运行长度编码。Druid    选择使用Concise算法[10]。图7显示了使用整数数组的Concise压缩的字节数。以上结果基于cc2.8xlarge系统，单线程、2G堆内存、512m young内存，以及每次运行之间的强制GC。该数据集是Twitter garden hose一天的数据[41]数据流收集的单日数据。数据集包含2,272,295行和12个不同基数的维度。作为一个额外的比较，我们也采用数据集行来最大化压缩。</p>
 
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-存储格式/" itemprop="url">
-              
-                <span itemprop="name">Druid-存储格式</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T13:14:28+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+<p>在未排序的情况下，总的Concise大小为53,451,144字节，总整数数组大小为127,248,520字节。总的来说，Concise的压缩比整型数组小约42%。在排序的情况下，总Concise压缩大小为43,832,884个字节，总整数数组大小为127,248,520字节。有趣的是，在排序之后，全局压缩只增加了最低限度。</p>
+<h3 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h3><p>德鲁伊的持久性组件允许不同的存储en- gines被插入，类似[12]。这些存储en- gines可以将数据存储在一个完全内存结构中，例如JVM堆或内存映射结构。交换存储引擎的能力允许根据特定应用程序的规范配置德鲁依。内存中存储的en- gine可能比内存映射的存储引擎更昂贵，但是如果性能很重要，它可能是更好的选择。默认情况下，使用内存映射存储引擎。</p>
+<p>当使用内存映射存储引擎时，Druid依赖于操作系统来页段的内存。考虑到段只能在内存中进行扫描，内存映射存储引擎允许最近的段保留在内存中，而从不查询的段被分页。使用内存映射存储引擎的主要缺点是，当一个查询需要将更多的段放到内存中，而不是给定节点的容量时。在这种情况下，查询性能将受到内存中和内存中分页段的成本的影响。</p>
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/12/Druid-架构/" itemprop="url">
-              
-                <span itemprop="name">Druid-架构</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-12T18:45:38+08:00"
-              content="2018-02-12" >
-          02-12
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/12/Druid-背景/" itemprop="url">
-              
-                <span itemprop="name">Druid-背景</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-12T18:45:30+08:00"
-              content="2018-02-12" >
-          02-12
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/12/Druid-概述/" itemprop="url">
-              
-                <span itemprop="name">Druid-概述</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-12T18:45:04+08:00"
-              content="2018-02-12" >
-          02-12
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/10/序-INTRO/" itemprop="url">
-              
-                <span itemprop="name">序 / INTRO</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-10T14:31:10+08:00"
-              content="2018-02-10" >
-          02-10
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/10/Ganglia原理介绍、安装使用/" itemprop="url">
-              
-                <span itemprop="name">Ganglia原理介绍、安装使用</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-10T11:29:32+08:00"
-              content="2018-02-10" >
-          02-10
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
     </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/OLAP/" rel="tag"># OLAP</a>
+          
+            <a href="/tags/Druid/" rel="tag"># Druid</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/12/Druid-架构/" rel="next" title="Druid-架构">
+                <i class="fa fa-chevron-left"></i> Druid-架构
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/13/Druid-查询Api/" rel="prev" title="Druid-查询Api">
+                Druid-查询Api <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -698,8 +552,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -807,6 +670,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#存储格式"><span class="nav-number">1.</span> <span class="nav-text">存储格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#索引、过滤数据"><span class="nav-number">1.1.</span> <span class="nav-text">索引、过滤数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储引擎"><span class="nav-number">1.2.</span> <span class="nav-text">存储引擎</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -951,6 +830,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
 
   
 
