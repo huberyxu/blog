@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="查询ApiDruid有自己的查询语言，通过POST请求。Broker, historical, 和real-time nodes都共享相同的查询API。POST请求的主体是一个JSON对象，其中包含各种查询参数的键值对。一个典型的查询将包含数据源名称、结果数据的粒度、时间范围、请求的类型以及需要聚合的metric。结果也将是一个JSON对象，其中包含在时间段内的聚合指标。 大多数查询类型还支持一个">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-13T07:48:40.834Z">
+<meta property="og:updated_time" content="2018-02-13T08:47:05.119Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Druid-查询Api">
 <meta name="twitter:description" content="查询ApiDruid有自己的查询语言，通过POST请求。Broker, historical, 和real-time nodes都共享相同的查询API。POST请求的主体是一个JSON对象，其中包含各种查询参数的键值对。一个典型的查询将包含数据源名称、结果数据的粒度、时间范围、请求的类型以及需要聚合的metric。结果也将是一个JSON对象，其中包含在时间段内的聚合指标。 大多数查询类型还支持一个">
@@ -430,8 +430,8 @@
 
       
         <h2 id="查询Api"><a href="#查询Api" class="headerlink" title="查询Api"></a>查询Api</h2><p>Druid有自己的查询语言，通过POST请求。Broker, historical, 和real-time nodes都共享相同的查询API。<br>POST请求的主体是一个JSON对象，其中包含各种查询参数的键值对。一个典型的查询将包含数据源名称、结果数据的粒度、时间范围、请求的类型以及需要聚合的metric。结果也将是一个JSON对象，其中包含在时间段内的聚合指标。</p>
-<p>大多数查询类型还支持一个过滤器集合。过滤器包括维度名和维度值的Boolean表达式，可以指定多个维和值的组合。当提供一个过滤器时，只有符合过滤器数据的子集将会被扫描。Druid有处理复杂的嵌套过滤器的能力，能够深入进行数据钻取。</p>
-<p>确切的查询语法取决于查询类型和请求的输入。查询一周的数据样本语法如下:</p>
+<p>大多数查询类型还支持一个过滤器集合。过滤器包括维度名和维度值的Boolean表达式，可以指定多个维和值的组合。当提供一个过滤器时，只有符合过滤器数据的子集将会被扫描。Druid有处理复杂的嵌套过滤器的能力，能够进行深度数据钻取。</p>
+<p>具体的查询语法取决于查询类型和请求。查询一周的样本数据语法如下:</p>
 <pre><code>{
     &quot;queryType&quot;: &quot;timeseries&quot;,
     &quot;dataSource&quot;: &quot;wikipedia&quot;,
@@ -461,7 +461,7 @@
 ]
 </code></pre><a id="more"></a>
 <p>Druid支持多种类型的聚合，包括对浮点数和整数类型的sum、最小值、最大值和复杂聚合，如基数估计和近似分位数估计。聚合的结果可以结合在数学表达式中，形成其他的聚合。这篇文章的主旨是查询API，更多的信息可以在网上找到。</p>
-<p>在撰写本文时，还没有实现对德鲁伊的join查询。这是一个工程资源分配和用例决策的功能，而不是技术价值驱动的决策。事实上，Druid的存储格式将允许实现连接(这并不意味着失去了维度列)并且为了实现它我们交流了几个月。到目前为止，我们已经做出了这样的选择:实施成本不值得投资于我们的产品。做出这一决定有两方面原因。</p>
+<p>在撰写本文时，还没有实现对Druid的join查询。这是一个工程资源分配和用例决策的功能，而不是技术价值驱动的决策。事实上，Druid的存储格式将允许实现连接(这并不意味着失去了维度列)并且为了实现它我们交流了几个月。到目前为止，我们已经做出了这样的选择:实施成本不值得投资于我们的产品。做出这一决定有两方面原因。</p>
 <ol>
 <li>在我们的实践中，join连接查询在分布式数据库中有不可抗的瓶颈。</li>
 <li>添加繁重join查询功能的收益比提升高并发的问题要小。</li>

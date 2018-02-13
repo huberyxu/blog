@@ -103,25 +103,26 @@
   <meta name="keywords" content="OLAP,Druid," />
 
 
-<meta name="description" content="性能Druid在多个组织、企业中都有生产集群，而且为了评估它的性能，我们选择了2014年初Metamarkets的生产集群数据，与其他数据库相比，我们还包括了TPC-H的结果。 查询性能Druid-性能的查询性能查询的不同而不同。例如，对高基数维度的值进行排序比在一个时间范围内的简单计数代价要昂贵得多。为了展示生产Druid集群中的平均查询延迟，我们选择了8个最查询最多的数据源，如表2所示。  大">
+<meta name="description" content="性能Druid在多个组织、企业中都有生产集群，而且为了评估它的性能，我们选择了2014年初Metamarkets的生产集群数据，与其他数据库相比，我们还包括了TPC-H的结果。 查询性能Druid的查询性能因查询的不同而不同。例如，对高基数维度的值进行排序比在一个时间范围内的简单计数代价要昂贵得多。为了展示生产Druid集群中的平均查询延迟，我们选择了8个查询最多的数据源，如表2所示。  大约30">
 <meta name="keywords" content="OLAP,Druid">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Druid-性能">
 <meta property="og:url" content="https://haibin.work/2018/02/13/Druid-性能/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="性能Druid在多个组织、企业中都有生产集群，而且为了评估它的性能，我们选择了2014年初Metamarkets的生产集群数据，与其他数据库相比，我们还包括了TPC-H的结果。 查询性能Druid-性能的查询性能查询的不同而不同。例如，对高基数维度的值进行排序比在一个时间范围内的简单计数代价要昂贵得多。为了展示生产Druid集群中的平均查询延迟，我们选择了8个最查询最多的数据源，如表2所示。  大">
+<meta property="og:description" content="性能Druid在多个组织、企业中都有生产集群，而且为了评估它的性能，我们选择了2014年初Metamarkets的生产集群数据，与其他数据库相比，我们还包括了TPC-H的结果。 查询性能Druid的查询性能因查询的不同而不同。例如，对高基数维度的值进行排序比在一个时间范围内的简单计数代价要昂贵得多。为了展示生产Druid集群中的平均查询延迟，我们选择了8个查询最多的数据源，如表2所示。  大约30">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://haibin.work/2018/02/13/Druid-性能/druid-f9.png">
+<meta property="og:image" content="https://haibin.work/2018/02/13/Druid-性能/druid-t2.png">
 <meta property="og:image" content="https://haibin.work/2018/02/13/Druid-性能/druid-f8.png">
 <meta property="og:image" content="https://haibin.work/2018/02/13/Druid-性能/druid-f9.png">
 <meta property="og:image" content="https://haibin.work/2018/02/13/Druid-性能/druid-f10.png">
 <meta property="og:image" content="https://haibin.work/2018/02/13/Druid-性能/druid-f11.png">
 <meta property="og:image" content="https://haibin.work/2018/02/13/Druid-性能/druid-f12.png">
-<meta property="og:updated_time" content="2018-02-13T07:47:57.387Z">
+<meta property="og:image" content="https://haibin.work/2018/02/13/Druid-性能/druid-t3.png">
+<meta property="og:updated_time" content="2018-02-13T08:30:13.464Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Druid-性能">
-<meta name="twitter:description" content="性能Druid在多个组织、企业中都有生产集群，而且为了评估它的性能，我们选择了2014年初Metamarkets的生产集群数据，与其他数据库相比，我们还包括了TPC-H的结果。 查询性能Druid-性能的查询性能查询的不同而不同。例如，对高基数维度的值进行排序比在一个时间范围内的简单计数代价要昂贵得多。为了展示生产Druid集群中的平均查询延迟，我们选择了8个最查询最多的数据源，如表2所示。  大">
-<meta name="twitter:image" content="https://haibin.work/2018/02/13/Druid-性能/druid-f9.png">
+<meta name="twitter:description" content="性能Druid在多个组织、企业中都有生产集群，而且为了评估它的性能，我们选择了2014年初Metamarkets的生产集群数据，与其他数据库相比，我们还包括了TPC-H的结果。 查询性能Druid的查询性能因查询的不同而不同。例如，对高基数维度的值进行排序比在一个时间范围内的简单计数代价要昂贵得多。为了展示生产Druid集群中的平均查询延迟，我们选择了8个查询最多的数据源，如表2所示。  大约30">
+<meta name="twitter:image" content="https://haibin.work/2018/02/13/Druid-性能/druid-t2.png">
 
 
 
@@ -437,9 +438,9 @@
 
       
         <h2 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h2><p>Druid在多个组织、企业中都有生产集群，而且为了评估它的性能，我们选择了2014年初Metamarkets的生产集群数据，与其他数据库相比，我们还包括了TPC-H的结果。</p>
-<h3 id="查询性能"><a href="#查询性能" class="headerlink" title="查询性能"></a>查询性能</h3><p>Druid-性能的查询性能查询的不同而不同。例如，对高基数维度的值进行排序比在一个时间范围内的简单计数代价要昂贵得多。为了展示生产Druid集群中的平均查询延迟，我们选择了8个最查询最多的数据源，如表2所示。</p>
-<img src="/2018/02/13/Druid-性能/druid-f9.png">
-<p>大约30%的查询涉及聚合不同类型的metric和过滤，60%的查询是由一个或多个维度组成的，而有10%的查询是搜索查询和元数据检索查询。聚合查询中扫描的列数大致遵循指数分布。涉及单个列的查询非常频繁，涉及所有列的查询非常少见。</p>
+<h3 id="查询性能"><a href="#查询性能" class="headerlink" title="查询性能"></a>查询性能</h3><p>Druid的查询性能因查询的不同而不同。例如，对高基数维度的值进行排序比在一个时间范围内的简单计数代价要昂贵得多。为了展示生产Druid集群中的平均查询延迟，我们选择了8个查询最多的数据源，如表2所示。</p>
+<img src="/2018/02/13/Druid-性能/druid-t2.png">
+<p>大约30%的查询涉及过滤和聚合不同类型的metric，60%的查询是由一个或多个维度组成，而有10%的查询是搜索查询和元数据检索查询。聚合查询中扫描的列数大致遵循指数分布。涉及单个列的查询非常频繁，涉及所有列的查询非常少见。</p>
 <p>关于我们的结果有几点注意:</p>
 <ol>
 <li>结果来自我们生产集群中的“hot” tier，大约50个数据源，数百个用户发出查询</li>
@@ -447,20 +448,21 @@
 <li>该tier使用英特尔®Xeon®e5 - 2670处理器,由1302个处理线程和672核(hyperthreaded)。</li>
 <li>使用内存映射存储引擎(机器配置为内存映射数据，而不是将数据加载到Java堆中)。</li>
 </ol>
-<p>图8展示查询延迟、图9展示了每分钟的查询。在所有不同的数据源中，查询延迟大约是550毫秒，90%的查询在不到1秒内返回，在2秒内达到95%，99%的查询在不到10秒内返回。在2月19日，我们偶尔观察到延迟的峰值，因为在我们最大的数据源之一的一个非常高的查询负载下，Memcached实例上的网络问题变得更加复杂。</p>
+<p>图8展示查询延迟、图9展示了每分钟的查询。在所有不同的数据源中，查询延迟大约是550毫秒，90%的查询在不到1秒内返回，在2秒内达到95%，99%的查询在不到10秒内返回。在2月19日，我们偶尔观察到延迟的峰值，因为我们最大的数据源之一在非常高的查询负载下，Memcached实例上的网络问题变得更加复杂。</p>
 <img src="/2018/02/13/Druid-性能/druid-f8.png">
 <img src="/2018/02/13/Druid-性能/druid-f9.png">
 <a id="more"></a>
-<h3 id="TPC-H-Data的查询测试"><a href="#TPC-H-Data的查询测试" class="headerlink" title="TPC-H Data的查询测试"></a>TPC-H Data的查询测试</h3><p>我们还在TPC-H数据上展示了Druid的性能。大多数TPC-H查询并不直接应用于德鲁伊，因此我们选择了更典型的Druid负载查询来演示查询性能。作为比较，我们还提供了使用MyISAM引擎(在我们的实验中较慢的)使用MyISAM引擎来查询MySQL的结果。</p>
+<h3 id="TPC-H-Data的查询测试"><a href="#TPC-H-Data的查询测试" class="headerlink" title="TPC-H Data的查询测试"></a>TPC-H Data的查询测试</h3><p>我们还在TPC-H数据上展示了Druid的性能。大多数TPC-H查询并不直接应用于Druid，因此我们选择了更典型的Druid负载查询来演示查询性能。作为比较，我们还提供了使用MyISAM引擎(在我们的实验中较慢的)来查询MySQL的结果。</p>
 <p>我们选择MySQL作为基准，因为它普遍流行。我们不选择另一个开源的列存储，因为我们没有信心可以正确地调优它以获得最佳性能。</p>
 <p>我们的Druid使用Amazon EC2 m3.2xlarge实例类型(Intel®v2 @ 2.80 ghz Xeon®e5 - 2680)的历史节点和c3.2xlarge实例(Intel®v2 @ 2.50 ghz Xeon®e5 - 2670)对代理节点。我们的MySQL设置是一个Amazon RDS实例，它运行在同一个m3.2xlarge实例类型上。</p>
-<p>1GB TPC-H数据集的结果如图10所示，100gb数据集的结果如图11所示。我们将Druid的扫描速率设置为53,539,211行/秒/核心，用于在给定的时间间隔中选择count(*)的相同查询，以及36,246,530行/秒/核心，用于选择sum(float)类型查询。</p>
+<p>1GB TPC-H数据集的结果如图10所示，100GB数据集的结果如图11所示。 给定时间间隔的select count(*)查询Druid的扫描速率为53,539,211行/秒/核心，select sum(float)查询的扫描速率为36,246,530行/秒/核心。</p>
 <img src="/2018/02/13/Druid-性能/druid-f10.png">
 <img src="/2018/02/13/Druid-性能/druid-f11.png">
-<p>最后,我们提出我们的结果扩展Druid,以满足日益增长的数据量和100GB tpc-h的数据集。 我们看到,当我们从8核心增加到48核,并不是所有类型的查询都能实现线性扩展,除了简单的聚合查询,如图12所示。<br>并行计算系统的速度增长通常是由系统的顺序操作所需要的时间所决定的。在这种情况下，代理级别上大量需要查询工作不能并行化。</p>
+<p>最后,我们提出扩展Druid,以满足日益增长的数据量和100GB tpc-h的数据集。 我们看到,当我们从8核心增加到48核,并不是所有类型的查询都能实现线性扩展,除了简单的聚合查询,如图12所示。<br>并行计算系统的速度增长通常是由系统的顺序操作所需要的时间所决定的。在这种情况下，代理级别上大量需要查询工作不能并行化。</p>
 <img src="/2018/02/13/Druid-性能/druid-f12.png">
-<h3 id="数据写入性能"><a href="#数据写入性能" class="headerlink" title="数据写入性能"></a>数据写入性能</h3><p>为了展示Druid的数据注入延迟，我们选择了几个不同维度、指标和事件的生产数据源。生产者设置由6节点,360 gb的内存和360核(12 x英特尔®Xeon®e5 - 2670)<br>请注意，在这个设置中，还有其他几个数据源正在被处理，许多其他的Druid相关的数据写入任务在机器上同时运行。</p>
+<h3 id="数据写入性能"><a href="#数据写入性能" class="headerlink" title="数据写入性能"></a>数据写入性能</h3><p>为了展示Druid的数据写入延迟，我们选择了几个不同维度、指标和事件的生产数据源。生产者设置由6节点,360 gb的内存和360核(12 x英特尔®Xeon®e5 - 2670)请注意，在这个设置中，还有其他几个数据源正在被处理，许多其他的Druid相关的数据写入任务在机器上同时运行。</p>
 <p>Druid的数据写入延迟严重依赖于被写入的数据集的复杂性。数据的复杂性是由每个事件中维度的数量、每个事件中的指标数量以及我们想要在这些指标上执行的聚合类型决定的。使用最基本的数据集(只有一个时间戳列)，可以以800000个事件/秒/核心 的速率写入数据，这实际上只是一个我们可以快速反序列化事件的速度。真实世界的数据集从来没有这么简单。表3显示了数据源的选择和它们的特性。</p>
+<img src="/2018/02/13/Druid-性能/druid-t3.png">
 <p>我们可以看到，根据表3中的描述，延迟会发生显著的变化，维度和度量并不总是写入延迟的因素。我们在简单数据集上看到了一些较低的延迟，因为这是数据生产者提供数据的速率。结果如图13所示。<br>我们将吞吐量定义为一个实时节点可以接收到的事件的数量，并且可以进行查询。如果将太多事件发送到实时节点，则这些事件将被阻塞，直到实时节点有能力接受它们。我们在生产中测量的峰值写入延迟为22914.43个事件/秒/核心，数据来源为30个维度和19个指标，运行一个Amazon cc2.8xlarge实例。</p>
 <p>我们提出的延迟测试足以解决交互带来的问题。我们希望延迟时间的变化更少。通过增加额外的硬件来减少延迟仍然是可能的，但是我们没有选择这样做，因为基础设施成本仍然是我们的考虑因素。</p>
 
