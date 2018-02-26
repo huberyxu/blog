@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="承接上文，讨论一下Abird平台OLAP技术架构之——实时 的一些思考 背景简单描述下实时的业务背景：对于部分用户体验数据以及其他数据，业务方有实时查询的需求，并且也要结合多维分析来定位异常问题。如实时vv/成功率/卡顿率/秒开率等指标，而且需要省份、运营商、网络制式、app版本等维度辅助定位陡升、陡降问题力求第一时间监控报警，还有诸如心跳等实时业务。 现状上文说了，我们采用MOLAP的实现方法，">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-26T16:00:00.510Z">
+<meta property="og:updated_time" content="2018-02-26T16:06:58.346Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Abird平台OLAP技术架构的一些思考(2)">
 <meta name="twitter:description" content="承接上文，讨论一下Abird平台OLAP技术架构之——实时 的一些思考 背景简单描述下实时的业务背景：对于部分用户体验数据以及其他数据，业务方有实时查询的需求，并且也要结合多维分析来定位异常问题。如实时vv/成功率/卡顿率/秒开率等指标，而且需要省份、运营商、网络制式、app版本等维度辅助定位陡升、陡降问题力求第一时间监控报警，还有诸如心跳等实时业务。 现状上文说了，我们采用MOLAP的实现方法，">
@@ -421,8 +421,8 @@
 <li>streaming通用化OLAP的cube构建引擎基于Blink重构，并完善优化</li>
 <li>基于Druid实时OLAP引擎——对Druid的介绍详见笔者Druid专栏</li>
 </ol>
-<p>对于方案1，集团Bayes平台已足够成熟，能够支持工程开发以及运维优化，但是随着业务增加，需要接入的TT流更多，业务SQL增多会面临离线一样的问题，尽管这样看似离线和实时在某些公共的业务上能整合计算逻辑，但实际上编写OLAP多维度的复杂SQL同样不易维护，而且会持续增加开发、运维成本。针对独立性强的、处理逻辑简明的可以采取该种方案。</p>
-<p>对于方案2，能形成自主研发的基于Flink的实时OLAP引擎，从长远来看意义重大，在已有的Streaming通用化方案上迁移容易，但难点在其三：</p>
+<h3 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h3><p>对于方案1，集团Bayes平台已足够成熟，能够支持工程开发以及运维优化，但是随着业务增加，需要接入的TT流更多，业务SQL增多会面临离线一样的问题，尽管这样看似离线和实时在某些公共的业务上能整合计算逻辑，但实际上编写OLAP多维度的复杂SQL同样不易维护，而且会持续增加开发、运维成本。针对独立性强的、处理逻辑简明的可以采取该种方案。</p>
+<h3 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h3><p>对于方案2，能形成自主研发的基于Flink的实时OLAP引擎，从长远来看意义重大，在已有的Streaming通用化方案上迁移容易，但难点在其三：</p>
 <ol>
 <li><p>由于前期cube构建采用完全立方体构建，实际上是对n个维度做了2^n条记录的分发再聚合，并未考虑后续的优化方案（这里只有必要维度的优化，对于维度组、衍生维度等比较实用的优化没有），而如果进行后续优化，实际上是对cube算法的重构，我们可以采用”By Layer”算法实现清晰易维护的MR流计算逻辑或者采用“Fast Cubing Algorithm”算法。具体不在此展开，参考kylin cube构建算法：<a href="http://kylin.apache.org/blog/2015/08/15/fast-cubing/" target="_blank" rel="noopener">http://kylin.apache.org/blog/2015/08/15/fast-cubing/</a><br>但不可否认的是，前者需要存储中间结果后者也需要做一定研发工作，真实实践仍需对其On Blink做性能评估，长远来看是有价值的也是值得一试的。</p>
 </li>
@@ -431,7 +431,7 @@
 <li><p>最终cube结果存储。如果考虑该种方案，要对存储立方体数据做出一套规划，如采取kv分布式存储Hbase等如何面对非rowkey格式查询，以及一些runtime聚合操作的实现（如衍生维度在查询时聚合、如时间维度上的下行采样等场景）。可以借鉴kylin/opentsdb等对HBase的应用，有同学会问，kylin2.0以上版本正在支持实时cube构建，能够达到亚秒级响应，为何不用？具体原因参见上一篇，说白了还是平台兼容性，我们作为业务部门balabala…</p>
 </li>
 </ol>
-<p>对于方案3，是笔者在前段考虑实时通用化时重点考虑的方案。在此重点研讨优缺点如下：</p>
+<h3 id="方案三"><a href="#方案三" class="headerlink" title="方案三"></a>方案三</h3><p>对于方案3，是笔者在前段考虑实时通用化时重点考虑的方案。在此重点研讨优缺点如下：</p>
 <h3 id="我们能得到什么？"><a href="#我们能得到什么？" class="headerlink" title="我们能得到什么？"></a>我们能得到什么？</h3><ol>
 <li><p>Druid对事件数据聚合，此类数据有较为明显的三类数据列构成：时间戳列、维度数据列（字符串数据，可用来过滤）、指标数据列（druid在导入数据时会根据配置对原始数据的数值列进行roll up得到指标数据列）。这种做法实际上是将Cube的计算逻辑后移（这种说法不严谨，实际上并无cube计算，而是基于最细粒度聚合的再计算），我们只需梳理事实表即可。这里说的最细粒度聚合实际上就是group by A,B,C,……所有一开始指定的维度的聚合计算。由此，我们可以避免cube计算以及优化等一系列“故事”。</p>
 </li>
@@ -668,7 +668,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现状"><span class="nav-number">2.</span> <span class="nav-text">现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进方案"><span class="nav-number">3.</span> <span class="nav-text">改进方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#我们能得到什么？"><span class="nav-number">3.1.</span> <span class="nav-text">我们能得到什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们还需考虑什么？"><span class="nav-number">3.2.</span> <span class="nav-text">我们还需考虑什么？</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现状"><span class="nav-number">2.</span> <span class="nav-text">现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进方案"><span class="nav-number">3.</span> <span class="nav-text">改进方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方案一"><span class="nav-number">3.1.</span> <span class="nav-text">方案一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案二"><span class="nav-number">3.2.</span> <span class="nav-text">方案二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案三"><span class="nav-number">3.3.</span> <span class="nav-text">方案三</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们能得到什么？"><span class="nav-number">3.4.</span> <span class="nav-text">我们能得到什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们还需考虑什么？"><span class="nav-number">3.5.</span> <span class="nav-text">我们还需考虑什么？</span></a></li></ol></li></ol></div>
             
 
           </div>

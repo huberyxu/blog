@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="背景本文重点讲述abird平台下vpm项目的需求梳理和架构思考。vpm项目主要是优酷“用户体验数据”的多维度分析产品，旨在辅助业务方收集、展示、监控和处理用户体验问题，反应用户体验的一些通用指标诸如vv/uv/成功率/卡顿率/秒开率此类，此外，还有错误码分布、异常日志分析等功能。 平台上OLAP场景大致分为两类： 临时查询：指用户通过手写SQL来完成一些临时的数据分析需求。这类需求的SQL形式多变">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-26T15:59:47.895Z">
+<meta property="og:updated_time" content="2018-02-26T16:06:38.642Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Abird平台OLAP技术架构的一些思考(1)">
 <meta name="twitter:description" content="背景本文重点讲述abird平台下vpm项目的需求梳理和架构思考。vpm项目主要是优酷“用户体验数据”的多维度分析产品，旨在辅助业务方收集、展示、监控和处理用户体验问题，反应用户体验的一些通用指标诸如vv/uv/成功率/卡顿率/秒开率此类，此外，还有错误码分布、异常日志分析等功能。 平台上OLAP场景大致分为两类： 临时查询：指用户通过手写SQL来完成一些临时的数据分析需求。这类需求的SQL形式多变">
@@ -424,8 +424,8 @@
 <li>支持olap的分布式存储引擎，如集团的hybirddb for mysql和ADS</li>
 <li>进行预计算的olap引擎如kylin、druid、es</li>
 </ol>
-<p>对于方案1，尽管能够提供最佳的灵活性，但由于以上存储引擎实际上都是全量存储明细数据，暂不论如何创建索引如何聚合查询，这种存储成本实际上是我们不希望看到的，因为用户体验数据大部分都是基于日志数据、点击数据，明细数据带来的价值是极小的、量级是巨大的，没必要做全量存储。</p>
-<p>对于方案2，es毋庸置疑适用于大数据量的过滤、检索的明细查询，在应对聚合查询时无法达到秒级响应甚至是分钟级，es在平台内也有用武之地但不是olap。而Druid主要面向的是实时Timeseries数据，我们也有类似的场景如实时分钟级趋势等，但这里面向的还是数仓中按T+1的结构化表。kylin显然是我们倾向的方案，下面来看下kylin的利弊和适合与否</p>
+<h3 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h3><p>对于方案1，尽管能够提供最佳的灵活性，但由于以上存储引擎实际上都是全量存储明细数据，暂不论如何创建索引如何聚合查询，这种存储成本实际上是我们不希望看到的，因为用户体验数据大部分都是基于日志数据、点击数据，明细数据带来的价值是极小的、量级是巨大的，没必要做全量存储。</p>
+<h3 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h3><p>对于方案2，es毋庸置疑适用于大数据量的过滤、检索的明细查询，在应对聚合查询时无法达到秒级响应甚至是分钟级，es在平台内也有用武之地但不是olap。而Druid主要面向的是实时Timeseries数据，我们也有类似的场景如实时分钟级趋势等，但这里面向的还是数仓中按T+1的结构化表。kylin显然是我们倾向的方案，下面来看下kylin的利弊和适合与否</p>
 <h3 id="引入kylin能给我们带来什么？"><a href="#引入kylin能给我们带来什么？" class="headerlink" title="引入kylin能给我们带来什么？"></a>引入kylin能给我们带来什么？</h3><p>kylin能够支持的量级、性能、查询响应、灵活性是毋庸置疑的，但逐一比对我们发现，目前的技术架构除了灵活性（这里包括构建cube的配置化和查询模式的灵活性）不能比拟外，其他的并不是我们的实际痛点，同样是依赖上游调度的预计算、基于kv分布式存储的查询引擎使得性能和响应速度并不能获得太大的提升。那我们就着重来看下kylin能带来哪些灵活性的提升以及是否解决我们的实际痛点。</p>
 <p>我们知道，Kylin的设计是基于一个星形模型，基于一个事实表和多个维表构建cube模型，生成mr job来计算每层cuboid并落地hbase。通过可视化的web ui即可做到cube的配置化实现（这里是我们想要的）。然而为此，我们仍然需要考虑：</p>
 <h3 id="我们能得到什么？"><a href="#我们能得到什么？" class="headerlink" title="我们能得到什么？"></a>我们能得到什么？</h3><ol>
@@ -446,7 +446,7 @@
 <li><p>其次需要考虑的是集群的开放、运维等问题</p>
 </li>
 </ol>
-<p>的确，考虑长远来说的话kylin引入的收益是日渐明显的，建立cube后相比目前SQL开发能提升效率，但引入之前的宽表构建也是我们不可避免的问题，松散的业务同样需要独立的模型——仍然要从构建宽表开始考虑一遍（如果新增的业务不能符合标准星型模型的话），等等，我们作为业务部门而不是平台部门是否能分散精力组建也是我们需要考虑的。从目前我们讲求较高的开发收益比来说（从0到1的收益远比从1到1.1大），不适合进行投入式的技术研发，或许有更具性价比的产品等待我们调研发现。长远来讲，我们希望Abird能将优土用户体验等日志从采集、到通用etl、到通用olap形成一套完备的解决方案，还是路漫漫其修远兮。再次提出一些思考与读者讨论，也欢迎读者共建。</p>
+<p>的确，考虑长远来说的话kylin引入的收益是日渐明显的，建立cube后相比目前SQL开发能提升效率，但引入之前的宽表构建也是我们不可避免的问题，松散的业务同样需要独立的模型——仍然要从构建宽表开始考虑一遍（如果新增的业务不能符合标准星型模型的话），等等，我们作为业务部门而不是平台部门是否能分散精力组建也是我们需要考虑的。从目前我们讲求较高的开发收益比来说（从0到1的收益远比从1到1.1大），不适合进行投入式的技术研发，或许有更具性价比的产品等待我们调研发现。长远来讲，我们希望Abird能将优土用户体验等日志从采集、到通用etl、到通用olap形成一套完备的解决方案，还是路漫漫其修远兮。在此提出一些思考与读者讨论，也欢迎读者共建。</p>
 
       
     </div>
@@ -671,7 +671,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现状"><span class="nav-number">2.</span> <span class="nav-text">现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进方案"><span class="nav-number">3.</span> <span class="nav-text">改进方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引入kylin能给我们带来什么？"><span class="nav-number">3.1.</span> <span class="nav-text">引入kylin能给我们带来什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们能得到什么？"><span class="nav-number">3.2.</span> <span class="nav-text">我们能得到什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们还需考虑什么？"><span class="nav-number">3.3.</span> <span class="nav-text">我们还需考虑什么？</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现状"><span class="nav-number">2.</span> <span class="nav-text">现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进方案"><span class="nav-number">3.</span> <span class="nav-text">改进方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方案一"><span class="nav-number">3.1.</span> <span class="nav-text">方案一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案二"><span class="nav-number">3.2.</span> <span class="nav-text">方案二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引入kylin能给我们带来什么？"><span class="nav-number">3.3.</span> <span class="nav-text">引入kylin能给我们带来什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们能得到什么？"><span class="nav-number">3.4.</span> <span class="nav-text">我们能得到什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们还需考虑什么？"><span class="nav-number">3.5.</span> <span class="nav-text">我们还需考虑什么？</span></a></li></ol></li></ol></div>
             
 
           </div>
