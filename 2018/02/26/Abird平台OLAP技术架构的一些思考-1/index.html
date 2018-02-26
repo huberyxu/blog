@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="背景本文重点讲述abird平台下vpm项目的需求梳理和架构思考。vpm项目主要是优酷“用户体验数据”的多维度分析产品，旨在辅助业务方收集、展示、监控和处理用户体验问题，反应用户体验的一些通用指标诸如vv/uv/成功率/卡顿率/秒开率此类，此外，还有错误码分布、异常日志分析等功能。 平台上OLAP场景大致分为两类： 临时查询：指用户通过手写SQL来完成一些临时的数据分析需求。这类需求的SQL形式多变">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-26T15:58:31.480Z">
+<meta property="og:updated_time" content="2018-02-26T15:59:47.895Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Abird平台OLAP技术架构的一些思考(1)">
 <meta name="twitter:description" content="背景本文重点讲述abird平台下vpm项目的需求梳理和架构思考。vpm项目主要是优酷“用户体验数据”的多维度分析产品，旨在辅助业务方收集、展示、监控和处理用户体验问题，反应用户体验的一些通用指标诸如vv/uv/成功率/卡顿率/秒开率此类，此外，还有错误码分布、异常日志分析等功能。 平台上OLAP场景大致分为两类： 临时查询：指用户通过手写SQL来完成一些临时的数据分析需求。这类需求的SQL形式多变">
@@ -428,8 +428,7 @@
 <p>对于方案2，es毋庸置疑适用于大数据量的过滤、检索的明细查询，在应对聚合查询时无法达到秒级响应甚至是分钟级，es在平台内也有用武之地但不是olap。而Druid主要面向的是实时Timeseries数据，我们也有类似的场景如实时分钟级趋势等，但这里面向的还是数仓中按T+1的结构化表。kylin显然是我们倾向的方案，下面来看下kylin的利弊和适合与否</p>
 <h3 id="引入kylin能给我们带来什么？"><a href="#引入kylin能给我们带来什么？" class="headerlink" title="引入kylin能给我们带来什么？"></a>引入kylin能给我们带来什么？</h3><p>kylin能够支持的量级、性能、查询响应、灵活性是毋庸置疑的，但逐一比对我们发现，目前的技术架构除了灵活性（这里包括构建cube的配置化和查询模式的灵活性）不能比拟外，其他的并不是我们的实际痛点，同样是依赖上游调度的预计算、基于kv分布式存储的查询引擎使得性能和响应速度并不能获得太大的提升。那我们就着重来看下kylin能带来哪些灵活性的提升以及是否解决我们的实际痛点。</p>
 <p>我们知道，Kylin的设计是基于一个星形模型，基于一个事实表和多个维表构建cube模型，生成mr job来计算每层cuboid并落地hbase。通过可视化的web ui即可做到cube的配置化实现（这里是我们想要的）。然而为此，我们仍然需要考虑：</p>
-<p>###我们能得到什么？</p>
-<ol>
+<h3 id="我们能得到什么？"><a href="#我们能得到什么？" class="headerlink" title="我们能得到什么？"></a>我们能得到什么？</h3><ol>
 <li><p>对于基数计算、精确去重问题（如我们的uv计算），不像市面上其他引擎采用近似估计如hyperloglog算法，kylin目前已在1.5.3版本中实现了全类型精确去重计数的支持</p>
 </li>
 <li><p>配置化的cube实现</p>
@@ -437,8 +436,7 @@
 <li><p>cube的剪枝优化，如必要维度、维度组、衍生维度等。我们目前只有必要维度的优化，sql的开发模式使得做这些优化不能通用所以要麻烦一些（这里的优化带来的计算资源的节省和存储空间的节省目前不是我们的瓶颈）</p>
 </li>
 </ol>
-<p>###我们还需考虑什么？</p>
-<ol>
+<h3 id="我们还需考虑什么？"><a href="#我们还需考虑什么？" class="headerlink" title="我们还需考虑什么？"></a>我们还需考虑什么？</h3><ol>
 <li><p>构建小规模的数据集市层，如事实表采用宽表，增建维表或引用已有维表（当然符合定义规范的维度也可以在runtime应用里解决，这里说的是标准做法）。所有非标准星型的数据模型，都可以通过预处理ETL先拉平，做成一个宽表（目前abird_vpm并非严格意义宽表），对于复杂指标涉及到表达式时，也可以通过提前处理解决。把表达式单独转成一列，再基于这列做聚合。问题在于，多个业务表面类似但实质不同，如何规范统一化的数据模型而不是烟囱建设数据集市是将要把控的重点。</p>
 </li>
 <li><p>kylin在集团内是否有对标产品？目前调研都不够理想，犹如孔明灯、夸克/FBI等产品业务方已在使用，我们基于它们建设也未尝不可，但我们需要的灵活性（cube配置化、查询模式多变）仍要调研取证。如果不基于已有产品建设，那么引进kylin的成本稍大，要和odps数据源集成，和计算引擎集成等等，要搭建至少有个小规模的kylin集群，一边还要跟社区（当然自己用可以慢慢来）。换句话说甚至不如开发一个类似kylin构建cube内核的通用mr来的实在（我们之前的兼容odps的最简方案）。</p>
@@ -673,7 +671,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现状"><span class="nav-number">2.</span> <span class="nav-text">现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进方案"><span class="nav-number">3.</span> <span class="nav-text">改进方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引入kylin能给我们带来什么？"><span class="nav-number">3.1.</span> <span class="nav-text">引入kylin能给我们带来什么？</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现状"><span class="nav-number">2.</span> <span class="nav-text">现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进方案"><span class="nav-number">3.</span> <span class="nav-text">改进方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引入kylin能给我们带来什么？"><span class="nav-number">3.1.</span> <span class="nav-text">引入kylin能给我们带来什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们能得到什么？"><span class="nav-number">3.2.</span> <span class="nav-text">我们能得到什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们还需考虑什么？"><span class="nav-number">3.3.</span> <span class="nav-text">我们还需考虑什么？</span></a></li></ol></li></ol></div>
             
 
           </div>
