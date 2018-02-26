@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="承接上文，讨论一下Abird平台OLAP技术架构之——实时 的一些思考 背景简单描述下实时的业务背景：对于部分用户体验数据以及其他数据，业务方有实时查询的需求，并且也要结合多维分析来定位异常问题。如实时vv/成功率/卡顿率/秒开率等指标，而且需要省份、运营商、网络制式、app版本等维度辅助定位陡升、陡降问题力求第一时间监控报警，还有诸如心跳等实时业务。 现状上文说了，我们采用MOLAP的实现方法，">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-26T15:55:50.418Z">
+<meta property="og:updated_time" content="2018-02-26T15:58:40.225Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Abird平台OLAP技术架构的一些思考(2)">
 <meta name="twitter:description" content="承接上文，讨论一下Abird平台OLAP技术架构之——实时 的一些思考 背景简单描述下实时的业务背景：对于部分用户体验数据以及其他数据，业务方有实时查询的需求，并且也要结合多维分析来定位异常问题。如实时vv/成功率/卡顿率/秒开率等指标，而且需要省份、运营商、网络制式、app版本等维度辅助定位陡升、陡降问题力求第一时间监控报警，还有诸如心跳等实时业务。 现状上文说了，我们采用MOLAP的实现方法，">
@@ -414,6 +414,7 @@
         <p>承接上文，讨论一下Abird平台OLAP技术架构之——实时 的一些思考</p>
 <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>简单描述下实时的业务背景：<br>对于部分用户体验数据以及其他数据，业务方有实时查询的需求，并且也要结合多维分析来定位异常问题。如实时vv/成功率/卡顿率/秒开率等指标，而且需要省份、运营商、网络制式、app版本等维度辅助定位陡升、陡降问题力求第一时间监控报警，还有诸如心跳等实时业务。</p>
 <h2 id="现状"><a href="#现状" class="headerlink" title="现状"></a>现状</h2><p>上文说了，我们采用MOLAP的实现方法，实时的技术架构也不外如是。我们目前采用TT+Blink+Streaming+OTS的方式，注意：Blink依据数据量级以及ETL复杂度选择使用。在Streaming中我们实现了配置化cube构建引擎，以降低后续流计算的接入成本。由于主要集中于业务，并未为此付出过多精力进行数据膨胀的优化。导致部分业务完全立方体的构建极易造成数据膨胀。其次，streaming集群跨数据中心io瓶颈、任务不稳定等随着业务增加任务增加，日渐增加我们的人肉运维成本。</p>
+<a id="more"></a>
 <h2 id="改进方案"><a href="#改进方案" class="headerlink" title="改进方案"></a>改进方案</h2><p>我们考虑如下几种改进方案：</p>
 <ol>
 <li>SQL On Blink</li>
