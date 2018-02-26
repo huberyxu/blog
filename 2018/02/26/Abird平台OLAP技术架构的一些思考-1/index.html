@@ -100,26 +100,28 @@
 
 
   
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="OLAP," />
 
 
-<meta name="description" content="I do not know go where, but I have been on the road.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hubery&#39;s Polaris">
-<meta property="og:url" content="https://haibin.work/tags/监控/index.html">
+<meta name="description" content="背景本文重点讲述abird平台下vpm项目的需求梳理和架构思考。vpm项目主要是优酷“用户体验数据”的多维度分析产品，旨在辅助业务方收集、展示、监控和处理用户体验问题，反应用户体验的一些通用指标诸如vv/uv/成功率/卡顿率/秒开率此类，此外，还有错误码分布、异常日志分析等功能。 平台上OLAP场景大致分为两类： 临时查询：指用户通过手写SQL来完成一些临时的数据分析需求。这类需求的SQL形式多变">
+<meta name="keywords" content="OLAP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Abird平台OLAP技术架构的一些思考(1)">
+<meta property="og:url" content="https://haibin.work/2018/02/26/Abird平台OLAP技术架构的一些思考-1/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="I do not know go where, but I have been on the road.">
+<meta property="og:description" content="背景本文重点讲述abird平台下vpm项目的需求梳理和架构思考。vpm项目主要是优酷“用户体验数据”的多维度分析产品，旨在辅助业务方收集、展示、监控和处理用户体验问题，反应用户体验的一些通用指标诸如vv/uv/成功率/卡顿率/秒开率此类，此外，还有错误码分布、异常日志分析等功能。 平台上OLAP场景大致分为两类： 临时查询：指用户通过手写SQL来完成一些临时的数据分析需求。这类需求的SQL形式多变">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-26T15:51:53.098Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hubery&#39;s Polaris">
-<meta name="twitter:description" content="I do not know go where, but I have been on the road.">
+<meta name="twitter:title" content="Abird平台OLAP技术架构的一些思考(1)">
+<meta name="twitter:description" content="背景本文重点讲述abird平台下vpm项目的需求梳理和架构思考。vpm项目主要是优酷“用户体验数据”的多维度分析产品，旨在辅助业务方收集、展示、监控和处理用户体验问题，反应用户体验的一些通用指标诸如vv/uv/成功率/卡顿率/秒开率此类，此外，还有错误码分布、异常日志分析等功能。 平台上OLAP场景大致分为两类： 临时查询：指用户通过手写SQL来完成一些临时的数据分析需求。这类需求的SQL形式多变">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/tags/监控/"/>
+  <link rel="canonical" href="https://haibin.work/2018/02/26/Abird平台OLAP技术架构的一些思考-1/"/>
 
 
 
@@ -128,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title>标签: 监控 | Hubery's Polaris</title>
+  <title>Abird平台OLAP技术架构的一些思考(1) | Hubery's Polaris</title>
   
 
 
@@ -185,7 +187,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -306,58 +308,220 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>监控<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
+
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/26/Abird平台OLAP技术架构的一些思考-1/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2018/02/10/Ganglia原理介绍、安装使用/" itemprop="url">
-              
-                <span itemprop="name">Ganglia原理介绍、安装使用</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">Abird平台OLAP技术架构的一些思考(1)</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-10T11:29:32+08:00"
-              content="2018-02-10" >
-          02-10
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-26T23:48:30+08:00">2018-02-26</time>
+            
 
-    </header>
-  </article>
+            
+            
 
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/02/26/Abird平台OLAP技术架构的一些思考-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/26/Abird平台OLAP技术架构的一些思考-1/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/02/26/Abird平台OLAP技术架构的一些思考-1/" class="leancloud_visitors" data-flag-title="Abird平台OLAP技术架构的一些思考(1)">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>本文重点讲述abird平台下vpm项目的需求梳理和架构思考。vpm项目主要是优酷“用户体验数据”的多维度分析产品，旨在辅助业务方收集、展示、监控和处理用户体验问题，反应用户体验的一些通用指标诸如vv/uv/成功率/卡顿率/秒开率此类，此外，还有错误码分布、异常日志分析等功能。</p>
+<p>平台上OLAP场景大致分为两类：</p>
+<pre><code>临时查询：指用户通过手写SQL来完成一些临时的数据分析需求。这类需求的SQL形式多变、逻辑复杂，对响应时间没有严格的要求。
+固化查询：指对一些固化下来的取数、看数的需求，通过数据产品的形式提供给用户，从而提高数据分析和运营的效率。这类需求的SQL有固定的模式，对响应时间有比较高的要求。
+</code></pre><p>多数情况下，vpm项目下的用户体验多维分析属于固化查询，有既定需求形态和固定的查询模式，如大盘。特殊情况下有个别专项，实际上专项中也是把临时需求固化下来形成小的产品，并无真正意义上的临时查询。</p>
+<h2 id="现状"><a href="#现状" class="headerlink" title="现状"></a>现状</h2><p>从OLAP技术手段来看，我们一直采用MOLAP的实现方法，将细节数据和聚合后的数据均保存在cube中，以空间换效率，查询时效率高，但生成cube时需要时间和空间。这里针对离线和实时我们有两种实现，分别探讨如下：</p>
+<p>离线中，我们在odps上通过编写sql来实现cube计算，然后将cube数据存入ots中，在应用中即时查询。由于前期有独立的abird_vpm表，开发效率较高，通过计算中间表的方式也能较大的优化计算效率、应对业务扩展。然而随着业务的再扩展问题凸显，首先，业务已不局限于abird_vpm表，还要零零散散的接入优土公共汇总层乃至明细层的其他源表，尽管对sql编写和cube计算层级做出一些规范和优化，但仍无法摆脱无底洞似的业务新增和变更的代码开发，任务增多日渐不好维护；另外，起始时缺乏对维表做统一管理，ots的表结构设计无法支持范围查询等等使得技术架构的灵活性大打折扣，给后续开发造成难度。</p>
+<h2 id="改进方案"><a href="#改进方案" class="headerlink" title="改进方案"></a>改进方案</h2><p>我们考虑如下几种改进方案：</p>
+<ol>
+<li>支持olap的分布式存储引擎，如集团的hybirddb for mysql和ADS</li>
+<li>进行预计算的olap引擎如kylin、druid、es</li>
+</ol>
+<p>对于方案1，尽管能够提供最佳的灵活性，但由于以上存储引擎实际上都是全量存储明细数据，暂不论如何创建索引如何聚合查询，这种存储成本实际上是我们不希望看到的，因为用户体验数据大部分都是基于日志数据、点击数据，明细数据带来的价值是极小的、量级是巨大的，没必要做全量存储。</p>
+<p>对于方案2，es毋庸置疑适用于大数据量的过滤、检索的明细查询，在应对聚合查询时无法达到秒级响应甚至是分钟级，es在平台内也有用武之地但不是olap。而Druid主要面向的是实时Timeseries数据，我们也有类似的场景如实时分钟级趋势等，但这里面向的还是数仓中按T+1的结构化表。kylin显然是我们倾向的方案，下面来看下kylin的利弊和适合与否</p>
+<h3 id="引入kylin能给我们带来什么？"><a href="#引入kylin能给我们带来什么？" class="headerlink" title="引入kylin能给我们带来什么？"></a>引入kylin能给我们带来什么？</h3><p>kylin能够支持的量级、性能、查询响应、灵活性是毋庸置疑的，但逐一比对我们发现，目前的技术架构除了灵活性（这里包括构建cube的配置化和查询模式的灵活性）不能比拟外，其他的并不是我们的实际痛点，同样是依赖上游调度的预计算、基于kv分布式存储的查询引擎使得性能和响应速度并不能获得太大的提升。那我们就着重来看下kylin能带来哪些灵活性的提升以及是否解决我们的实际痛点。</p>
+<p>我们知道，Kylin的设计是基于一个星形模型，基于一个事实表和多个维表构建cube模型，生成mr job来计算每层cuboid并落地hbase。通过可视化的web ui即可做到cube的配置化实现（这里是我们想要的）。然而为此，我们仍然需要考虑：</p>
+<p>###我们能得到什么？</p>
+<ol>
+<li><p>对于基数计算、精确去重问题（如我们的uv计算），不像市面上其他引擎采用近似估计如hyperloglog算法，kylin目前已在1.5.3版本中实现了全类型精确去重计数的支持</p>
+</li>
+<li><p>配置化的cube实现</p>
+</li>
+<li><p>cube的剪枝优化，如必要维度、维度组、衍生维度等。我们目前只有必要维度的优化，sql的开发模式使得做这些优化不能通用所以要麻烦一些（这里的优化带来的计算资源的节省和存储空间的节省目前不是我们的瓶颈）</p>
+</li>
+</ol>
+<p>###我们还需考虑什么？</p>
+<ol>
+<li><p>构建小规模的数据集市层，如事实表采用宽表，增建维表或引用已有维表（当然符合定义规范的维度也可以在runtime应用里解决，这里说的是标准做法）。所有非标准星型的数据模型，都可以通过预处理ETL先拉平，做成一个宽表（目前abird_vpm并非严格意义宽表），对于复杂指标涉及到表达式时，也可以通过提前处理解决。把表达式单独转成一列，再基于这列做聚合。问题在于，多个业务表面类似但实质不同，如何规范统一化的数据模型而不是烟囱建设数据集市是将要把控的重点。</p>
+</li>
+<li><p>kylin在集团内是否有对标产品？目前调研都不够理想，犹如孔明灯、夸克/FBI等产品业务方已在使用，我们基于它们建设也未尝不可，但我们需要的灵活性（cube配置化、查询模式多变）仍要调研取证。如果不基于已有产品建设，那么引进kylin的成本稍大，要和odps数据源集成，和计算引擎集成等等，要搭建至少有个小规模的kylin集群，一边还要跟社区（当然自己用可以慢慢来）。换句话说甚至不如开发一个类似kylin构建cube内核的通用mr来的实在（我们之前的兼容odps的最简方案）。</p>
+</li>
+<li><p>seiya应用的数据层改造。目前针对ots特定的表结构已有一套数据层查询方案，但实际上引入kylin后，查询模式可以转变为基于数据模型的sql driver查询，显而易见，当我们集市构建丰富、cube模型设计合理（维度、指标等）的情况下，能够在不改变cube构建任务的情况下、在应用层即可应对更多的业务开发。</p>
+</li>
+<li><p>其次需要考虑的是集群的开放、运维等问题</p>
+</li>
+</ol>
+<p>的确，考虑长远来说的话kylin引入的收益是日渐明显的，建立cube后相比目前SQL开发能提升效率，但引入之前的宽表构建也是我们不可避免的问题，松散的业务同样需要独立的模型——仍然要从构建宽表开始考虑一遍（如果新增的业务不能符合标准星型模型的话），等等，我们作为业务部门而不是平台部门是否能分散精力组建也是我们需要考虑的。从目前我们讲求较高的开发收益比来说（从0到1的收益远比从1到1.1大），不适合进行投入式的技术研发，或许有更具性价比的产品等待我们调研发现。长远来讲，我们希望Abird能将优土用户体验等日志从采集、到通用etl、到通用olap形成一套完备的解决方案，还是路漫漫其修远兮。再次提出一些思考与读者讨论，也欢迎读者共建。</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/OLAP/" rel="tag"># OLAP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/13/Druid-生产部署/" rel="next" title="Druid-生产部署">
+                <i class="fa fa-chevron-left"></i> Druid-生产部署
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/26/Abird平台OLAP技术架构的一些思考-2/" rel="prev" title="Abird平台OLAP技术架构的一些思考(2)">
+                Abird平台OLAP技术架构的一些思考(2) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -380,8 +544,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -489,6 +662,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现状"><span class="nav-number">2.</span> <span class="nav-text">现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进方案"><span class="nav-number">3.</span> <span class="nav-text">改进方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引入kylin能给我们带来什么？"><span class="nav-number">3.1.</span> <span class="nav-text">引入kylin能给我们带来什么？</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -633,6 +822,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
 
   
 
