@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="承接上文，讨论一下Abird平台OLAP技术架构之——实时 的一些思考 背景简单描述下实时的业务背景：对于部分用户体验数据以及其他数据，业务方有实时查询的需求，并且也要结合多维分析来定位异常问题。如实时vv/成功率/卡顿率/秒开率等指标，而且需要省份、运营商、网络制式、app版本等维度辅助定位陡升、陡降问题力求第一时间监控报警，还有诸如心跳等实时业务。 现状上文说了，我们采用MOLAP的实现方法，">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-26T16:06:58.346Z">
+<meta property="og:updated_time" content="2018-02-26T16:09:50.362Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Abird平台OLAP技术架构的一些思考(2)">
 <meta name="twitter:description" content="承接上文，讨论一下Abird平台OLAP技术架构之——实时 的一些思考 背景简单描述下实时的业务背景：对于部分用户体验数据以及其他数据，业务方有实时查询的需求，并且也要结合多维分析来定位异常问题。如实时vv/成功率/卡顿率/秒开率等指标，而且需要省份、运营商、网络制式、app版本等维度辅助定位陡升、陡降问题力求第一时间监控报警，还有诸如心跳等实时业务。 现状上文说了，我们采用MOLAP的实现方法，">
@@ -432,7 +432,7 @@
 </li>
 </ol>
 <h3 id="方案三"><a href="#方案三" class="headerlink" title="方案三"></a>方案三</h3><p>对于方案3，是笔者在前段考虑实时通用化时重点考虑的方案。在此重点研讨优缺点如下：</p>
-<h3 id="我们能得到什么？"><a href="#我们能得到什么？" class="headerlink" title="我们能得到什么？"></a>我们能得到什么？</h3><ol>
+<h4 id="我们能得到什么？"><a href="#我们能得到什么？" class="headerlink" title="我们能得到什么？"></a>我们能得到什么？</h4><ol>
 <li><p>Druid对事件数据聚合，此类数据有较为明显的三类数据列构成：时间戳列、维度数据列（字符串数据，可用来过滤）、指标数据列（druid在导入数据时会根据配置对原始数据的数值列进行roll up得到指标数据列）。这种做法实际上是将Cube的计算逻辑后移（这种说法不严谨，实际上并无cube计算，而是基于最细粒度聚合的再计算），我们只需梳理事实表即可。这里说的最细粒度聚合实际上就是group by A,B,C,……所有一开始指定的维度的聚合计算。由此，我们可以避免cube计算以及优化等一系列“故事”。</p>
 </li>
 <li><p>避免了cube计算也就避免了上文提到的streaming稳定性的问题，更进一步，Druid这种方式更具查询灵活性，最细粒度聚合值有了，在其上所有需要的聚合层级都可得，也能支持秒级查询响应。</p>
@@ -440,7 +440,7 @@
 <li><p>具备了上述灵活性，查询受用面积更广，实际上更进一步避免了“实时热更新”的问题。不在此展开（这个问题曾一度困扰笔者，解决思路如新版Flink的CEP和cloudera的streaming+drools），附链接：<a href="http://blog.cloudera.com/blog/2015/11/how-to-build-a-complex-event-processing-app-on-apache-spark-and-drools/。" target="_blank" rel="noopener">http://blog.cloudera.com/blog/2015/11/how-to-build-a-complex-event-processing-app-on-apache-spark-and-drools/。</a></p>
 </li>
 </ol>
-<h3 id="我们还需考虑什么？"><a href="#我们还需考虑什么？" class="headerlink" title="我们还需考虑什么？"></a>我们还需考虑什么？</h3><ol>
+<h4 id="我们还需考虑什么？"><a href="#我们还需考虑什么？" class="headerlink" title="我们还需考虑什么？"></a>我们还需考虑什么？</h4><ol>
 <li><p>Druid目前不支持join查询，这意味着我们许多指标如成功率/卡顿率/秒开率等需要将相关因子在ETL时打平并落入一个datasource，这里Blink完全能够胜任不足为虑。</p>
 </li>
 <li><p>集团内Druid集群服务。据目前了解，只有个别团队提供Druid对外服务，但其产品未对外开放，运维成本能降低（自行搭建的Druid角色较多运维难度较大），但运维门槛会加大（毕竟未开放想让人家提供无偿贴心服务么）。而且资源受限，是否能够支撑重点业务，数据ttl等问题都需要根据业务进行评估。</p>
@@ -668,7 +668,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现状"><span class="nav-number">2.</span> <span class="nav-text">现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进方案"><span class="nav-number">3.</span> <span class="nav-text">改进方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方案一"><span class="nav-number">3.1.</span> <span class="nav-text">方案一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案二"><span class="nav-number">3.2.</span> <span class="nav-text">方案二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案三"><span class="nav-number">3.3.</span> <span class="nav-text">方案三</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们能得到什么？"><span class="nav-number">3.4.</span> <span class="nav-text">我们能得到什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#我们还需考虑什么？"><span class="nav-number">3.5.</span> <span class="nav-text">我们还需考虑什么？</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现状"><span class="nav-number">2.</span> <span class="nav-text">现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进方案"><span class="nav-number">3.</span> <span class="nav-text">改进方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方案一"><span class="nav-number">3.1.</span> <span class="nav-text">方案一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案二"><span class="nav-number">3.2.</span> <span class="nav-text">方案二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案三"><span class="nav-number">3.3.</span> <span class="nav-text">方案三</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#我们能得到什么？"><span class="nav-number">3.3.1.</span> <span class="nav-text">我们能得到什么？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#我们还需考虑什么？"><span class="nav-number">3.3.2.</span> <span class="nav-text">我们还需考虑什么？</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
