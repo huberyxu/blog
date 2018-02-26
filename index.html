@@ -1950,7 +1950,8 @@ Characters Removed -&gt; [25, 42, 17, 170]
 
       
         
-          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Druid是一个用于大规模数据集的实时分析处理的数据存储系统。该系统结合了列存储、分布式的、无共享的体系结构，高效的索引能够支持10亿行数据分析查询的亚秒级响应。在本文中，我们描述了Druid的架构，以及它如何支持快速聚合，灵活的过滤器，以及低延迟的数据注入。<br>Categories and Subject Descriptors<br>H.2.4 [Database Management]: Systems—Distributed databases<br>关键字<br>distributed; real-time; fault-tolerant; highly available; open source; analytics; column-oriented; OLAP</p>
+          <p>Druid系列文章为笔者对<druid white="" paper="">的翻译文章，如需转载请注明出处。</druid></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Druid是一个用于大规模数据集的实时分析处理的数据存储系统。该系统结合了列存储、分布式的、无共享的体系结构，高效的索引能够支持10亿行数据分析查询的亚秒级响应。在本文中，我们描述了Druid的架构，以及它如何支持快速聚合，灵活的过滤器，以及低延迟的数据注入。<br>Categories and Subject Descriptors<br>H.2.4 [Database Management]: Systems—Distributed databases<br>关键字<br>distributed; real-time; fault-tolerant; highly available; open source; analytics; column-oriented; OLAP</p>
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>近年来，互联网技术的迅猛发展使机器生成的事件激增。单独来说，这些事件包含的有用信息非常少，而且价值很低。考虑到从大量数据中提取有价值的数据所需的时间和资源，许多公司愿意放弃这些数据。尽管已经建立了基础设施来处理基于事件的数据(例如IBM的Netezza[37]、HP的Vertica[5]和EMC的Greenplum[29])，但它们在很大程度上以高价出售，而且只针对那些能够支付得起的公司。</p>
 <p>几年前，谷歌引入了MapReduce[11]作为其利用商品硬件的机制来索引网络和分析日志。Hadoop[36]项目很快就完成了，并且很大程度上是基于最初的MapReduce理论而形成的。Hadoop目前部署在许多组织中，以存储和分析大量的日志数据。Hadoop帮助公司将其低价值的事件流转化为高价值的聚合，用于各种应用程序，如商业智能和测试。</p>
           <!--noindex-->
