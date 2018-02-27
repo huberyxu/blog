@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="承接上文，讨论一下Abird平台OLAP技术架构之——实时 的一些思考 背景简单描述下实时的业务背景：对于部分用户体验数据以及其他数据，业务方有实时查询的需求，并且也要结合多维分析来定位异常问题。如实时vv/成功率/卡顿率/秒开率等指标，而且需要省份、运营商、网络制式、app版本等维度辅助定位陡升、陡降问题力求第一时间监控报警，还有诸如心跳等实时业务。 现状上文说了，我们采用MOLAP的实现方法，">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-26T16:09:50.362Z">
+<meta property="og:updated_time" content="2018-02-27T06:55:38.445Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Abird平台OLAP技术架构的一些思考(2)">
 <meta name="twitter:description" content="承接上文，讨论一下Abird平台OLAP技术架构之——实时 的一些思考 背景简单描述下实时的业务背景：对于部分用户体验数据以及其他数据，业务方有实时查询的需求，并且也要结合多维分析来定位异常问题。如实时vv/成功率/卡顿率/秒开率等指标，而且需要省份、运营商、网络制式、app版本等维度辅助定位陡升、陡降问题力求第一时间监控报警，还有诸如心跳等实时业务。 现状上文说了，我们采用MOLAP的实现方法，">
@@ -437,7 +437,7 @@
 </li>
 <li><p>避免了cube计算也就避免了上文提到的streaming稳定性的问题，更进一步，Druid这种方式更具查询灵活性，最细粒度聚合值有了，在其上所有需要的聚合层级都可得，也能支持秒级查询响应。</p>
 </li>
-<li><p>具备了上述灵活性，查询受用面积更广，实际上更进一步避免了“实时热更新”的问题。不在此展开（这个问题曾一度困扰笔者，解决思路如新版Flink的CEP和cloudera的streaming+drools），附链接：<a href="http://blog.cloudera.com/blog/2015/11/how-to-build-a-complex-event-processing-app-on-apache-spark-and-drools/。" target="_blank" rel="noopener">http://blog.cloudera.com/blog/2015/11/how-to-build-a-complex-event-processing-app-on-apache-spark-and-drools/。</a></p>
+<li><p>具备了上述灵活性，查询受用面积更广，实际上更进一步避免了“实时热更新”的问题。不在此展开（这个问题曾一度困扰笔者，解决思路如新版Flink的CEP和cloudera的streaming+drools），附链接：<a href="http://blog.cloudera.com/blog/2015/11/how-to-build-a-complex-event-processing-app-on-apache-spark-and-drools/" target="_blank" rel="noopener">http://blog.cloudera.com/blog/2015/11/how-to-build-a-complex-event-processing-app-on-apache-spark-and-drools/</a></p>
 </li>
 </ol>
 <h4 id="我们还需考虑什么？"><a href="#我们还需考虑什么？" class="headerlink" title="我们还需考虑什么？"></a>我们还需考虑什么？</h4><ol>
