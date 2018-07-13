@@ -472,6 +472,196 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb-读数据/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/13/Opentsdb-读数据/" itemprop="url">Opentsdb-读数据</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T13:09:12+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb-读数据/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb-读数据/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/13/Opentsdb-读数据/" class="leancloud_visitors" data-flag-title="Opentsdb-读数据">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>OpenTSDB提供了许多方法来提取、操作和分析数据。数据可以通过CLI工具(HTTP API)查询，并被展示为GnuPlot图。诸如Grafana和Bosun这样的开源工具也可以访问TSDB数据。使用OpenTSDB的基于tag的系统查询可能有点复杂，所以请阅读本文并检查以下页面以了解更深的信息。此章节上的示例查询遵循HTTP API格式。<br>  ● Understanding Metrics and Time Series<br>  ● Dates and Times<br>  ● Query Filters<br>  ● Aggregation<br>  ● Downsampling<br>  ● Query Performance<br>  ● Query Examples<br>  ● Query Details and Stats<br>这个页面提供了典型的查询组件的概览。有关每个组件的详细信息，请参见文本中引用的页面或上面的内容表。</p>
+<h2 id="查询组件"><a href="#查询组件" class="headerlink" title="查询组件"></a>查询组件</h2><p>OpenTSDB提供了许多工具和端点，允许各种随时间而变化的查询规范。最初的语法允许进行简单的筛选、聚合和下行采样。后来的版本增加了对函数和表达式的支持。一般来说，每个查询都有以下组件：</p>
+
+<h3 id="Time-时间"><a href="#Time-时间" class="headerlink" title="Time(时间)"></a>Time(时间)</h3><p>绝对时间戳以格式化的或Unix整数时间戳支持。相对时间可用于刷新图表。目前，所有查询都能够覆盖单个时间跨度。在未来，我们希望提供一个偏移查询参数，允许在不同的时间段内聚合或绘制一个度量，比如比较上个星期到一年前。查看日期和时间篇章了解详细的内容。<br>虽然OpenTSDB可以用毫秒级的精确度存储数据，但大多数查询将返回具有秒级别的数据，以提供对现有工具的向后兼容性。除非使用查询指定了一个向下的采样算法，否则数据将以查询中指定的相同聚合函数自动为1秒采样。这样，如果将多个数据点存储为一个给定的秒，它们将被聚合并以正常的查询返回。<br>若要以毫秒级别提取数据，请使用/ api /query 并指定msResolution(ms也可以，但不推荐)JSON参数或查询字符串标记，它将绕过采样(除非指定)，并在Unix纪元毫秒解析中返回所有时间戳。此外，scan 命令行将返回写入存储的时间戳。</p>
+<h3 id="Filter-过滤器"><a href="#Filter-过滤器" class="headerlink" title="Filter(过滤器)"></a>Filter(过滤器)</h3><p>每个时间序列由一个度量和一个或多个tag name/value对组成。在OpenTSDB中，过滤器被应用于tag value(此时TSDB不提供对metric或tag name的过滤)。因为过滤器在查询中是可选的，如果您只请求度量的名称，那么将在聚合的结果中返回每个数值或tag value。过滤器类似于SQL中的WHERE子句。例如，如果我们有一个存储的数据集:</p>
+<pre><code>sys.cpu.user host=webserver01,cpu=0  1356998400  1
+sys.cpu.user host=webserver01,cpu=1  1356998400  4
+sys.cpu.user host=webserver02,cpu=0  1356998400  2
+sys.cpu.user host=webserver02,cpu=1  1356998400  1
+</code></pre><p>并制作一个简单的查询，其中包含必须的条件start time、aggregator和metric，例如:<br>start = 1356998400&amp;m = sum:sys.cpu.user，我们将在1356998400上得到一个累加值8和所有4个时间序列的值。<br>如果我们想要下钻一个特定的时间序列，我们可以使用过滤器。例如，我们可以在主机标签上通过:start = 1356998400&amp;m = sum:sys.cpu.user { host = webserver01 }。该查询将返回一个值5，只包含时间序列，其中主机= webserver01。要深入到特定的时间序列，您必须包含该系列的所有标记，例如查询start = 1356998400&amp;m = sum:sys.cpu。用户{主机= webserver01 cpu = 0 }将返回1。<br>Note：<br>不一致的标记在查询时可能导致意外的结果。详情请参阅write data章节。还可以看显示标记。<br>有关详细信息，请阅读查询过滤器文档。</p>
+<h3 id="Aggregation-聚合"><a href="#Aggregation-聚合" class="headerlink" title="Aggregation(聚合)"></a>Aggregation(聚合)</h3><p>OpenTSDB的一个强大功能是能够在一组数据点上执行多个时间序列的动态聚合。原始数据总是可以在存储中使用，但我们可以以有意义的方式快速提取数据。聚合函数是将两个或多个数据点合并为一个单一值的方法。<br>Note：<br>OpenTSDB在默认情况下聚合数据，并要求每个查询都有一个聚合运算符。每个聚合器都必须处理不同时间戳的丢失或数据点。这是通过插值执行的，如果用户不知道TSDB正在做什么，就会在查询时导致意外的结果。<br>有关详细信息,请参阅Aggregation</p>
+<h3 id="Downsampling（下采样）"><a href="#Downsampling（下采样）" class="headerlink" title="Downsampling（下采样）"></a>Downsampling（下采样）</h3><p>OpenTSDB可以输入大量的数据，甚至是一个时间序列中每秒钟一个数据点。因此，查询可能返回大量的数据点。访问带有大量API点的查询结果可能占用带宽。高频率的数据很容易压垮Javascript图形库，因此选择使用GnuPlot。GUI创建的图形很难读取，导致粗线，如下图所示：</p>
+
+<p>下采样可以在查询时使用，以减少返回的数据点的数量，这样您就可以从图表中提取出更好的信息，或者在连接上传输更少的数据。下采样需要一个聚合函数和一个时间间隔。聚合函数用于在指定的区间内用适当的数学函数计算新的数据点。例如，如果使用聚合sum，那么将在区间内的所有数据点汇总成一个单独的值。如果选择avg，则返回间隔内所有数据点的平均值。<br>使用下采样，我们可以清除之前的图表，以获得更有用的东西：</p>
+
+<p>For details, see Downsampling.</p>
+<h3 id="Rate-速率"><a href="#Rate-速率" class="headerlink" title="Rate(速率)"></a>Rate(速率)</h3><p>一些数据源返回值作为不断递增的计数器，一个例子是一个网站点击计数器。当您启动web服务器时，它可能有一个0的计数器。五分钟后，价值可能是1024。再过五分钟，可能是2048。计数器的图形将是一条直线，向右倾斜，并不总是很有用。OpenTSDB提供了一个速率转换函数，它可以计算随时间变化的值的速率。这将把计数器转换成带尖刺的行，以便在活动发生时显示您，并且可以更有用。</p>
+<p>速率是值的一阶导数。它被定义为(v2 - v1)/(t2 - t1)，时间为秒。因此，你会得到每秒变化的速率。目前，毫秒值的变化速率默认为每秒计算。OpenTSDB 2.0为特殊单调递增的计数器数据处理提供了支持，包括设置“滚动”值并抑制异常波动的能力。当在一个查询中指定了counterMax时，如果一个数据点接近这个值，并且在小于之前的点上，最大的值将被用来计算一个准确的速率给出两个点。例如，如果我们将一个整数计数器记录为2个字节，那么最大值将是65,535。如果t0的值是64000，而t1的值是1000，那么每秒生成的速率将被计算为- 63000。但是我们知道，它很有可能是翻转过来的，所以我们可以将最大值设置为65535，现在计算将是65535 - t0 + t1给我们2535。</p>
+<p>在计数器中跟踪数据的系统在重新启动时通常会恢复到0，当这种情况发生时，当使用最大计数器特性时，我们会得到一个虚假的结果。例如，如果计数器在t0上达到2000，有人重新启动服务器，那么下一个值可能是t1的500。如果我们把最大值设为65535，结果就是65535 - 2000 + 500，给我们64035。如果正常速率是每秒几点，那么这个特殊的峰值，在30秒之间，会产生一个2134.5的速率峰值!为了避免这种情况，我们可以设置resetValue，当速率超过这个值时，返回0的数据点，以避免在任意方向上出现峰值。</p>
+<h2 id="操作顺序"><a href="#操作顺序" class="headerlink" title="操作顺序"></a>操作顺序</h2><p>理解操作的顺序是很重要的。当返回查询结果时，以下是处理的顺序：</p>
+<ol>
+<li>Filtering</li>
+<li>Grouping</li>
+<li>Downsampling</li>
+<li>Interpolation</li>
+<li>Aggregation</li>
+<li>Rate Conversion</li>
+<li>Functions</li>
+<li>Expressions</li>
+</ol>
+<p>原文地址：<a href="http://opentsdb.net/docs/build/html/user_guide/query/index.html" target="_blank" rel="noopener">http://opentsdb.net/docs/build/html/user_guide/query/index.html</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb-写数据/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -581,7 +771,9 @@
       
         
           <p>你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。</p>
-<h2 id="命名schame"><a href="#命名schame" class="headerlink" title="命名schame"></a>命名schame</h2><p>许多metrics的管理者为其时间序列提供单一命名。<br>举个例子，系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver01.sys.cpu.0.user。这个名字告诉我们，这是一系列在webserver1主机上的0cpu的用户使用记录。如果你只接收指定web server的cpu用户使用时间，那么这么写是没问题的。<br>但是如果该webserver有64颗cpu并且你想计算它们的平均使用时间呢？有些系统允许你使用诸如webserver01.sys.cpu.<em>.user的通配符来读取64个不同的文件并且聚合其结果。或者你可以记录一个新的度量名为webserver01.sys.cpu.user.all来代表同样的聚合计算，但这意味着你必须记录“64+1”次记录。如果你有上千个web server并且你想计算他们的cpu平均使用时间呢？你可以使用如 </em>.sys.cpu.*.user<br>并且系统打开64,000个文件，聚合计算并返回结果。或者你可以起一个进程预处理这些数据并存入webservers.sys.cpu.user.all。<br>Opentsdb引入标签来实现不同的处理方式，每个系列的数据都有一个metric名称，但它更通用，有些东西可以在时间序列上共享，换句话说，标签name/value对的结合使用似的查询更灵活，聚合计算高效。<br>注意：<br>在Opentsdb中每个时间序列必须有至少一个标签。<br>用刚才得metric webserver01.sys.cpu.0.user举例，在OpenTSDB中，可能为会变成：sys.cpu.user host=webserver01, cpu=0。现在，如果我们想查询特定的cpu核，我们可以这样写查询：sum:sys.cpu.user{host=webserver01,cpu=42}.<br>如果想查询所有核，我们可以简单的移除掉cpu标签：sum:sys.cpu.user{host=webserver01}，如果我们想计算所有服务器的所有cpu核，我们可以简单的写成：sum:sys.cpu.user。这些数据会一个接一个的全部存储为sys.cpu.user的时间序列，所以聚合起来非常高效。opentsdb为尽可能快的聚合查询所设计，使用户可以从高层入手并深度挖掘数据详细信息。</p>
+<h2 id="命名schame"><a href="#命名schame" class="headerlink" title="命名schame"></a>命名schame</h2><p>许多metrics的管理者为其时间序列提供单一命名。<br>举个例子:<br>系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver01.sys.cpu.0.user。这个名字告诉我们，这是一系列在webserver1主机上的0cpu的用户使用记录。如果你只接收指定web server的cpu用户使用时间，那么这么写是没问题的。<br>但是如果该webserver有64颗cpu并且你想计算它们的平均使用时间呢？有些系统允许你使用诸如webserver01.sys.cpu.<em>.user的通配符来读取64个不同的文件并且聚合其结果。或者你可以记录一个新的度量名为webserver01.sys.cpu.user.all来代表同样的聚合计算，但这意味着你必须记录“64+1”次记录。如果你有上千个web server并且你想计算他们的cpu平均使用时间呢？你可以使用如 </em>.sys.cpu.*.user<br>并且系统打开64,000个文件，聚合计算并返回结果。或者你可以起一个进程预处理这些数据并存入webservers.sys.cpu.user.all.</p>
+<p>Opentsdb引入标签来实现不同的处理方式，每个系列的数据都有一个metric名称，但它更通用，有些东西可以在时间序列上共享，换句话说，标签name/value对的结合使用似的查询更灵活，聚合计算高效。</p>
+<p>注意：<br>在Opentsdb中每个时间序列必须有至少一个标签。<br>用刚才得metric webserver01.sys.cpu.0.user举例，在OpenTSDB中，可能为会变成：sys.cpu.user host=webserver01, cpu=0。现在，如果我们想查询特定的cpu核，我们可以这样写查询：sum:sys.cpu.user{host=webserver01,cpu=42}.<br>如果想查询所有核，我们可以简单的移除掉cpu标签：sum:sys.cpu.user{host=webserver01}，如果我们想计算所有服务器的所有cpu核，我们可以简单的写成：sum:sys.cpu.user。这些数据会一个接一个的全部存储为sys.cpu.user的时间序列，所以聚合起来非常高效。opentsdb为尽可能快的聚合查询所设计，使用户可以从高层入手并深度挖掘数据详细信息。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/07/13/Opentsdb-写数据/#more" rel="contents">
@@ -1823,200 +2015,6 @@ mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/13/Druid-查询Api/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/13/Druid-查询Api/" itemprop="url">Druid-查询Api</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-13T14:05:15+08:00">2018-02-13</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Druid/" itemprop="url" rel="index"><span itemprop="name">Druid</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/13/Druid-查询Api/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/13/Druid-查询Api/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/13/Druid-查询Api/" class="leancloud_visitors" data-flag-title="Druid-查询Api">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="查询Api"><a href="#查询Api" class="headerlink" title="查询Api"></a>查询Api</h2><p>Druid有自己的查询语言，通过POST请求。Broker, historical, 和real-time nodes都共享相同的查询API。<br>POST请求的主体是一个JSON对象，其中包含各种查询参数的键值对。一个典型的查询将包含数据源名称、结果数据的粒度、时间范围、请求的类型以及需要聚合的metric。结果也将是一个JSON对象，其中包含在时间段内的聚合指标。</p>
-<p>大多数查询类型还支持一个过滤器集合。过滤器包括维度名和维度值的Boolean表达式，可以指定多个维和值的组合。当提供一个过滤器时，只有符合过滤器数据的子集将会被扫描。Druid有处理复杂的嵌套过滤器的能力，能够进行深度数据钻取。</p>
-<p>具体的查询语法取决于查询类型和请求。查询一周的样本数据语法如下:</p>
-<pre><code>{
-    &quot;queryType&quot;: &quot;timeseries&quot;,
-    &quot;dataSource&quot;: &quot;wikipedia&quot;,
-    &quot;intervals&quot;: &quot;2013-01-01/2013-01-08&quot;,
-    &quot;filter&quot;: {
-        &quot;type&quot;: &quot;selector&quot;,
-        &quot;dimension&quot;: &quot;page&quot;, 
-        &quot;value&quot;: &quot;Ke$ha&quot;},
-    &quot;granularity&quot;: &quot;day&quot;, 
-    &quot;aggregations&quot;: [{&quot;type&quot;:&quot;count&quot;, &quot;name&quot;:&quot;rows&quot;}]
-}
-</code></pre><p>上面所示的查询将返回从2013-01-01到2013-01-08的Wikipedia数据源中行数统计，只对那些“page”维度的值等于“Ke$ha”的行进行filter计算。结果将按天进行分桶，并且将是一个JSON数组的形式:</p>
-<pre><code>[
-    {
-    &quot;timestamp&quot;: &quot;2012-01-01T00:00:00.000Z&quot;,
-    &quot;result&quot;: {&quot;rows&quot;:393298}
-    }
-    {
-    &quot;timestamp&quot;: &quot;2012-01-02T00:00:00.000Z&quot;,
-    &quot;result&quot;: {&quot;rows&quot;:382932}
-    }
-    ...
-    {
-    &quot;timestamp&quot;: &quot;2012-01-07T00:00:00.000Z&quot;,
-    &quot;result&quot;: {&quot;rows&quot;: 1337} 
-    }
-]
-</code></pre>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/13/Druid-查询Api/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2066,7 +2064,7 @@ mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -103,18 +103,18 @@
   <meta name="keywords" content="外文翻译,Opentsdb," />
 
 
-<meta name="description" content="你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。 命名schame许多metrics的管理者为其时间序列提供单一命名。举个例子，系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver0">
+<meta name="description" content="你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。 命名schame许多metrics的管理者为其时间序列提供单一命名。举个例子:系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver0">
 <meta name="keywords" content="外文翻译,Opentsdb">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Opentsdb-写数据">
 <meta property="og:url" content="https://haibin.work/2018/07/13/Opentsdb-写数据/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。 命名schame许多metrics的管理者为其时间序列提供单一命名。举个例子，系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver0">
+<meta property="og:description" content="你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。 命名schame许多metrics的管理者为其时间序列提供单一命名。举个例子:系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver0">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-13T05:04:49.629Z">
+<meta property="og:updated_time" content="2018-07-13T05:08:22.519Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Opentsdb-写数据">
-<meta name="twitter:description" content="你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。 命名schame许多metrics的管理者为其时间序列提供单一命名。举个例子，系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver0">
+<meta name="twitter:description" content="你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。 命名schame许多metrics的管理者为其时间序列提供单一命名。举个例子:系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver0">
 
 
 
@@ -430,7 +430,9 @@
 
       
         <p>你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。</p>
-<h2 id="命名schame"><a href="#命名schame" class="headerlink" title="命名schame"></a>命名schame</h2><p>许多metrics的管理者为其时间序列提供单一命名。<br>举个例子，系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver01.sys.cpu.0.user。这个名字告诉我们，这是一系列在webserver1主机上的0cpu的用户使用记录。如果你只接收指定web server的cpu用户使用时间，那么这么写是没问题的。<br>但是如果该webserver有64颗cpu并且你想计算它们的平均使用时间呢？有些系统允许你使用诸如webserver01.sys.cpu.<em>.user的通配符来读取64个不同的文件并且聚合其结果。或者你可以记录一个新的度量名为webserver01.sys.cpu.user.all来代表同样的聚合计算，但这意味着你必须记录“64+1”次记录。如果你有上千个web server并且你想计算他们的cpu平均使用时间呢？你可以使用如 </em>.sys.cpu.*.user<br>并且系统打开64,000个文件，聚合计算并返回结果。或者你可以起一个进程预处理这些数据并存入webservers.sys.cpu.user.all。<br>Opentsdb引入标签来实现不同的处理方式，每个系列的数据都有一个metric名称，但它更通用，有些东西可以在时间序列上共享，换句话说，标签name/value对的结合使用似的查询更灵活，聚合计算高效。<br>注意：<br>在Opentsdb中每个时间序列必须有至少一个标签。<br>用刚才得metric webserver01.sys.cpu.0.user举例，在OpenTSDB中，可能为会变成：sys.cpu.user host=webserver01, cpu=0。现在，如果我们想查询特定的cpu核，我们可以这样写查询：sum:sys.cpu.user{host=webserver01,cpu=42}.<br>如果想查询所有核，我们可以简单的移除掉cpu标签：sum:sys.cpu.user{host=webserver01}，如果我们想计算所有服务器的所有cpu核，我们可以简单的写成：sum:sys.cpu.user。这些数据会一个接一个的全部存储为sys.cpu.user的时间序列，所以聚合起来非常高效。opentsdb为尽可能快的聚合查询所设计，使用户可以从高层入手并深度挖掘数据详细信息。</p>
+<h2 id="命名schame"><a href="#命名schame" class="headerlink" title="命名schame"></a>命名schame</h2><p>许多metrics的管理者为其时间序列提供单一命名。<br>举个例子:<br>系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver01.sys.cpu.0.user。这个名字告诉我们，这是一系列在webserver1主机上的0cpu的用户使用记录。如果你只接收指定web server的cpu用户使用时间，那么这么写是没问题的。<br>但是如果该webserver有64颗cpu并且你想计算它们的平均使用时间呢？有些系统允许你使用诸如webserver01.sys.cpu.<em>.user的通配符来读取64个不同的文件并且聚合其结果。或者你可以记录一个新的度量名为webserver01.sys.cpu.user.all来代表同样的聚合计算，但这意味着你必须记录“64+1”次记录。如果你有上千个web server并且你想计算他们的cpu平均使用时间呢？你可以使用如 </em>.sys.cpu.*.user<br>并且系统打开64,000个文件，聚合计算并返回结果。或者你可以起一个进程预处理这些数据并存入webservers.sys.cpu.user.all.</p>
+<p>Opentsdb引入标签来实现不同的处理方式，每个系列的数据都有一个metric名称，但它更通用，有些东西可以在时间序列上共享，换句话说，标签name/value对的结合使用似的查询更灵活，聚合计算高效。</p>
+<p>注意：<br>在Opentsdb中每个时间序列必须有至少一个标签。<br>用刚才得metric webserver01.sys.cpu.0.user举例，在OpenTSDB中，可能为会变成：sys.cpu.user host=webserver01, cpu=0。现在，如果我们想查询特定的cpu核，我们可以这样写查询：sum:sys.cpu.user{host=webserver01,cpu=42}.<br>如果想查询所有核，我们可以简单的移除掉cpu标签：sum:sys.cpu.user{host=webserver01}，如果我们想计算所有服务器的所有cpu核，我们可以简单的写成：sum:sys.cpu.user。这些数据会一个接一个的全部存储为sys.cpu.user的时间序列，所以聚合起来非常高效。opentsdb为尽可能快的聚合查询所设计，使用户可以从高层入手并深度挖掘数据详细信息。</p>
 <a id="more"></a>
 <h2 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h2><p>尽管标签模式非常灵活，但如果你不明白Opentsdb的查询方式还是会出现一些问题，所以需要一些提前考虑。举个例子我们要查询这个：sum:sys.cpu.user{host=webserver01}.我们记录了webserver01的64个时间序列，每一个时间序列代表一个cpu核。当我们发起这个查询，所有64个sys.cpu.user的时间序列都被查询出来，求平均，然后返回一系列数据。比如说对于这个1356998400这个时间戳是个50的结果，如果我们迁移到另一个系统预先计算了sys.cpu.user host=webserver01这个值并将其写入了Opentsdb，如果我们在执行相同的查询，那么我们会得到1356998400时间处为100的这个结果。发生了什么？<br>Opentsdb聚合了所有64个时间序列，存储如下：</p>
 <pre><code>sys.cpu.user host=webserver01        1356998400  50
@@ -533,6 +535,10 @@ sys.cpu.user host=webserver01,cpu=63 1356998400  1
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/07/13/Opentsdb-读数据/" rel="prev" title="Opentsdb-读数据">
+                Opentsdb-读数据 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -610,7 +616,7 @@ sys.cpu.user host=webserver01,cpu=63 1356998400  1
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
