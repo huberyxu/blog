@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="任何数据库系统的一个关键功能是使用某种形式的过滤启用完整数据集的抓取子集。OpenTSDB自版本1.x 以来提供了过滤，从2.2开始具有扩展的功能。过滤器目前只能在标签值上操作。这意味着任何指标(Metric)和标记键(tag name)都必须精确地指定，因为它们在获取数据时出现在数据库中。 示例数据：在下面解释每个过滤器时，使用了以下数据。它由一个单一的度量标准组成，多个时间序列定义在不同的标签">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-13T06:52:23.683Z">
+<meta property="og:updated_time" content="2018-07-13T06:56:10.563Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Opentsdb原理-查询过滤器">
 <meta name="twitter:description" content="任何数据库系统的一个关键功能是使用某种形式的过滤启用完整数据集的抓取子集。OpenTSDB自版本1.x 以来提供了过滤，从2.2开始具有扩展的功能。过滤器目前只能在标签值上操作。这意味着任何指标(Metric)和标记键(tag name)都必须精确地指定，因为它们在获取数据时出现在数据库中。 示例数据：在下面解释每个过滤器时，使用了以下数据。它由一个单一的度量标准组成，多个时间序列定义在不同的标签">
@@ -439,7 +439,8 @@
 5    sys.cpu.system    host=web01 owner=jdoe    4
 6    sys.cpu.system    dc=lax host=web01        8
 7    sys.cpu.system    dc=lax host=web02        4
-</code></pre><h2 id="分组"><a href="#分组" class="headerlink" title="分组"></a>分组</h2><p>分组，也称为group - by，是将多个时间序列使用所需的聚合函数和过滤器组合成一个的过程。默认情况下，OpenTSDB以Metric的形式对所有内容进行分组，如果查询返回10个时间序列，并使用一个sum的聚合器，那么所有10个序列将会随着时间的推移一起添加到一个值。有关时间序列如何合并的详细信息，请参见聚合篇章。<br>为了避免在没有任何聚合的情况下对每个底层时间序列进行分组和获取，请使用版本2.2中none聚合器。或者，您可以在OpenTSDB 2.2之后的版本每个过滤器基础上禁用分组。请参阅API文档，了解如何做到这一点。</p>
+</code></pre><a id="more"></a>
+<h2 id="分组"><a href="#分组" class="headerlink" title="分组"></a>分组</h2><p>分组，也称为group - by，是将多个时间序列使用所需的聚合函数和过滤器组合成一个的过程。默认情况下，OpenTSDB以Metric的形式对所有内容进行分组，如果查询返回10个时间序列，并使用一个sum的聚合器，那么所有10个序列将会随着时间的推移一起添加到一个值。有关时间序列如何合并的详细信息，请参见聚合篇章。<br>为了避免在没有任何聚合的情况下对每个底层时间序列进行分组和获取，请使用版本2.2中none聚合器。或者，您可以在OpenTSDB 2.2之后的版本每个过滤器基础上禁用分组。请参阅API文档，了解如何做到这一点。</p>
 <h2 id="OpenTSDB-1-x-2-1"><a href="#OpenTSDB-1-x-2-1" class="headerlink" title="OpenTSDB 1.x - 2.1"></a>OpenTSDB 1.x - 2.1</h2><p>在最初的OpenTSDB发行版和最多2.1版本中，只有两种类型的过滤器可用，并且它们被隐式配置成分组。允许的两个操作符是:</p>
 <pre><code>*   -  星号(或通配符)将返回一个单独的结果，以检测每个唯一的标记值。如果标签密钥主机与web01和web02配对，那么将会有两个组返回，一个在web01上，一个在web02上。 
 |   -  管道符(或文字)
@@ -545,6 +546,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/07/13/Opentsdb原理-聚合/" rel="prev" title="Opentsdb原理-聚合">
+                Opentsdb原理-聚合 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -622,7 +627,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">21</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

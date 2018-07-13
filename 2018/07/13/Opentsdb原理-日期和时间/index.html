@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="OpenTSDB在查询数据时支持一些日期和时间格式。支持通过GUI、CliQuery工具或HTTP API提交查询。每个查询都需要一个 start time 和一个可选的end time。如果未指定结束时间，则使用TSD正在运行的系统的当前时间。 相对时间如果您不知道请求的确切时间戳您可以提交过去相对于TSD正在运行的系统的时间。相对时间按照格式 -ago 格式 &amp;lt;amount&amp;gt;  是">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-13T06:19:58.738Z">
+<meta property="og:updated_time" content="2018-07-13T06:56:14.388Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Opentsdb原理-日期和时间">
 <meta name="twitter:description" content="OpenTSDB在查询数据时支持一些日期和时间格式。支持通过GUI、CliQuery工具或HTTP API提交查询。每个查询都需要一个 start time 和一个可选的end time。如果未指定结束时间，则使用TSD正在运行的系统的当前时间。 相对时间如果您不知道请求的确切时间戳您可以提交过去相对于TSD正在运行的系统的时间。相对时间按照格式 -ago 格式 &amp;lt;amount&amp;gt;  是">
@@ -434,6 +434,7 @@
 <pre><code>&lt;amount&gt;  是时间的数量单位；
 &lt;time unit&gt;是时间的单位,比如小时,天,等。
 </code></pre><p>例如,如果我们提供1h-ago而不指定结束时间。查询将返回数据从1小时前到当前时间。可能的时间单位包括:<br>  ● ms - Milliseconds<br>  ● s - Seconds<br>  ● m - Minutes<br>  ● h - Hours<br>  ● d - Days (24 hours)<br>  ● w - Weeks (7 days)<br>  ● n - Months (30 days)<br>  ● y - Years (365 days)<br>Note：<br>相对时间不考虑闰秒、闰年或时区。他们只是简单地计算过去从当前时间的秒数。</p>
+<a id="more"></a>
 <h2 id="绝对的Unix时间"><a href="#绝对的Unix时间" class="headerlink" title="绝对的Unix时间"></a>绝对的Unix时间</h2><p>在内部，所有数据都与Unix(或POSIX)样式时间戳关联。<br>Unix时间定义为自1970年1月1日UTC时间以来的秒数。时间戳被表示为一个正整数，如1364410924，代表ISO 8601:2013 - 03 - 27t19:04 . 4z。</p>
 <p>由于调用OpenTSDB中的数据需要一个Unix时间戳，所以在查询中支持此格式是有意义的。因此，您可以为查询的开始或结束时间提供一个整数。<br>使用Unix时间戳的查询也可以简单地追加三位数来支持毫秒精度。例如，提供1364410924000的起始时间和1364410924250的结束时间将返回250毫秒的窗口内的数据。毫秒时间戳也可以提供一个周期，将秒从毫秒分隔为1364410924.250。任何带有13(或14)字符的整数都将被当作毫秒级的时间戳。任何少于等于10个字符的表示秒。毫秒只能提供3位数的精度。如果你的工具输出超过3位小数，你必须截断或绕过数值。</p>
 <h3 id="绝对的格式时间"><a href="#绝对的格式时间" class="headerlink" title="绝对的格式时间"></a>绝对的格式时间</h3><p>由于在您的头脑中计算Unix时间非常困难，OpenTSDB还支持人类可读的绝对日期和时间。支持的格式包括：<br>  ● yyyy/MM/dd-HH:mm:ss<br>  ● yyyy/MM/dd HH:mm:ss<br>  ● yyyy/MM/dd-HH:mm<br>  ● yyyy/MM/dd HH:mm<br>  ● yyyy/MM/dd<br>yyyy代表的是一个四位数的年份，例如2013年。MM代表了从01到12月的一个月。dd表示从当前月份的第几天，从01开始。HH表示24小时格式的一天，从00到23。mm代表从00到59的分钟，ss代表从00到59的秒。每个月、日、小时、分钟和秒数都必须以0表示，例如本月的第5天必须为05。在没有时间的情况下提供数据时，系统将假定给定的一天的午夜。<br>例如2013 / 01 / 23 - 12:50:42 或  2013 / 01 / 23。格式化时间由主机的默认时区转换为UTC。HTTP API查询可以接受用户提供的时区来覆盖本地区域。<br>Note：<br>在使用CliQuery工具时，您必须使用将日期与时间分隔开来的格式。这是因为命令行在空格上被分割，所以如果您在时间戳中放置一个空格，那么它将不能正确地解析执行。</p>
@@ -561,7 +562,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">21</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="OpenTSDB是一个时间序列数据库。时间序列是随时间变化的某种特定度量的一系列数据点。每一个时间序列由一个度量加上一个或多个与这个度量相关的tag (我们将在一个部分中涉及tag)。度量指标是您希望随时间追踪的任何特定数据(例如对Apache托管文件的点击)。 OpenTSDB也是一个数据绘图系统。OpenTSDB与其他系统有一点不同。我们将在下面更详细地讨论绘图，但现在很重要的一点是，对于Op">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-13T06:13:44.102Z">
+<meta property="og:updated_time" content="2018-07-13T06:55:49.319Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Opentsdb-Metric和时间">
 <meta name="twitter:description" content="OpenTSDB是一个时间序列数据库。时间序列是随时间变化的某种特定度量的一系列数据点。每一个时间序列由一个度量加上一个或多个与这个度量相关的tag (我们将在一个部分中涉及tag)。度量指标是您希望随时间追踪的任何特定数据(例如对Apache托管文件的点击)。 OpenTSDB也是一个数据绘图系统。OpenTSDB与其他系统有一点不同。我们将在下面更详细地讨论绘图，但现在很重要的一点是，对于Op">
@@ -432,7 +432,7 @@
         <p>OpenTSDB是一个时间序列数据库。时间序列是随时间变化的某种特定度量的一系列数据点。每一个时间序列由一个度量加上一个或多个与这个度量相关的tag (我们将在一个部分中涉及tag)。度量指标是您希望随时间追踪的任何特定数据(例如对Apache托管文件的点击)。</p>
 <p>OpenTSDB也是一个数据绘图系统。OpenTSDB与其他系统有一点不同。我们将在下面更详细地讨论绘图，但现在很重要的一点是，对于OpenTSDB，任何给定的图的基础都是Metric。它需要这个Metric找到所有的时间序列，根据你选择的时间范围，将这些时间序列聚合在一起(例如，把它们相加)，并绘制结果。这个绘图机制是非常灵活和强大的，你可以做更多的事情，但是现在我们来讨论一下时间序列的关键，这就是Metric。</p>
 <p>在OpenTSDB中，一个metric以字符串命名，如http.hits. 为了能够将所有不同的值存储在这个Metric的所有地方，当您将数据发送到TSD时，您可以用一个或多个标记标记数据。TSD存储时间戳、值和标签。当您想要检索这些数据时，TSD将检索您提供的时间跨度的所有值，可选地使用标签过滤器，将所有这些值聚合在一起，并根据时间绘制这个值的图表。</p>
-<p>这里有一堆东西我们已经介绍过了。为了帮助您理解Opentsdb是如何工作的，我将从一个典型的例子开始。</p>
+<p>这里有一堆东西我们已经介绍过了。为了帮助您理解Opentsdb是如何工作的，我将从一个典型的例子开始。<br><a id="more"></a></p>
 <h2 id="Web服务器访问、负载示例"><a href="#Web服务器访问、负载示例" class="headerlink" title="Web服务器访问、负载示例"></a>Web服务器访问、负载示例</h2><p>假设您有一堆web服务器，您希望跟踪两件事情：对web服务器的访问和系统的负载平均值。让我们用度量名称来表示这个。对于平均负载，我们叫它proc.loadavg.1min(因为在Linux上，您可以通过查看 /proc/loadavg轻松获得这些数据)。对于许多web服务器来说，有方法可以向web服务器请求一个计数器，它可以在服务器启动时向服务器显示命中次数。这是一个方便的计数器，这个Metric我们将命名为 http.hits。我之所以选择这两个例子有两个原因。首先，我们将了解OpenTSDB如何轻松地处理这两个计数器(随时间增加的值，除非它们在重新启动/重新启动或溢出时被重新设置)，以及它如何处理上下波动的正常值，比如负载平均值。OpenTSDB的一个巨大优势是，您不需要对计数器进行任何速率计算，它已为你做了该工作。第二个原因是，我们还可以向您展示如何在相同的范围内划分两个不同的度量标准。</p>
 <h3 id="第一个数据点"><a href="#第一个数据点" class="headerlink" title="第一个数据点"></a>第一个数据点</h3><p>如果不深入了解收集器如何向TSD发送数据，那么您就编写一个收集器，定期向TSD发送这些数据的当前值。因此，TSD可以聚合来自多个主机的数据，用“host”标签标记每个值。如果你有web服务器A,B,C，等等，它们会周期性地向TSD发送类似的东西：</p>
 <pre><code>put http.hits 1234567890 34877 host=A
@@ -578,7 +578,7 @@ put proc.loadavg.1min 1234567890 1.35 host=A
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">21</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

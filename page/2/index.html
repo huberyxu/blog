@@ -323,6 +323,333 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb-安装/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/13/Opentsdb-安装/" itemprop="url">Opentsdb-安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T10:58:51+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb-安装/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb-安装/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/13/Opentsdb-安装/" class="leancloud_visitors" data-flag-title="Opentsdb-安装">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>OpenTSDB可从源码编译或者包安装，详见github<br>运行要求<br>Linux系统<br>java1.6以上<br>Hbase 0.92以上<br>GnuPlot4.2以上</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。<br>启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。<br>如果不能连接zookeeper，检查Ips或者host  name以解决hbase对zookeeper的强制依赖。<br>如果hbase启动，可以选择从包安装，或者使用GIT或者从tar包安装。</p>
+<p>从源码编译：<br>Compilation requirements include:<br>  ● A Linux system<br>  ● Java Development Kit 1.6 or later<br>  ● GnuPlot 4.2 or later<br>  ● Autotools<br>  ● Make<br>  ● Python<br>  ● Git<br>  ● An Internet connection<br>命令：</p>
+<pre><code>git clone git://github.com/OpenTSDB/opentsdb.git
+cd opentsdb
+./build.sh
+make install
+</code></pre><h2 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h2><p>安装完成后你可以在hbase实例之上运行opentsdb，第一步你要在hbase上创建必要的表。有一个简单的脚本能完成这件事并可以指定是否压缩：</p>
+<pre><code>env COMPRESSION=NONE HBASE_HOME=path/to/hbase-0.94.X ./src/create_table.sh
+</code></pre><p>此处，COMPRESSION有如下选项：none，lzo，gzip，snappy，该脚本创建如下表：tsdb，tsdb-uid，tsdb-tree，和tsdb-meta，如果你只是测试opentsdb，暂时无需考虑压缩。生产环境下，确保使用可用压缩以避免存储灾难。</p>
+<h2 id="启动TSD"><a href="#启动TSD" class="headerlink" title="启动TSD"></a>启动TSD</h2><p>opentsdb2.3版本维护一个配置文件，由daemon和命令行工具共享。如果你从源码编译，需要copy ./src/opentsdb.conf到指定目录，并且做如下配置，其中必要的是：</p>
+<p>  ● tsd.http.cachedir - 临时文件路径<br>  ● tsd.http.staticroot - 静态GUI文件路径 ./build/staticroot<br>  ● tsd.storage.hbase.zk_quorum - 如果HBase和zookeeper不是运行在同一台机，在此处指定地址和端口号。</p>
+<p>配置好以后，可通过如下命令启动：</p>
+<pre><code>./build/tsdb tsd
+</code></pre><p>或者，你可以用如下命令创建临时目录并在一行命令中指定：</p>
+<pre><code>tsdtmp=${TMPDIR-&apos;/tmp&apos;}/tsd    # For best performance, make sure
+mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
+./build/tsdb tsd --port=4242 --staticroot=build/staticroot --cachedir=&quot;$tsdtmp&quot; --zkquorum=myhost:2181
+</code></pre><p>之后，你可以通过 <a href="http://127.0.0.1:4242" target="_blank" rel="noopener">http://127.0.0.1:4242</a> 访问TSD的web界面<br>注意：<br>当你通过GUI生成一个图形时，cache directory用来存放生成的临时文件。这些文件需要定期清理。opentsdb并未做这件事，但提供了一天清理一次的脚本<br>    tools/clean_cache.sh</p>
+<p>原文地址：<a href="http://opentsdb.net/docs/build/html/installation.html" target="_blank" rel="noopener">http://opentsdb.net/docs/build/html/installation.html</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/26/Abird平台OLAP技术架构的一些思考-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/02/26/Abird平台OLAP技术架构的一些思考-2/" itemprop="url">Abird平台OLAP技术架构的一些思考(2)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-26T23:48:37+08:00">2018-02-26</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/02/26/Abird平台OLAP技术架构的一些思考-2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/26/Abird平台OLAP技术架构的一些思考-2/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/02/26/Abird平台OLAP技术架构的一些思考-2/" class="leancloud_visitors" data-flag-title="Abird平台OLAP技术架构的一些思考(2)">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>承接上文，讨论一下Abird平台OLAP技术架构之——实时 的一些思考</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>简单描述下实时的业务背景：<br>对于部分用户体验数据以及其他数据，业务方有实时查询的需求，并且也要结合多维分析来定位异常问题。如实时vv/成功率/卡顿率/秒开率等指标，而且需要省份、运营商、网络制式、app版本等维度辅助定位陡升、陡降问题力求第一时间监控报警，还有诸如心跳等实时业务。</p>
+<h2 id="现状"><a href="#现状" class="headerlink" title="现状"></a>现状</h2><p>上文说了，我们采用MOLAP的实现方法，实时的技术架构也不外如是。我们目前采用TT+Blink+Streaming+OTS的方式，注意：Blink依据数据量级以及ETL复杂度选择使用。在Streaming中我们实现了配置化cube构建引擎，以降低后续流计算的接入成本。由于主要集中于业务，并未为此付出过多精力进行数据膨胀的优化。导致部分业务完全立方体的构建极易造成数据膨胀。其次，streaming集群跨数据中心io瓶颈、任务不稳定等随着业务增加任务增加，日渐增加我们的人肉运维成本。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/02/26/Abird平台OLAP技术架构的一些思考-2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/26/Abird平台OLAP技术架构的一些思考-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1697,179 +2024,11 @@ Characters Removed -&gt; [25, 42, 17, 170]
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/10/Ganglia原理介绍、安装使用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/10/Ganglia原理介绍、安装使用/" itemprop="url">Ganglia原理介绍、安装使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-10T11:29:32+08:00">2018-02-10</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Ganglia/" itemprop="url" rel="index"><span itemprop="name">Ganglia</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/10/Ganglia原理介绍、安装使用/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/10/Ganglia原理介绍、安装使用/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/10/Ganglia原理介绍、安装使用/" class="leancloud_visitors" data-flag-title="Ganglia原理介绍、安装使用">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>Ganglia简介：<br>Ganglia是UC Berkeley发起的一个开源集群监视项目，设计用于测量数以千计的节点。Ganglia的核心包含gmond、gmetad以及一个Web前端。主要是用来监控系统性能，如：cpu 、mem、硬盘利用率， I/O负载、网络流量情况等，通过曲线很容易见到每个节点的工作状态，对合理调整、分配系统资源，提高系统整体性能起到重要作用。</p>
-<p>每台计算机都运行一个收集和发送度量数据的名为 gmond 的守护进程。接收所有度量数据的主机可以显示这些数据并且可以将这些数据的精简表单传递到层次结构中。正因为有这种层次结构模式，才使得 Ganglia 可以实现良好的扩展。gmond 带来的系统负载非常少，这使得它成为在集群中各台计算机上运行的一段代码，而不会影响用户性能。所有这些数据多次收集会影响节点性能。网络中的 “抖动”发生在大量小消息同时出现时，可以通过将节点时钟保持一致，来避免这个问题。</p>
-<p>gmetad可以部署在集群内任一台节点或者通过网络连接到集群的独立主机，它通过单播路由的方式与gmond通信，收集区域内节点的状态信息，并以XML数据的形式，保存在数据库中。由RRDTool工具处理数据，并生成相应的的图形显示，以Web方式直观的提供给客户端。</p>
-<p>工作原理：<br>    Ganglia包括如下几个程序，他们之间通过XDR(xml的压缩格式)或者XML格式传递监控数据，达到监控效果。集群内的节点，通过运行gmond收集发布节点状态信息，然后gmetad周期性的轮询gmond收集到的信息，然后存入rrd数据库，通过web服务器可以对其进行查询展示。</p>
-<img src="/2018/02/10/Ganglia原理介绍、安装使用/ganglia.jpg">
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/10/Ganglia原理介绍、安装使用/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1914,7 +2073,7 @@ Characters Removed -&gt; [25, 42, 17, 170]
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">21</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

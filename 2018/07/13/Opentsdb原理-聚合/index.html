@@ -100,28 +100,39 @@
 
 
   
-  <meta name="keywords" content="OLAP,Druid,外文翻译," />
+  <meta name="keywords" content="外文翻译,Opentsdb," />
 
 
-<meta name="description" content="Druid系列文章为笔者对Druid white paper的翻译文章，如需转载请注明出处。 概述Druid是一个用于大规模数据集的实时分析处理的数据存储系统。该系统结合了列存储、分布式的、无共享的体系结构，高效的索引能够支持10亿行数据分析查询的亚秒级响应。在本文中，我们描述了Druid的架构，以及它如何支持快速聚合，灵活的过滤器，以及低延迟的数据注入。Categories and Subjec">
-<meta name="keywords" content="OLAP,Druid,外文翻译">
+<meta name="description" content="OpenTSDB被设计用于在查询执行期间有效地组合多个、不同的时间序列。这样做的原因是当用户查看他们的数据时，他们通常会从一个较高的层次开始提问，比如“我的数据中心的总吞吐量是多少?”或者“地区目前的能耗是多少?”。在查看这些高级别的值之后，一个或多个用户可能会坚持下去，深入到更细粒度的数据集，比如“在我的松散的数据中心中，主机的吞吐量是多少?”我们希望能很容易地回答这些高层次的问题，但仍然可以进">
+<meta name="keywords" content="外文翻译,Opentsdb">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Druid-概述">
-<meta property="og:url" content="https://haibin.work/2018/02/12/Druid-概述/index.html">
+<meta property="og:title" content="Opentsdb原理-聚合">
+<meta property="og:url" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="Druid系列文章为笔者对Druid white paper的翻译文章，如需转载请注明出处。 概述Druid是一个用于大规模数据集的实时分析处理的数据存储系统。该系统结合了列存储、分布式的、无共享的体系结构，高效的索引能够支持10亿行数据分析查询的亚秒级响应。在本文中，我们描述了Druid的架构，以及它如何支持快速聚合，灵活的过滤器，以及低延迟的数据注入。Categories and Subjec">
+<meta property="og:description" content="OpenTSDB被设计用于在查询执行期间有效地组合多个、不同的时间序列。这样做的原因是当用户查看他们的数据时，他们通常会从一个较高的层次开始提问，比如“我的数据中心的总吞吐量是多少?”或者“地区目前的能耗是多少?”。在查看这些高级别的值之后，一个或多个用户可能会坚持下去，深入到更细粒度的数据集，比如“在我的松散的数据中心中，主机的吞吐量是多少?”我们希望能很容易地回答这些高层次的问题，但仍然可以进">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-13T03:00:01.044Z">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/table-1.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/table-2.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/table-3.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/table-4.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/table-5.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/table-6.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/table-7.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/table-8.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/p1.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/p2.png">
+<meta property="og:updated_time" content="2018-07-13T08:11:32.282Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Druid-概述">
-<meta name="twitter:description" content="Druid系列文章为笔者对Druid white paper的翻译文章，如需转载请注明出处。 概述Druid是一个用于大规模数据集的实时分析处理的数据存储系统。该系统结合了列存储、分布式的、无共享的体系结构，高效的索引能够支持10亿行数据分析查询的亚秒级响应。在本文中，我们描述了Druid的架构，以及它如何支持快速聚合，灵活的过滤器，以及低延迟的数据注入。Categories and Subjec">
+<meta name="twitter:title" content="Opentsdb原理-聚合">
+<meta name="twitter:description" content="OpenTSDB被设计用于在查询执行期间有效地组合多个、不同的时间序列。这样做的原因是当用户查看他们的数据时，他们通常会从一个较高的层次开始提问，比如“我的数据中心的总吞吐量是多少?”或者“地区目前的能耗是多少?”。在查看这些高级别的值之后，一个或多个用户可能会坚持下去，深入到更细粒度的数据集，比如“在我的松散的数据中心中，主机的吞吐量是多少?”我们希望能很容易地回答这些高层次的问题，但仍然可以进">
+<meta name="twitter:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/table-1.png">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/2018/02/12/Druid-概述/"/>
+  <link rel="canonical" href="https://haibin.work/2018/07/13/Opentsdb原理-聚合/"/>
 
 
 
@@ -130,7 +141,7 @@
     sidebar: "",
   };
 </script>
-  <title>Druid-概述 | Hubery's Polaris</title>
+  <title>Opentsdb原理-聚合 | Hubery's Polaris</title>
   
 
 
@@ -324,7 +335,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/12/Druid-概述/">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-聚合/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xuhaibin">
@@ -341,7 +352,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Druid-概述</h1>
+          <h1 class="post-title" itemprop="name headline">Opentsdb原理-聚合</h1>
         
 
         <div class="post-meta">
@@ -353,7 +364,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-12T18:45:04+08:00">2018-02-12</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T14:54:01+08:00">2018-07-13</time>
             
 
             
@@ -374,7 +385,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Druid/" itemprop="url" rel="index"><span itemprop="name">Druid</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
 
                 
                 
@@ -389,8 +400,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2018/02/12/Druid-概述/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/12/Druid-概述/" itemprop="commentCount"></span>
+                <a href="/2018/07/13/Opentsdb原理-聚合/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb原理-聚合/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -398,7 +409,7 @@
 
           
           
-             <span id="/2018/02/12/Druid-概述/" class="leancloud_visitors" data-flag-title="Druid-概述">
+             <span id="/2018/07/13/Opentsdb原理-聚合/" class="leancloud_visitors" data-flag-title="Opentsdb原理-聚合">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -429,14 +440,49 @@
       
 
       
-        <p>Druid系列文章为笔者对Druid white paper的翻译文章，如需转载请注明出处。</p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Druid是一个用于大规模数据集的实时分析处理的数据存储系统。该系统结合了列存储、分布式的、无共享的体系结构，高效的索引能够支持10亿行数据分析查询的亚秒级响应。在本文中，我们描述了Druid的架构，以及它如何支持快速聚合，灵活的过滤器，以及低延迟的数据注入。<br>Categories and Subject Descriptors<br>H.2.4 [Database Management]: Systems—Distributed databases<br>关键字<br>distributed; real-time; fault-tolerant; highly available; open source; analytics; column-oriented; OLAP</p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>近年来，互联网技术的迅猛发展使机器生成的事件激增。单独来说，这些事件包含的有用信息非常少，而且价值很低。考虑到从大量数据中提取有价值的数据所需的时间和资源，许多公司愿意放弃这些数据。尽管已经建立了基础设施来处理基于事件的数据(例如IBM的Netezza[37]、HP的Vertica[5]和EMC的Greenplum[29])，但它们在很大程度上以高价出售，而且只针对那些能够支付得起的公司。</p>
-<p>几年前，谷歌引入了MapReduce[11]作为其利用商品硬件的机制来索引网络和分析日志。Hadoop[36]项目很快就完成了，并且很大程度上是基于最初的MapReduce理论而形成的。Hadoop目前部署在许多组织中，以存储和分析大量的日志数据。Hadoop帮助公司将其低价值的事件流转化为高价值的聚合，用于各种应用程序，如商业智能和测试。</p>
-<a id="more"></a>
-<p>与许多伟大的系统一样，Hadoop已经打开了我们的视野，也让我们看到新的问题。具体来说，Hadoop擅长存储和提供大量数据，但是它不能保证数据访问的速度有多快。此外，尽管Hadoop是一个高度可用的系统，但是在大量并发负载下性能会降低。最后，尽管Hadoop可以很好地存储数据，但它并没有对数据进行优化，使数据立即可读。</p>
-<p>在开发Metamarkets产品的早期，我们遇到了这些问题，并认识到Hadoop是一个很好的后台处理、批处理和数据仓库系统。但是，作为一个在高度一致的租户环境(1000+用户)中具有产品级保证的公司，查询性能和数据可用性方面，Hadoop并不能满足我们的需求。</p>
-<p>我们探索了不同的解决方案，在尝试了关系数据库管理系统和NoSQL技术架构之后，我们得出了这样的结论:在开源世界中没有任何东西可以完全满足我们的需求。我们最终创建了Druid，一个开源的、分布式的、基于列的、实时的分析数据存储。在许多方面，Druid与其他OLAP系统(30、35、22)、在交互查询系统[28]、内存数据库[14]以及广为人知的分布式数据存储(7、12、23)有相似之处。在分布式和查询模型上也借鉴了当前的生成搜索基础结构[25,3,4]。<br>本文描述了Druid的架构，探索了在创建系统的过程中所做的各种决策设计，它为托管服务提供了动力，并试图帮助任何一个面临类似问题的人。Druid被部署在几个技术公司的生产环境中中。本文的结构如下:首先第2节中描述Druid解决的问题。接下来，第3节我们将从数据流角度详细介绍系统架构。在第4节中，我们讨论如何以及为什么数据转换成二进制格式。第5节中简要描述了查询API，并在第6节中展示了性能结果。最后，我们将从第7节中运行Druid、第8节中总结经验。</p>
+        <p>OpenTSDB被设计用于在查询执行期间有效地组合多个、不同的时间序列。这样做的原因是当用户查看他们的数据时，他们通常会从一个较高的层次开始提问，比如“我的数据中心的总吞吐量是多少?”或者“地区目前的能耗是多少?”。在查看这些高级别的值之后，一个或多个用户可能会坚持下去，深入到更细粒度的数据集，比如“在我的松散的数据中心中，主机的吞吐量是多少?”我们希望能很容易地回答这些高层次的问题，但仍然可以进行更详细的下钻。</p>
+<p>但是如何将多个单独的时间序列合并成单一的数据系列呢?聚合函数提供了将不同时间序列合并成一个的数学方法。过滤器用于通过tag来分组结果，聚合应用于每个组。聚合类似于SQL的GROUP BY子句，用户选择一个预定义的聚合函数，将多个记录合并到一个结果中。然而在tsd中，一组记录按时间戳和组进行聚合。</p>
+<p>每个聚合器有两个组件:</p>
+<pre><code>Function——数学计算应用于所有的值，计算平均值或选择最高。
+Interpolation——一种处理丢失值的方法，比如时间序列A在T1时的值，但是时间序列B没有值。
+</code></pre><p>这个文章关注的是聚合器如何在一个环境中使用，即在将多个时间序列合并为一个时。此外，聚合器还可以用于压缩时间序列(即返回一个较低的结果集)。有关更多信息，请参见Downsampling。</p>
+<h2 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h2><p>当将多组时间序列聚合成一组时，每个序列的时间戳都是对齐的。然后，对于每个时间戳，所有时间序列中的值聚合成一个新的数值。也就是说，聚合器将在每个时间序列的所有时间戳上工作。将原始数据看作一个矩阵或表，如下例所示，它演示了在两个时间序列(A和B)上工作的sum聚合器，从而产生一个新的时间序列输出。</p>
+<img src="/2018/07/13/Opentsdb原理-聚合/table-1.png">
+<p>对于时间戳t0，可以总结A和B的数据点，即5 + 10 = = 15。接下来，将ts1的两个值相加得到10，以此类推。在SQL中，这看起来像是SELECT SUM(value) FROM ts_table GROUP BY timestamp。</p>
+<h2 id="插值"><a href="#插值" class="headerlink" title="插值"></a>插值</h2><p>在上面的例子中，时间序列A和B都有数据点在每个时间戳，它们整齐排列。然而，当两个系列不一一对应时，会发生什么呢?它可能很难，有时甚至是不需要，同步时所有数据源的同时写入数据。例如，如果我们有10,000个服务器每5分钟发送100个系统指标，那么在一秒钟内就会有1000万个数据点。我们需要一个非常结实的网络和集群来容纳流量。更不用说系统会闲置4分59秒。相反，随着时间的推移，写入文件变得更有意义，这样我们平均每秒就有3333个写，以减少我们的硬件和网络需求。<br>你如何对一个不存在的值进行求和或者求平均呢?第一种本能想到的是返回有效的数据点，并完成它。然而，如果您正在处理的是数千个数据源，其中数据点是完全不一致的，那该怎么办呢?例如，下面的图显示了一个不一致的时间序列，结果是一条让人感到困惑的锯齿状的线：</p>
+<img src="/2018/07/13/Opentsdb原理-聚合/table-2.png">
+<p>Note:<br>Missing Data：<br>“丢失”，是指一个时间序列在给定时间戳中没有数据点。通常情况下，数据在请求的具体时间戳之前或之后偏移，但如果源或TSD遇到错误，而数据没有被记录，则可能会丢失数据。一些时间序列DBs可以允许在时间戳中存储NaN，以表示不可记录的值，但是OpenTSDB还不允许这样做。</p>
+<p>或者，您可以简单地忽略所有在给定时间戳的时间序列数据点，任何序列都缺少数据。但是如果您有两个时间序列，并且它们仅仅是时间戳不一致的，那么您的查询将返回一个空的数据集，即使在存储中有很好的数据，所以这并不一定非常有用。</p>
+<p>另一种方法是定义一个标量值(例如，0或Long的最大值)，以便在数据点丢失时使用。OpenTSDB 2.0之后的版本提供了一些聚合方法，可以用一个标量值替换缺少的数据点，实际上，上面的图形是使用zimsum聚合器生成的，它用一个0代替不一致的值。这种替换在处理不同的值时间序列时非常有用，例如在给定时间内的总销售额，但不适用于处理平均值或较严格的视觉图形。</p>
+<p>OpenTSDB提供的一个方案是使用定义好的数值分析方法来插值这个时间点的值。插值使用现有数据点来计算在请求的时间戳中最好的猜测值。使用OpenTSDB的线性插值我们可以平滑我们的不一致图得到：</p>
+<img src="/2018/07/13/Opentsdb原理-聚合/table-3.png">
+<p>对于一个数值例子，看一下这两个时间序列，其中的源每20秒发出一个值，而数据有10秒的时间偏移：</p>
+<img src="/2018/07/13/Opentsdb原理-聚合/table-4.png">
+<p>当OpenTSDB计算一个聚合时，它开始于任何时间序列的第一个数据点，在本例中，它将是t0中的B的数据。我们请求A在t0处一个值，但这里没有任何数据。我们知道在t0 + 10s中有A的数据，但由于之前没有任何值，我们无法猜测它会是什么。因此，我们只需返回B的值。<br>我们要求从时间序列B中得到t0 + 10s的值，但没有。但是B知道t0 + 20有一个值我们在t0上有一个值所以我们现在可以计算一下t0 + 10s。线性插值的公式为y = y0 +(y1 - y0)<em>(x - x0)/(x1 - x0))，对于级数B，y0 = 10,y1 = 20,x = t0 + 10s(或10)，x0 = t0(或0)，x1 = t0 + 20(或20)。因此，我们有y = 10 +(20 - 10)</em>(10 - 0)/(20 - 0)，这将减少到y = 10 + 10 <em>(10 / 20)，进一步减少到y = 10 + 10 </em>。5和y = 10 + 5。因此B在t0+10s会给我们一个估计值：15。</p>
+<p>迭代在每一个时间戳上继续进行，每个系列的数据点都被作为查询的一部分返回。使用sum聚合器的结果系列将是这样的：</p>
+<img src="/2018/07/13/Opentsdb原理-聚合/table-5.png">
+<p>更多的例子:对于图形趋势的我们有以下的例子。在OpenTSDB中记录了一个名为m的虚构的度量。“sum of m”是顶部的蓝色线,由start = 1h - ago&amp;m = sum查询而来。红色的线由host = foo得来， 绿线由host = bar得来。</p>
+<img src="/2018/07/13/Opentsdb原理-聚合/table-6.png">
+<p>如果你把红线和绿线叠起来，你就会得到蓝线。在任何离散时间点上，蓝线都有一个值等于红线的值和当时绿线的值。如果没有插值，你就会得到一些不太直观的东西，这很难理解，而且也没有那么有用：</p>
+<img src="/2018/07/13/Opentsdb原理-聚合/table-7.png">
+<p>注意蓝色的线在18:46:48处下降到绿色的数据点。不需要数学家，也不需要上高级的数学课，就可以看到，插值是必要的，以恰当地聚合多个时间序列，并得到有意义的结果。</p>
+<p>目前，OpenTSDB主要支持线性插值(有时缩短称为“lerp”)和一些聚合器，这些聚合器将简单地替代零或最大或最小值。对于那些想要添加其他插值方法的人来说，插件是受欢迎的。<br>只有在查询时发现多个时间序列时，才会在查询时执行插值。许多指标收集系统在写中插值，这样你的原始值就不会被记录下来。OpenTSDB存储您的原始值，并允许您随时检索它。<br>下面是来自邮件列表的另一个稍微复杂的例子，描述了多个时间序列是如何按平均聚合的：</p>
+<img src="/2018/07/13/Opentsdb原理-聚合/table-8.png">
+<p>三角形的粗蓝线是一个与多个时间序列的avg函数的集合，如每个查询开始= 1h - ago&amp;m = avg:duration_seconds。正如我们所看到的，产生的时间序列在所有底层时间序列的每一个时间戳上都有一个数据点，数据点是通过在那个时间戳中获取所有时间序列的平均值来计算的。这也适用于方形紫色时间序列的独立数据点，它在下一次数据点之前临时提高了平均值。</p>
+<p>Note：<br>聚合函数根据输入数据点返回整数或双值。如果两个源值都是整数，那么结果计算将是整数。这意味着任何由计算产生的分数值将会被砍掉，不会发生四舍五入。如果两个数据点都是浮点值，那么结果就是浮点数。但是，如果启用了downsampling或rates，结果将始终是浮点数。</p>
+<h2 id="下采样"><a href="#下采样" class="headerlink" title="下采样"></a>下采样</h2><p>如上所述，插值是处理丢失数据的一种方法。但一些用户讨厌线性插值是对数据欺骗的这种方法，因为它产生了虚值。相反，另一种处理不一致值的方法是通过downsampling。例如，如果消息源每分钟都报告一个值，但它们在那一分钟内发生了倾斜，那么就为所有数据源数据的每个查询提供1分钟的下行采样。这将导致在每个时间序列中对相同时间戳的值进行快照，以避免插值。当一个采样桶丢失一个值时，仍然会发生插值。<br>有关避免插值的细节和示例，请参阅downsampling。<br>Note：<br>一般来说，将多个时间序列合并到一个查询中，这是一个很好的方法。</p>
+<h2 id="支持的聚合器"><a href="#支持的聚合器" class="headerlink" title="支持的聚合器"></a>支持的聚合器</h2><p>下面是OpenTSDB中可用的聚合函数的描述。注意，有些应该只用于分组，有些则用于下采样。</p>
+<img src="/2018/07/13/Opentsdb原理-聚合/p1.png">
+<img src="/2018/07/13/Opentsdb原理-聚合/p2.png">
+<p>*查看维基百科上的文章。对于高基数计算，使用估计的百分位数可能更有效。</p>
+<p>Avg<br>计算整个下行取样桶或跨多个时间序列的所有值的平均值。这个函数将在整个时间序列中执行线性插值。它对于查看度量指标很有用。</p>
+<pre><code>Note：
+即使计算通常会导致浮点值，如果数据点被记录为整数，一个整数将被返回失去一些精度。
+</code></pre><p>Count<br>返回存储在系列或范围中的数据点的数量。当用于聚合多个系列时，将会替换零。当使用下采样时，它将反映每个下样桶中数据点的数量。当在组中使用聚合时，反映在给定时间内的时间序列的数量。<br>Dev<br>计算一个bucket或时间序列的标准偏差。这个函数将在整个时间序列中执行线性插值。它对于查看度量指标很有用。<br>Note：<br>即使计算通常会得到浮点值，如果数据点被记录为整数，整数返回失去一些精度。<br>Estimated Percentiles<br>使用选择算法计算各种百分比。这些对于有许多数据点的系列来说是有用的，因为一些数据可能被排除在计算之外。当用于聚合多个系列时，函数将执行线性插值。有关详细信息,请参阅维基百科。实现是通过Apache数学库实现的。<br>First &amp; Last<br>这些聚合器将在向下采样间隔中返回第一个或最后一个数据点。例如，如果一个下样桶由系列2、6、1、7组成，那么第一个聚合器将返回1，最后将返回7。请注意，这个聚合器只对downsamplers有用。</p>
+<pre><code>警告：
+当作为集合聚合器使用时，结果不确定，因为从存储中检索的时间序列和在内存中保存的时间序列不一致。
+</code></pre><p>Max<br>返回所有时间序列中最大的数据点，或者在一个时间跨度内。这个函数将在整个时间序列中执行线性插值。它对于查看度量指标的上界很有用。<br>MimMin<br>“maximum if missing minimum” 函数将只返回所有时间序列中或在时间跨度内最小的数据点。该函数不会执行插值，相反，它将返回值为所缺少的数据类型的最大值。Long.MaxValue为整数值最大值或Double.MaxValue为浮点型最大值。有关详细信息，请参见原始数据类型。它对于查看度量指标的下界是有用的。<br>MimMax<br>“minimum if missing maximum”函数将只返回最大的数据点，从所有的时间序列，或者在时间跨度内返回。该函数不会执行插值，相反，它将返回值为缺失值的数据类型的最小值。Long.MinValue用于整数值最小值或Double.MinValue表示浮点类型最小值。有关详细信息，请参见原始数据类型。它对于查看度量指标的上界很有用。<br>Min<br>只返回所有时间序列中或时间段内最小的数据点。这个函数将在整个时间序列中执行线性插值。它对于查看度量指标的下界是有用的。<br>None<br>跳过group by聚合。这个聚合器对于从存储中获取原始数据非常有用，因为它将为每次匹配过滤器的序列返回一个结果集。注意，如果使用downsampler，查询将抛出异常。<br>Percentiles<br>计算不同的百分位数。当用于聚合多个系列时，函数将执行线性插值。实现是通过Apache数学库实现的。<br>Sum<br>计算所有时间序列，或者在抽样的时间范围内的所有数据点的和。这是GUI的默认聚合函数，因为它通常在组合多个时间序列(比如测量或计数器)时是最有用的。当数据点未能对齐时，它执行线性插值。如果你有一组不同的值，你想要求和，你不需要插值，看看zimsum<br>ZimSum<br>计算所有数据点在指定时间戳的所有时间序列或在时间范围内的总和。这个函数不执行插值，而是用一个0代替丢失的数据点。这在处理离散值时很有用。</p>
+<p>Listing Aggregators<br>使用TSD上运行的HTTP API，用户可以查询 /api/aggregators 来获得在TSD上实现的聚合器列表。</p>
 
       
     </div>
@@ -454,11 +500,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/OLAP/" rel="tag"># OLAP</a>
-          
-            <a href="/tags/Druid/" rel="tag"># Druid</a>
-          
             <a href="/tags/外文翻译/" rel="tag"># 外文翻译</a>
+          
+            <a href="/tags/Opentsdb/" rel="tag"># Opentsdb</a>
           
         </div>
       
@@ -471,8 +515,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/02/10/序-INTRO/" rel="next" title="序 / INTRO">
-                <i class="fa fa-chevron-left"></i> 序 / INTRO
+              <a href="/2018/07/13/Opentsdb原理-查询过滤器/" rel="next" title="Opentsdb原理-查询过滤器">
+                <i class="fa fa-chevron-left"></i> Opentsdb原理-查询过滤器
               </a>
             
           </div>
@@ -481,8 +525,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/02/12/Druid-背景/" rel="prev" title="Druid-背景">
-                Druid-背景 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/07/13/Opentsdb原理-下采样/" rel="prev" title="Opentsdb原理-下采样">
+                Opentsdb原理-下采样 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -671,7 +715,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#聚合"><span class="nav-number">1.</span> <span class="nav-text">聚合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插值"><span class="nav-number">2.</span> <span class="nav-text">插值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下采样"><span class="nav-number">3.</span> <span class="nav-text">下采样</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#支持的聚合器"><span class="nav-number">4.</span> <span class="nav-text">支持的聚合器</span></a></li></ol></div>
             
 
           </div>
