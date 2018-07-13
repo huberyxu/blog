@@ -472,6 +472,191 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-Metric和时间序列/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/13/Opentsdb原理-Metric和时间序列/" itemprop="url">Opentsdb-Metric和时间</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T13:47:14+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb原理-Metric和时间序列/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb原理-Metric和时间序列/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/13/Opentsdb原理-Metric和时间序列/" class="leancloud_visitors" data-flag-title="Opentsdb-Metric和时间">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>OpenTSDB是一个时间序列数据库。时间序列是随时间变化的某种特定度量的一系列数据点。每一个时间序列由一个度量加上一个或多个与这个度量相关的tag (我们将在一个部分中涉及tag)。度量指标是您希望随时间追踪的任何特定数据(例如对Apache托管文件的点击)。</p>
+<p>OpenTSDB也是一个数据绘图系统。OpenTSDB与其他系统有一点不同。我们将在下面更详细地讨论绘图，但现在很重要的一点是，对于OpenTSDB，任何给定的图的基础都是Metric。它需要这个Metric找到所有的时间序列，根据你选择的时间范围，将这些时间序列聚合在一起(例如，把它们相加)，并绘制结果。这个绘图机制是非常灵活和强大的，你可以做更多的事情，但是现在我们来讨论一下时间序列的关键，这就是Metric。</p>
+<p>在OpenTSDB中，一个metric以字符串命名，如http.hits. 为了能够将所有不同的值存储在这个Metric的所有地方，当您将数据发送到TSD时，您可以用一个或多个标记标记数据。TSD存储时间戳、值和标签。当您想要检索这些数据时，TSD将检索您提供的时间跨度的所有值，可选地使用标签过滤器，将所有这些值聚合在一起，并根据时间绘制这个值的图表。</p>
+<p>这里有一堆东西我们已经介绍过了。为了帮助您理解Opentsdb是如何工作的，我将从一个典型的例子开始。</p>
+<h2 id="Web服务器访问、负载示例"><a href="#Web服务器访问、负载示例" class="headerlink" title="Web服务器访问、负载示例"></a>Web服务器访问、负载示例</h2><p>假设您有一堆web服务器，您希望跟踪两件事情：对web服务器的访问和系统的负载平均值。让我们用度量名称来表示这个。对于平均负载，我们叫它proc.loadavg.1min(因为在Linux上，您可以通过查看 /proc/loadavg轻松获得这些数据)。对于许多web服务器来说，有方法可以向web服务器请求一个计数器，它可以在服务器启动时向服务器显示命中次数。这是一个方便的计数器，这个Metric我们将命名为 http.hits。我之所以选择这两个例子有两个原因。首先，我们将了解OpenTSDB如何轻松地处理这两个计数器(随时间增加的值，除非它们在重新启动/重新启动或溢出时被重新设置)，以及它如何处理上下波动的正常值，比如负载平均值。OpenTSDB的一个巨大优势是，您不需要对计数器进行任何速率计算，它已为你做了该工作。第二个原因是，我们还可以向您展示如何在相同的范围内划分两个不同的度量标准。</p>
+<h3 id="第一个数据点"><a href="#第一个数据点" class="headerlink" title="第一个数据点"></a>第一个数据点</h3><p>如果不深入了解收集器如何向TSD发送数据，那么您就编写一个收集器，定期向TSD发送这些数据的当前值。因此，TSD可以聚合来自多个主机的数据，用“host”标签标记每个值。如果你有web服务器A,B,C，等等，它们会周期性地向TSD发送类似的东西：</p>
+<pre><code>put http.hits 1234567890 34877 host=A
+put proc.loadavg.1min 1234567890 1.35 host=A
+</code></pre><p>这里的“1234567890”是当前的时间(date+ % s)秒。下一个数字是这个时候的度规的值。这是来自主机A的数据，所以它被标记为host = A。主机B的数据将被标记为host = B，等等。随着时间的推移，您将获得一系列存储在OpenTSDB中的时间序列。</p>
+<h3 id="第一个图表"><a href="#第一个图表" class="headerlink" title="第一个图表"></a>第一个图表</h3><p>现在，让我们回顾一下我们刚开始讨论的内容。时间序列是一些特定度量(及其标记)的一系列数据。对于这个示例，每个主机向TSD发送两个时间序列。如果你有3个盒子，每一个发送这两个时间序列，TSD将收集和存储6个时间序列。现在有了数据，让我们开始绘图。<br>要绘制HTTP点击，您只需访问UI并输入http.hits按您的Metric名称命中，并输入时间范围。点击“Rate”按钮，因为这个特定的度量是一个速率计数器。随着时间的推移，您的web服务器的HTTP点击率有一个图表。</p>
+<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>UI的默认值是将每个主机的每个时间序列加在一起(sum)。这意味着，TSD将使用这个度量(主机= A、B、C)的三次时间序列，并将它们的值加在一起，以在给定时间内得到所有web服务器的总命中值。</p>
+<p>注意，你不需要为此请求三次，TSD将会计算出来。所以，如果每一个主机在某个时间点上每秒钟服务1000次，那么图就会显示3000次。如果您想要显示每个web服务器所服务的点击量是多少呢？两种方式。如果您只关心每个web服务器所服务的平均值，只需将聚合器方法从sum改为avg，您也可以尝试其他(max,min)来查看最大值或最小值。更多的聚合函数在works中(percentiles，等等)。这是在每个时间间隔的基础上完成的，如果在某个时间点你的 qps 50，而其他的则是100，后来一个不同的网络服务器是每秒50和100，这两点的Min值为50。换句话说，它没有计算出哪个时间序列是最小值，只展示了主机比较的值。另一种方法是查看每个web服务器的服务数量，正是我们要查找的标签字段（tag）。</p>
+<h3 id="下采样"><a href="#下采样" class="headerlink" title="下采样"></a>下采样</h3><p>为了减少返回的数据池数量，可以指定一个下采样间隔和方法，如1h - avg或1d - sum。这也很有用(比如在使用max和min时)，在给定的时间内找到最佳和最坏的数据。down采样最有效的方法是使图形化阶段变得不那么密集，可读性更强，特别是在绘制比屏幕像素更多的数据时。</p>
+<h3 id="Tag过滤器"><a href="#Tag过滤器" class="headerlink" title="Tag过滤器"></a>Tag过滤器</h3><p>在UI中，您将看到TSD已经填充了一个或多个“Tags”，第一个是host。TSD在这里说的是，在这个时间范围内，它看到数据被标记为一个host标记。您可以对图表进行筛选，使其仅仅绘制一个host的值。如果您在host行中填写A，则只需在host=A的时间内绘制值。如果您想要给出一个主机列表，请填写由管道符号分隔的主机列表，例如：A | B。这将为您提供两个图，而不是一个，一个为A，一个为b。最后，您还可以指定特殊字符 *，这意味着为每个主机绘制一条线。</p>
+<h3 id="添加更多Metric"><a href="#添加更多Metric" class="headerlink" title="添加更多Metric"></a>添加更多Metric</h3><p>所以，现在你有了你的网络点击量。这与平均负荷有什么关系?在这张图上，点击“+”按钮，为这个已有的图形添加一个新的Metric。输入proc.loadavg.1min 为Metric，点击“Right Axis”，Y轴分别按比例缩放，右侧为其标签。确保“Rate”是不能点击的，因为负载平均不是一个计数器度量。你瞧，现在您可以看到web点击率的变化如何影响系统的负载平均值。</p>
+<h3 id="更有趣的内容"><a href="#更有趣的内容" class="headerlink" title="更有趣的内容"></a>更有趣的内容</h3><p>假设您的服务器实际上运行两个web服务器，比如静态内容和动态内容。与其创建另一个度量，不如为http.hits这个Metric创建Tag。你的收集器发送的东西像：</p>
+<pre><code>put http.hits 1234567890 34877 host=A webserver=static 
+put http.hits 1234567890 4357 host=A webserver=dynamic 
+put proc.loadavg.1min 1234567890 1.35 host=A
+</code></pre><p>为什么要这样做而不是创建另一个度量?那么，如果有时候你关心的是使用HTTP的总点击量，有时你关心的是如何比较静态和动态命中的关系呢？有了标签，很容易。使用这个新的标记，您将看到在绘制这个度量时，UI中出现了一个webserver标签。你可以把它空着将聚合两个值到一个图中(根据你的聚合器设置),你可以看到总hits，或者你可以做网络服务器= <em> 列出每个静态和动态实例。您甚至可以更深入地指定webserver = </em>和host = *来查看完整的故障。</p>
+<h2 id="何时创建Metric"><a href="#何时创建Metric" class="headerlink" title="何时创建Metric?"></a>何时创建Metric?</h2><p>现在，您不能将两个指标组合成一条主线。这意味着您Metric是最大的聚合点。如果您想下钻某个度量Metric，使用标签。</p>
+<h2 id="Tags-vs-Metrics"><a href="#Tags-vs-Metrics" class="headerlink" title="Tags vs. Metrics"></a>Tags vs. Metrics</h2><p>度量标准应该是一个特定的东西，比如“Ethernet Packets”，但不能被再分解成一个特定的实例。一般来说，您不希望收集像net.bytes.eth0，net.bytes.eth1等等这样的Metric。而是 net.bytes和标签eth0如：iface=eth0。不要麻烦地创建单独的“in”和“out”度量。添加标签 direction = in或 direction= out。这样就可以很容易地在一个框中看到的总网络活动，而不必绘制一堆度量。而且这样可以让您灵活地进行下钻，并显示特定iface的活动，或者只是一个特定的direction。</p>
+<h2 id="Counters-and-Rates"><a href="#Counters-and-Rates" class="headerlink" title="Counters and Rates"></a>Counters and Rates</h2><p>如果某Metric是一个计数器，或者是一个自然的速率，在发送到TSD之前，不要把它转换成速率。有两个主要原因。首先，执行自己的速率计算、重置/溢出等处理是愚蠢的，因为TSD可以为您做。您也不必担心根据一个稍微不准确或更改的样本时间间隔来得到单位秒计算的正确性。第二，如果你丢失了一个数据点或者更多，如果你发送的是当前的计数器值，那么你就不会丢失数据。TSD中的黄金法则是，如果源数据是一个计数器(某些计数器是 / proc或SNMP)，那么保持这种状态。不要转换它。如果您正在编写自己的收集器(比方说，计算一个对特定的错误消息使用 tail- f 的频率)，不要每次都重置您的计数器。让TSD为你做这项工作。</p>
+<h2 id="Tags-are-your-Friend"><a href="#Tags-are-your-Friend" class="headerlink" title="Tags are your Friend"></a>Tags are your Friend</h2><p>在任何小环境中，您可能都有集群或一组机器做同样的事情，随着时间的推移发生变化也没关系。当您将数据发送到TSD以传递这个集群信息时，只需使用一个标记。将cluster = webserver 添加到所有web服务器发送的数据点中，并为所有数据库添加cluster = db等等。</p>
+<p>现在，当您为webserver集群设置CPU活动时，您会看到它们都聚合成一个图表。然后，假设您添加了一个webserver，甚至将它从webserver更改为数据库。您所要做的就是确保当它的角色发生变化时，发送正确的标签，而现在这个box中的CPU活跃度指向正确的集群。更重要的是，你所有的历史数据都是正确的!这是OpenTSDB的真正力量。您不仅不会像基于rrd的系统一样，在时间上不丢失数据的分辨率，而且历史数据不会随着您的box改变而丢失。也不必将集群分开，不会在dashborad中感知到该事件。</p>
+<h2 id="Precisions-on-Metrics-and-Tags"><a href="#Precisions-on-Metrics-and-Tags" class="headerlink" title="Precisions on Metrics and Tags"></a>Precisions on Metrics and Tags</h2><p>在数据点上允许标签的最大数量是由一个常量(const . max_num<em>tags)默认定义是8。度量名称、标记名称和标记值必须由字母数字字符、破折号“-”、下划线“</em>”、句号”。“以及斜杠”/“。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb-读数据/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -583,7 +768,7 @@
           
             <p>OpenTSDB提供了许多方法来提取、操作和分析数据。数据可以通过CLI工具(HTTP API)查询，并被展示为GnuPlot图。诸如Grafana和Bosun这样的开源工具也可以访问TSDB数据。使用OpenTSDB的基于tag的系统查询可能有点复杂，所以请阅读本文并检查以下页面以了解更深的信息。此章节上的示例查询遵循HTTP API格式。<br>  ● Understanding Metrics and Time Series<br>  ● Dates and Times<br>  ● Query Filters<br>  ● Aggregation<br>  ● Downsampling<br>  ● Query Performance<br>  ● Query Examples<br>  ● Query Details and Stats<br>这个页面提供了典型的查询组件的概览。有关每个组件的详细信息，请参见文本中引用的页面或上面的内容表。</p>
 <h2 id="查询组件"><a href="#查询组件" class="headerlink" title="查询组件"></a>查询组件</h2><p>OpenTSDB提供了许多工具和端点，允许各种随时间而变化的查询规范。最初的语法允许进行简单的筛选、聚合和下行采样。后来的版本增加了对函数和表达式的支持。一般来说，每个查询都有以下组件：</p>
-
+<img src="/2018/07/13/Opentsdb-读数据/opentsdb1.png">
 <h3 id="Time-时间"><a href="#Time-时间" class="headerlink" title="Time(时间)"></a>Time(时间)</h3><p>绝对时间戳以格式化的或Unix整数时间戳支持。相对时间可用于刷新图表。目前，所有查询都能够覆盖单个时间跨度。在未来，我们希望提供一个偏移查询参数，允许在不同的时间段内聚合或绘制一个度量，比如比较上个星期到一年前。查看日期和时间篇章了解详细的内容。<br>虽然OpenTSDB可以用毫秒级的精确度存储数据，但大多数查询将返回具有秒级别的数据，以提供对现有工具的向后兼容性。除非使用查询指定了一个向下的采样算法，否则数据将以查询中指定的相同聚合函数自动为1秒采样。这样，如果将多个数据点存储为一个给定的秒，它们将被聚合并以正常的查询返回。<br>若要以毫秒级别提取数据，请使用/ api /query 并指定msResolution(ms也可以，但不推荐)JSON参数或查询字符串标记，它将绕过采样(除非指定)，并在Unix纪元毫秒解析中返回所有时间戳。此外，scan 命令行将返回写入存储的时间戳。</p>
 <h3 id="Filter-过滤器"><a href="#Filter-过滤器" class="headerlink" title="Filter(过滤器)"></a>Filter(过滤器)</h3><p>每个时间序列由一个度量和一个或多个tag name/value对组成。在OpenTSDB中，过滤器被应用于tag value(此时TSDB不提供对metric或tag name的过滤)。因为过滤器在查询中是可选的，如果您只请求度量的名称，那么将在聚合的结果中返回每个数值或tag value。过滤器类似于SQL中的WHERE子句。例如，如果我们有一个存储的数据集:</p>
 <pre><code>sys.cpu.user host=webserver01,cpu=0  1356998400  1
@@ -595,7 +780,7 @@ sys.cpu.user host=webserver02,cpu=1  1356998400  1
 <h3 id="Downsampling（下采样）"><a href="#Downsampling（下采样）" class="headerlink" title="Downsampling（下采样）"></a>Downsampling（下采样）</h3><p>OpenTSDB可以输入大量的数据，甚至是一个时间序列中每秒钟一个数据点。因此，查询可能返回大量的数据点。访问带有大量API点的查询结果可能占用带宽。高频率的数据很容易压垮Javascript图形库，因此选择使用GnuPlot。GUI创建的图形很难读取，导致粗线，如下图所示：</p>
 
 <p>下采样可以在查询时使用，以减少返回的数据点的数量，这样您就可以从图表中提取出更好的信息，或者在连接上传输更少的数据。下采样需要一个聚合函数和一个时间间隔。聚合函数用于在指定的区间内用适当的数学函数计算新的数据点。例如，如果使用聚合sum，那么将在区间内的所有数据点汇总成一个单独的值。如果选择avg，则返回间隔内所有数据点的平均值。<br>使用下采样，我们可以清除之前的图表，以获得更有用的东西：</p>
-
+<img src="/2018/07/13/Opentsdb-读数据/opentsdb-downsampling2.png">
 <p>For details, see Downsampling.</p>
 <h3 id="Rate-速率"><a href="#Rate-速率" class="headerlink" title="Rate(速率)"></a>Rate(速率)</h3><p>一些数据源返回值作为不断递增的计数器，一个例子是一个网站点击计数器。当您启动web服务器时，它可能有一个0的计数器。五分钟后，价值可能是1024。再过五分钟，可能是2048。计数器的图形将是一条直线，向右倾斜，并不总是很有用。OpenTSDB提供了一个速率转换函数，它可以计算随时间变化的值的速率。这将把计数器转换成带尖刺的行，以便在活动发生时显示您，并且可以更有用。</p>
 <p>速率是值的一阶导数。它被定义为(v2 - v1)/(t2 - t1)，时间为秒。因此，你会得到每秒变化的速率。目前，毫秒值的变化速率默认为每秒计算。OpenTSDB 2.0为特殊单调递增的计数器数据处理提供了支持，包括设置“滚动”值并抑制异常波动的能力。当在一个查询中指定了counterMax时，如果一个数据点接近这个值，并且在小于之前的点上，最大的值将被用来计算一个准确的速率给出两个点。例如，如果我们将一个整数计数器记录为2个字节，那么最大值将是65,535。如果t0的值是64000，而t1的值是1000，那么每秒生成的速率将被计算为- 63000。但是我们知道，它很有可能是翻转过来的，所以我们可以将最大值设置为65535，现在计算将是65535 - t0 + t1给我们2535。</p>
@@ -1838,183 +2023,6 @@ mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/13/Druid-性能/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/13/Druid-性能/" itemprop="url">Druid-性能</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-13T14:10:47+08:00">2018-02-13</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Druid/" itemprop="url" rel="index"><span itemprop="name">Druid</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/13/Druid-性能/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/13/Druid-性能/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/13/Druid-性能/" class="leancloud_visitors" data-flag-title="Druid-性能">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h2><p>Druid在多个组织、企业中都有生产集群，而且为了评估它的性能，我们选择了2014年初Metamarkets的生产集群数据，与其他数据库相比，我们还包括了TPC-H的结果。</p>
-<h3 id="查询性能"><a href="#查询性能" class="headerlink" title="查询性能"></a>查询性能</h3><p>Druid的查询性能因查询的不同而不同。例如，对高基数维度的值进行排序比在一个时间范围内的简单计数代价要昂贵得多。为了展示生产Druid集群中的平均查询延迟，我们选择了8个查询最多的数据源，如表2所示。</p>
-<img src="/2018/02/13/Druid-性能/druid-t2.png">
-<p>大约30%的查询涉及过滤和聚合不同类型的metric，60%的查询是由一个或多个维度组成，而有10%的查询是搜索查询和元数据检索查询。聚合查询中扫描的列数大致遵循指数分布。涉及单个列的查询非常频繁，涉及所有列的查询非常少见。</p>
-<p>关于我们的结果有几点注意:</p>
-<ol>
-<li>结果来自我们生产集群中的“hot” tier，大约50个数据源，数百个用户发出查询</li>
-<li>在“hot”层有大约10.5TB的RAM，并且大约有10TB的部分被加载。总的来说，这一层有大约500亿条记录。没有显示每个数据源的结果。</li>
-<li>该tier使用英特尔®Xeon®e5 - 2670处理器,由1302个处理线程和672核(hyperthreaded)。</li>
-<li>使用内存映射存储引擎(机器配置为内存映射数据，而不是将数据加载到Java堆中)。</li>
-</ol>
-<p>图8展示查询延迟、图9展示了每分钟的查询。在所有不同的数据源中，查询延迟大约是550毫秒，90%的查询在不到1秒内返回，在2秒内达到95%，99%的查询在不到10秒内返回。在2月19日，我们偶尔观察到延迟的峰值，因为我们最大的数据源之一在非常高的查询负载下，Memcached实例上的网络问题变得更加复杂。</p>
-<img src="/2018/02/13/Druid-性能/druid-f8.png">
-<img src="/2018/02/13/Druid-性能/druid-f9.png">
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/13/Druid-性能/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2064,7 +2072,7 @@ mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
