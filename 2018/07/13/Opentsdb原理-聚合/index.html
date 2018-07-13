@@ -121,7 +121,7 @@
 <meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/table-8.png">
 <meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/p1.png">
 <meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-聚合/p2.png">
-<meta property="og:updated_time" content="2018-07-13T08:11:32.282Z">
+<meta property="og:updated_time" content="2018-07-13T08:19:41.825Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Opentsdb原理-聚合">
 <meta name="twitter:description" content="OpenTSDB被设计用于在查询执行期间有效地组合多个、不同的时间序列。这样做的原因是当用户查看他们的数据时，他们通常会从一个较高的层次开始提问，比如“我的数据中心的总吞吐量是多少?”或者“地区目前的能耗是多少?”。在查看这些高级别的值之后，一个或多个用户可能会坚持下去，深入到更细粒度的数据集，比如“在我的松散的数据中心中，主机的吞吐量是多少?”我们希望能很容易地回答这些高层次的问题，但仍然可以进">
@@ -446,6 +446,7 @@
 <pre><code>Function——数学计算应用于所有的值，计算平均值或选择最高。
 Interpolation——一种处理丢失值的方法，比如时间序列A在T1时的值，但是时间序列B没有值。
 </code></pre><p>这个文章关注的是聚合器如何在一个环境中使用，即在将多个时间序列合并为一个时。此外，聚合器还可以用于压缩时间序列(即返回一个较低的结果集)。有关更多信息，请参见Downsampling。</p>
+<a id="more"></a>
 <h2 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h2><p>当将多组时间序列聚合成一组时，每个序列的时间戳都是对齐的。然后，对于每个时间戳，所有时间序列中的值聚合成一个新的数值。也就是说，聚合器将在每个时间序列的所有时间戳上工作。将原始数据看作一个矩阵或表，如下例所示，它演示了在两个时间序列(A和B)上工作的sum聚合器，从而产生一个新的时间序列输出。</p>
 <img src="/2018/07/13/Opentsdb原理-聚合/table-1.png">
 <p>对于时间戳t0，可以总结A和B的数据点，即5 + 10 = = 15。接下来，将ts1的两个值相加得到10，以此类推。在SQL中，这看起来像是SELECT SUM(value) FROM ts_table GROUP BY timestamp。</p>
