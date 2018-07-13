@@ -103,18 +103,18 @@
   <meta name="keywords" content="外文翻译,Opentsdb," />
 
 
-<meta name="description" content="1、环境OpenTSDB可从源码编译或者包安装，详见github运行要求Linux系统java1.6以上Hbase 0.92以上GnuPlot4.2以上 2、安装第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。如果不能连接zoo">
+<meta name="description" content="环境OpenTSDB可从源码编译或者包安装，详见github运行要求Linux系统java1.6以上Hbase 0.92以上GnuPlot4.2以上 安装第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。如果不能连接zookeep">
 <meta name="keywords" content="外文翻译,Opentsdb">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Opentsdb-安装">
 <meta property="og:url" content="https://haibin.work/2018/07/13/Opentsdb-安装/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="1、环境OpenTSDB可从源码编译或者包安装，详见github运行要求Linux系统java1.6以上Hbase 0.92以上GnuPlot4.2以上 2、安装第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。如果不能连接zoo">
+<meta property="og:description" content="环境OpenTSDB可从源码编译或者包安装，详见github运行要求Linux系统java1.6以上Hbase 0.92以上GnuPlot4.2以上 安装第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。如果不能连接zookeep">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-13T03:07:13.793Z">
+<meta property="og:updated_time" content="2018-07-13T03:12:09.580Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Opentsdb-安装">
-<meta name="twitter:description" content="1、环境OpenTSDB可从源码编译或者包安装，详见github运行要求Linux系统java1.6以上Hbase 0.92以上GnuPlot4.2以上 2、安装第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。如果不能连接zoo">
+<meta name="twitter:description" content="环境OpenTSDB可从源码编译或者包安装，详见github运行要求Linux系统java1.6以上Hbase 0.92以上GnuPlot4.2以上 安装第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。如果不能连接zookeep">
 
 
 
@@ -429,17 +429,25 @@
       
 
       
-        <h2 id="1、环境"><a href="#1、环境" class="headerlink" title="1、环境"></a>1、环境</h2><p>OpenTSDB可从源码编译或者包安装，详见github<br>运行要求<br>Linux系统<br>java1.6以上<br>Hbase 0.92以上<br>GnuPlot4.2以上</p>
-<h2 id="2、安装"><a href="#2、安装" class="headerlink" title="2、安装"></a>2、安装</h2><p>第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。<br>启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。<br>如果不能连接zookeeper，检查Ips或者host  name以解决hbase对zookeeper的强制依赖。<br>如果hbase启动，可以选择从包安装，或者使用GIT或者从tar包安装。</p>
-<p>从源码编译：<br>Compilation requirements include:<br>  ● A Linux system<br>  ● Java Development Kit 1.6 or later<br>  ● GnuPlot 4.2 or later<br>  ● Autotools<br>  ● Make<br>  ● Python<br>  ● Git<br>  ● An Internet connection<br>命令：<br>    git clone git://github.com/OpenTSDB/opentsdb.git<br>    cd opentsdb<br>    ./build.sh<br>    make install</p>
-<h2 id="3、创建表"><a href="#3、创建表" class="headerlink" title="3、创建表"></a>3、创建表</h2><p>安装完成后你可以在hbase实例之上运行opentsdb，第一步你要在hbase上创建必要的表。有一个简单的脚本能完成这件事并可以指定是否压缩：<br>env COMPRESSION=NONE HBASE_HOME=path/to/hbase-0.94.X ./src/create_table.sh<br>此处，COMPRESSION有如下选项：none，lzo，gzip，snappy，该脚本创建如下表：tsdb，tsdb-uid，tsdb-tree，和tsdb-meta，如果你只是测试opentsdb，暂时无需考虑压缩。生产环境下，确保使用可用压缩以避免存储灾难。</p>
-<h2 id="4、启动TSD"><a href="#4、启动TSD" class="headerlink" title="4、启动TSD"></a>4、启动TSD</h2><p>opentsdb2.3版本维护一个配置文件，由daemon和命令行工具共享。如果你从源码编译，需要copy ./src/opentsdb.conf到指定目录，并且做如下配置，其中必要的是：</p>
+        <h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>OpenTSDB可从源码编译或者包安装，详见github<br>运行要求<br>Linux系统<br>java1.6以上<br>Hbase 0.92以上<br>GnuPlot4.2以上</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。<br>启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。<br>如果不能连接zookeeper，检查Ips或者host  name以解决hbase对zookeeper的强制依赖。<br>如果hbase启动，可以选择从包安装，或者使用GIT或者从tar包安装。</p>
+<p>从源码编译：<br>Compilation requirements include:<br>  ● A Linux system<br>  ● Java Development Kit 1.6 or later<br>  ● GnuPlot 4.2 or later<br>  ● Autotools<br>  ● Make<br>  ● Python<br>  ● Git<br>  ● An Internet connection<br>命令：</p>
+<pre><code>git clone git://github.com/OpenTSDB/opentsdb.git
+cd opentsdb
+./build.sh
+make install
+</code></pre><h2 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h2><p>安装完成后你可以在hbase实例之上运行opentsdb，第一步你要在hbase上创建必要的表。有一个简单的脚本能完成这件事并可以指定是否压缩：</p>
+<pre><code>env COMPRESSION=NONE HBASE_HOME=path/to/hbase-0.94.X ./src/create_table.sh
+</code></pre><p>此处，COMPRESSION有如下选项：none，lzo，gzip，snappy，该脚本创建如下表：tsdb，tsdb-uid，tsdb-tree，和tsdb-meta，如果你只是测试opentsdb，暂时无需考虑压缩。生产环境下，确保使用可用压缩以避免存储灾难。</p>
+<h2 id="启动TSD"><a href="#启动TSD" class="headerlink" title="启动TSD"></a>启动TSD</h2><p>opentsdb2.3版本维护一个配置文件，由daemon和命令行工具共享。如果你从源码编译，需要copy ./src/opentsdb.conf到指定目录，并且做如下配置，其中必要的是：</p>
 <p>  ● tsd.http.cachedir - 临时文件路径<br>  ● tsd.http.staticroot - 静态GUI文件路径 ./build/staticroot<br>  ● tsd.storage.hbase.zk_quorum - 如果HBase和zookeeper不是运行在同一台机，在此处指定地址和端口号。</p>
-<p>配置好以后，可通过如下命令启动：<br>    ./build/tsdb tsd<br>或者，你可以用如下命令创建临时目录并在一行命令中指定：</p>
+<p>配置好以后，可通过如下命令启动：</p>
+<pre><code>./build/tsdb tsd
+</code></pre><p>或者，你可以用如下命令创建临时目录并在一行命令中指定：</p>
 <pre><code>tsdtmp=${TMPDIR-&apos;/tmp&apos;}/tsd    # For best performance, make sure
 mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
 ./build/tsdb tsd --port=4242 --staticroot=build/staticroot --cachedir=&quot;$tsdtmp&quot; --zkquorum=myhost:2181
-</code></pre><p>之后，你可以通过<a href="http://127.0.0.1:4242访问TSD的web界面" target="_blank" rel="noopener">http://127.0.0.1:4242访问TSD的web界面</a><br>注意：<br>当你通过GUI生成一个图形时，cache directory用来存放生成的临时文件。这些文件需要定期清理。opentsdb并未做这件事，但提供了一天清理一次的脚本<br>    tools/clean_cache.sh</p>
+</code></pre><p>之后，你可以通过 <a href="http://127.0.0.1:4242" target="_blank" rel="noopener">http://127.0.0.1:4242</a> 访问TSD的web界面<br>注意：<br>当你通过GUI生成一个图形时，cache directory用来存放生成的临时文件。这些文件需要定期清理。opentsdb并未做这件事，但提供了一天清理一次的脚本<br>    tools/clean_cache.sh</p>
 <p>原文地址：<a href="http://opentsdb.net/docs/build/html/installation.html" target="_blank" rel="noopener">http://opentsdb.net/docs/build/html/installation.html</a></p>
 
       
@@ -669,7 +677,7 @@ mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、环境"><span class="nav-number">1.</span> <span class="nav-text">1、环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、安装"><span class="nav-number">2.</span> <span class="nav-text">2、安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、创建表"><span class="nav-number">3.</span> <span class="nav-text">3、创建表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、启动TSD"><span class="nav-number">4.</span> <span class="nav-text">4、启动TSD</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境"><span class="nav-number">1.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建表"><span class="nav-number">3.</span> <span class="nav-text">创建表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动TSD"><span class="nav-number">4.</span> <span class="nav-text">启动TSD</span></a></li></ol></div>
             
 
           </div>
