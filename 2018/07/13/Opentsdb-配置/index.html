@@ -100,27 +100,28 @@
 
 
   
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="外文翻译,Opentsdb," />
 
 
-<meta name="description" content="I do not know go where, but I have been on the road.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hubery&#39;s Polaris">
-<meta property="og:url" content="https://haibin.work/tags/index.html">
+<meta name="description" content="配置OpenTSDB可以通过本地系统的文件进行配置，通过命令行参数或组合，或者两者兼而有之。配置文件配置文件符合Java属性规范。配置名称是小写的，带点字符串，没有空格。每个名称后面跟着一个等号，然后是属性的值。所有OpenTSDB属性从tsd开始。#注释。例如: # List of Zookeeper hosts that manage the HBase cluster tsd.storage">
+<meta name="keywords" content="外文翻译,Opentsdb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Opentsdb-配置">
+<meta property="og:url" content="https://haibin.work/2018/07/13/Opentsdb-配置/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="I do not know go where, but I have been on the road.">
+<meta property="og:description" content="配置OpenTSDB可以通过本地系统的文件进行配置，通过命令行参数或组合，或者两者兼而有之。配置文件配置文件符合Java属性规范。配置名称是小写的，带点字符串，没有空格。每个名称后面跟着一个等号，然后是属性的值。所有OpenTSDB属性从tsd开始。#注释。例如: # List of Zookeeper hosts that manage the HBase cluster tsd.storage">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-08T08:07:39.351Z">
+<meta property="og:updated_time" content="2018-07-13T03:15:39.695Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hubery&#39;s Polaris">
-<meta name="twitter:description" content="I do not know go where, but I have been on the road.">
+<meta name="twitter:title" content="Opentsdb-配置">
+<meta name="twitter:description" content="配置OpenTSDB可以通过本地系统的文件进行配置，通过命令行参数或组合，或者两者兼而有之。配置文件配置文件符合Java属性规范。配置名称是小写的，带点字符串，没有空格。每个名称后面跟着一个等号，然后是属性的值。所有OpenTSDB属性从tsd开始。#注释。例如: # List of Zookeeper hosts that manage the HBase cluster tsd.storage">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/tags/"/>
+  <link rel="canonical" href="https://haibin.work/2018/07/13/Opentsdb-配置/"/>
 
 
 
@@ -129,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title>标签 | Hubery's Polaris</title>
+  <title>Opentsdb-配置 | Hubery's Polaris</title>
   
 
 
@@ -309,71 +310,207 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb-配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline"></h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          <div class="tag-cloud">
-            <div class="tag-cloud-title">
-                
-                
-                  
-                    
-                  
-                
-                  
-                    
-                  
-                
-                  
-                    
-                  
-                
-                  
-                    
-                  
-                
-                  
-                    
-                  
-                
-                  
-                    
-                  
-                
-                目前共计 6 个标签
-            </div>
-            <div class="tag-cloud-tags">
-              <a href="/tags/Druid/" style="font-size: 24px; color: #4f4f4f">Druid</a> <a href="/tags/Ganglia/" style="font-size: 12px; color: #ccc">Ganglia</a> <a href="/tags/OLAP/" style="font-size: 30px; color: #111">OLAP</a> <a href="/tags/Opentsdb/" style="font-size: 18px; color: #8e8e8e">Opentsdb</a> <a href="/tags/外文翻译/" style="font-size: 30px; color: #111">外文翻译</a> <a href="/tags/监控/" style="font-size: 12px; color: #ccc">监控</a>
-            </div>
-          </div>
+          <h1 class="post-title" itemprop="name headline">Opentsdb-配置</h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T11:12:20+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb-配置/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb-配置/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/13/Opentsdb-配置/" class="leancloud_visitors" data-flag-title="Opentsdb-配置">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>OpenTSDB可以通过本地系统的文件进行配置，通过命令行参数或组合，或者两者兼而有之。<br>配置文件<br>配置文件符合Java属性规范。配置名称是小写的，带点字符串，没有空格。每个名称后面跟着一个等号，然后是属性的值。所有OpenTSDB属性从tsd开始。#注释。例如:</p>
+<pre><code># List of Zookeeper hosts that manage the HBase cluster
+tsd.storage.hbase.zk_quorum = 192.168.1.100
+</code></pre><p>将配置TSD连接到192.168.1.100的Zookeeper。<br>当组合配置文件和命令行参数时，处理顺序如下:</p>
+<ol>
+<li>加载默认值加载配置文件值</li>
+<li>配置文件参数加载，覆盖默认值</li>
+<li>命令行参数加载，覆盖配置文件参数和默认参数<br>文件路径<br>可以使用- config命令行参数指定配置文件的完整路径。否则，如果没有指定，OpenTSDB和一些命令行工具将尝试在以下位置搜索一个有效的配置文件:<br>● ./opentsdb.conf<br>● /etc/opentsdb.conf<br>● /etc/opentsdb/opentsdb.conf<br>● /opt/opentsdb/opentsdb.conf<br>如果无法找到有效的配置文件，且不设置所需的属性，则TSD将不会启动。请参阅下面的属性表，以获得所需配置设置的列表。<br>参数<br>下面是所有工具的配置选项表。在应用时，将提供相应的命令行覆盖。请注意，单个命令行工具可能有它们自己的值，所以请参阅它们的文档以了解详细信息。</li>
+</ol>
+<p><a href="http://opentsdb.net/docs/build/html/user_guide/configuration.html" target="_blank" rel="noopener">http://opentsdb.net/docs/build/html/user_guide/configuration.html</a></p>
+
       
     </div>
     
     
     
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/外文翻译/" rel="tag"># 外文翻译</a>
+          
+            <a href="/tags/Opentsdb/" rel="tag"># Opentsdb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/13/Opentsdb-安装/" rel="next" title="Opentsdb-安装">
+                <i class="fa fa-chevron-left"></i> Opentsdb-安装
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
           </div>
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -396,8 +533,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -511,6 +657,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置"><span class="nav-number">1.</span> <span class="nav-text">配置</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

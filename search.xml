@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Opentsdb-配置]]></title>
+    <url>%2F2018%2F07%2F13%2FOpentsdb-%E9%85%8D%E7%BD%AE%2F</url>
+    <content type="text"><![CDATA[配置OpenTSDB可以通过本地系统的文件进行配置，通过命令行参数或组合，或者两者兼而有之。配置文件配置文件符合Java属性规范。配置名称是小写的，带点字符串，没有空格。每个名称后面跟着一个等号，然后是属性的值。所有OpenTSDB属性从tsd开始。#注释。例如: # List of Zookeeper hosts that manage the HBase cluster tsd.storage.hbase.zk_quorum = 192.168.1.100 将配置TSD连接到192.168.1.100的Zookeeper。当组合配置文件和命令行参数时，处理顺序如下: 加载默认值加载配置文件值 配置文件参数加载，覆盖默认值 命令行参数加载，覆盖配置文件参数和默认参数文件路径可以使用- config命令行参数指定配置文件的完整路径。否则，如果没有指定，OpenTSDB和一些命令行工具将尝试在以下位置搜索一个有效的配置文件:● ./opentsdb.conf● /etc/opentsdb.conf● /etc/opentsdb/opentsdb.conf● /opt/opentsdb/opentsdb.conf如果无法找到有效的配置文件，且不设置所需的属性，则TSD将不会启动。请参阅下面的属性表，以获得所需配置设置的列表。参数下面是所有工具的配置选项表。在应用时，将提供相应的命令行覆盖。请注意，单个命令行工具可能有它们自己的值，所以请参阅它们的文档以了解详细信息。 http://opentsdb.net/docs/build/html/user_guide/configuration.html]]></content>
+      <categories>
+        <category>Opentsdb</category>
+      </categories>
+      <tags>
+        <tag>外文翻译</tag>
+        <tag>Opentsdb</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Opentsdb-安装]]></title>
     <url>%2F2018%2F07%2F13%2FOpentsdb-%E5%AE%89%E8%A3%85%2F</url>
     <content type="text"><![CDATA[环境OpenTSDB可从源码编译或者包安装，详见github运行要求Linux系统java1.6以上Hbase 0.92以上GnuPlot4.2以上 安装第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。如果不能连接zookeeper，检查Ips或者host name以解决hbase对zookeeper的强制依赖。如果hbase启动，可以选择从包安装，或者使用GIT或者从tar包安装。 从源码编译：Compilation requirements include: ● A Linux system ● Java Development Kit 1.6 or later ● GnuPlot 4.2 or later ● Autotools ● Make ● Python ● Git ● An Internet connection命令： git clone git://github.com/OpenTSDB/opentsdb.git cd opentsdb ./build.sh make install 创建表安装完成后你可以在hbase实例之上运行opentsdb，第一步你要在hbase上创建必要的表。有一个简单的脚本能完成这件事并可以指定是否压缩： env COMPRESSION=NONE HBASE_HOME=path/to/hbase-0.94.X ./src/create_table.sh 此处，COMPRESSION有如下选项：none，lzo，gzip，snappy，该脚本创建如下表：tsdb，tsdb-uid，tsdb-tree，和tsdb-meta，如果你只是测试opentsdb，暂时无需考虑压缩。生产环境下，确保使用可用压缩以避免存储灾难。 启动TSDopentsdb2.3版本维护一个配置文件，由daemon和命令行工具共享。如果你从源码编译，需要copy ./src/opentsdb.conf到指定目录，并且做如下配置，其中必要的是： ● tsd.http.cachedir - 临时文件路径 ● tsd.http.staticroot - 静态GUI文件路径 ./build/staticroot ● tsd.storage.hbase.zk_quorum - 如果HBase和zookeeper不是运行在同一台机，在此处指定地址和端口号。 配置好以后，可通过如下命令启动： ./build/tsdb tsd 或者，你可以用如下命令创建临时目录并在一行命令中指定： tsdtmp=${TMPDIR-&apos;/tmp&apos;}/tsd # For best performance, make sure mkdir -p &quot;$tsdtmp&quot; # your temporary directory uses tmpfs ./build/tsdb tsd --port=4242 --staticroot=build/staticroot --cachedir=&quot;$tsdtmp&quot; --zkquorum=myhost:2181 之后，你可以通过 http://127.0.0.1:4242 访问TSD的web界面注意：当你通过GUI生成一个图形时，cache directory用来存放生成的临时文件。这些文件需要定期清理。opentsdb并未做这件事，但提供了一天清理一次的脚本 tools/clean_cache.sh 原文地址：http://opentsdb.net/docs/build/html/installation.html]]></content>
