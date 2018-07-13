@@ -472,6 +472,407 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-查询过滤器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/13/Opentsdb原理-查询过滤器/" itemprop="url">Opentsdb原理-查询过滤器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T14:20:25+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb原理-查询过滤器/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb原理-查询过滤器/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/13/Opentsdb原理-查询过滤器/" class="leancloud_visitors" data-flag-title="Opentsdb原理-查询过滤器">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>任何数据库系统的一个关键功能是使用某种形式的过滤启用完整数据集的抓取子集。OpenTSDB自版本1.x 以来提供了过滤，从2.2开始具有扩展的功能。过滤器目前只能在标签值上操作。这意味着任何指标(Metric)和标记键(tag name)都必须精确地指定，因为它们在获取数据时出现在数据库中。</p>
+<p>示例数据：<br>在下面解释每个过滤器时，使用了以下数据。它由一个单一的度量标准组成，多个时间序列定义在不同的标签上。以T1为例，只给出一个数据点：</p>
+<pre><code>TS#    Metric            Tags                    Value @ T1
+1    sys.cpu.system    dc=dal host=web01        3
+2    sys.cpu.system    dc=dal host=web02        2
+3    sys.cpu.system    dc=dal host=web03        10
+4    sys.cpu.system    host=web01                1
+5    sys.cpu.system    host=web01 owner=jdoe    4
+6    sys.cpu.system    dc=lax host=web01        8
+7    sys.cpu.system    dc=lax host=web02        4
+</code></pre><h2 id="分组"><a href="#分组" class="headerlink" title="分组"></a>分组</h2><p>分组，也称为group - by，是将多个时间序列使用所需的聚合函数和过滤器组合成一个的过程。默认情况下，OpenTSDB以Metric的形式对所有内容进行分组，如果查询返回10个时间序列，并使用一个sum的聚合器，那么所有10个序列将会随着时间的推移一起添加到一个值。有关时间序列如何合并的详细信息，请参见聚合篇章。<br>为了避免在没有任何聚合的情况下对每个底层时间序列进行分组和获取，请使用版本2.2中none聚合器。或者，您可以在OpenTSDB 2.2之后的版本每个过滤器基础上禁用分组。请参阅API文档，了解如何做到这一点。</p>
+<h2 id="OpenTSDB-1-x-2-1"><a href="#OpenTSDB-1-x-2-1" class="headerlink" title="OpenTSDB 1.x - 2.1"></a>OpenTSDB 1.x - 2.1</h2><p>在最初的OpenTSDB发行版和最多2.1版本中，只有两种类型的过滤器可用，并且它们被隐式配置成分组。允许的两个操作符是:</p>
+<pre><code>*   -  星号(或通配符)将返回一个单独的结果，以检测每个唯一的标记值。如果标签密钥主机与web01和web02配对，那么将会有两个组返回，一个在web01上，一个在web02上。 
+|   -  管道符(或文字)
+将只返回指定的标记值的单独结果。也就是说，它将仅匹配具有给定标记值的时间序列和每个匹配的组。
+</code></pre><p>每个查询可以提供多个过滤器，结果使用And合并。这些过滤器仍然可以在2.x及之后的版本使用。</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>下面的示例使用v1 HTTP URI语法，其中的m参数由聚合器、冒号组成，然后用等号分隔的方括号标记过滤器：</p>
+<p>Example 1: <a href="http://host:4242/q?start=1h-ago&amp;m=sum:sys.cpu.system{host=web01}" target="_blank" rel="noopener">http://host:4242/q?start=1h-ago&amp;m=sum:sys.cpu.system{host=web01}</a></p>
+<pre><code>Time Series Included     Tags                     Aggregated         Tags Value @ T1
+1, 4, 5, 6                 host=web01                              16
+</code></pre><p>在这种情况下，集合的Aggregated集将是空的，因为时间序列4和5都有与整个集合不相同的Tag。</p>
+<p>Example 2: <a href="http://host:4242/q?start=1h-ago&amp;m=sum:sys.cpu.system{host=web01,dc=dal}" target="_blank" rel="noopener">http://host:4242/q?start=1h-ago&amp;m=sum:sys.cpu.system{host=web01,dc=dal}</a></p>
+<pre><code>Time Series Included         Tags                     Aggregated         Tags Value @ T1
+1                             host=web01,dc=dal                          3
+</code></pre><p>Example 3: <a href="http://host:4242/q?start=1h-ago&amp;m=sum:sys.cpu.system{host=*,dc=dal}" target="_blank" rel="noopener">http://host:4242/q?start=1h-ago&amp;m=sum:sys.cpu.system{host=*,dc=dal}</a></p>
+<pre><code>Time Series Included         Tags                     Aggregated         Tags Value @ T1
+1                             host=web01,dc=dal                          3
+2                             host=web02,dc=dal                          2
+3                             host=web03,dc=dal                          10
+</code></pre><p>这次我们为主机提供了*，并为dc提供了显式匹配。这将在host这个tag name上进行分组，并对每个host返回一个value，在本例中为3个序列。</p>
+<p>Example 4: <a href="http://host:4242/q?start=1h-ago&amp;m=sum:sys.cpu.system{dc=dal|lax}" target="_blank" rel="noopener">http://host:4242/q?start=1h-ago&amp;m=sum:sys.cpu.system{dc=dal|lax}</a></p>
+<pre><code>Time Series Included         Tags                     Aggregated         Tags Value @ T1
+1, 2, 3                     dc=dal                     host             15
+6, 7                         dc=lax                     host             12
+</code></pre><p>这里使用的|操作符只匹配查询中提供的dc标记键的值。因此TSD将与这些值一起组合任何时间序列。host 标签被移动到聚合标签列表，因为集合中的每一个时间序列都有一个host tag，并且有多个值。</p>
+<p>警告：<br>因为这些过滤器是有限的，如果用户编写了# 1、# 4和# 5这样的时间序列，那么可能返回预料之外的结果，因为这些时间序列可能有一个普通的标记，但是会有不同的附加标记。这个问题有点用2.3版本的Explicit Tags来解决。</p>
+<h2 id="OpenTSDB-2-2"><a href="#OpenTSDB-2-2" class="headerlink" title="OpenTSDB 2.2"></a>OpenTSDB 2.2</h2><p>在OpenTSDB2.2中，引入了一个更加灵活的过滤器框架，能够禁用grouping并且添加额外的过滤器类型如正则表达式和模糊匹配。过滤框架可以被插入到外部系统中，例如资产管理或供应系统。</p>
+<p>当处理时，相同的tag key上允许多个过滤器，它们通过AND连接。例如，如果我们有两个过滤器host = literal_or(web01) AND host = literal_or(web02)，查询将总是空的。如果两个或更多的过滤器包含在相同的标记键上，并且一个已经被启用了，而另一个则没有，那么gourp by将作用于这个标记键上的所有过滤器。</p>
+<p>警告：<br>某些类型的筛选器可能会导致查询执行得慢一些，尤其是regexp、通配符查询和大小写不敏感的过滤器。在从存储中获取数据之前，过滤器被处理以创建一个基于uid的数据库过滤器，因此使用区分大小写的文本或过滤器总是比regexp更快，因为我们可以将字符串解析为uid，并将这些字符串发送到存储系统进行过滤。相反，如果您要使用pre、post或infix过滤的regex或通配符，则TSD必须使用标记键UID从存储中检索所有行，然后针对每个惟一行，将UID解析回字符串，然后在结果上运行过滤器。此外，带有大量文字的筛选器将被处理后存储，以避免为备份存储创建一个巨大的过滤器。这个限制默认值为4096，可以通过tsd.query.filter.expansion_limit配置。</p>
+<p>Explicit Tags<br>在2.3和之后，如果您知道给定的metric的所有tag name可以通过使用explicitTags特性得到极大的提高查询效率。这种标签有两个好处：<br>1、对于具有高基数的度量，后端可以切换到更有效的查询，以从存储中获取较小的数据子集。(尤其是2.4)<br>2、对于带有不同标记的度量，可以使用它来避免在最终结果中聚合不需要的时间序列。<br>显式标记将设计一个底层存储查询，它只使用给定的标记键来获取这些行。这样，数据库就可以跳过无关的行，在更短的时间内响应请求。</p>
+<p>例子<br>下面的例子使用了v2 HTTP URI语法，其中的m参数由聚合器、冒号、explicit_tags URI标志组成，然后在括号中以相等的符号分隔的度量和标记过滤器。</p>
+<p>Example 1:  <a href="http://host:4242/q?start=1h-ago&amp;m=sum:explicit_tags:sys.cpu.system{host=web01}" target="_blank" rel="noopener">http://host:4242/q?start=1h-ago&amp;m=sum:explicit_tags:sys.cpu.system{host=web01}</a></p>
+<pre><code>Time Series Included         Tags                     Aggregated         Tags Value @ T1
+4                             host=web01                              1
+</code></pre><p>这解决了标签键不一致的问题，让我们只能选择时间序列# 4。</p>
+<p>Example 2: <a href="http://host:4242/q?start=1h-ago&amp;m=sum:explicit_tags:sys.cpu.system{host=*}{dc=*}" target="_blank" rel="noopener">http://host:4242/q?start=1h-ago&amp;m=sum:explicit_tags:sys.cpu.system{host=*}{dc=*}</a></p>
+<pre><code>Time Series Included         Tags                     Aggregated         Tags Value @ T1
+1, 6                         host=web01                 dc                 11
+2, 7                         host=web02                 dc                 6
+3                             host=web03,dc=dal                          10
+</code></pre><p>该查询使用v2 URI语法，以避免在dc标记键上分组，将其放入第二组大括号中。这允许我们过滤出来都有host和dc标签的时间序列，并在host标签上分组，跳过了第4、5条记录。</p>
+<p>Note：<br>在使用HBase(0.98和更高版本)或Bigtable时，请确保tsd.query.enable_fuzzy_filter(默认启用)启用了。将一个特殊的过滤器交给后端，它可以跳过我们需要查询的行，而不是遍历每个行键并比较正则表达式。</p>
+<p>Note：<br>在2.4中，TSDB将会发出多个get请求，而不是使用扫描器。这可以通过多种因素减少查询时间，特别是在高基数时间序列中。但是过滤器必须只包含literal_or`’s。</p>
+<p>Built-in 2.x Filters<br>下面的列表是OpenTSDB内置的过滤器。附加的过滤器可以作为插件加载。每个标题都是在URI或JSON查询中使用的过滤器类型。在编写URI查询时，过滤器名称是在标记键的等号并将过滤器值放置在括号中之后，将过滤器名称放置在此。如主机= { regexp(web[0 - 9]+ .lax.mysite.com)}。该JSON中，简单地使用筛选器名称作为type参数，filte作为r过滤器值参数。<br>{<br>  “type”: “regexp”,<br>  “filter”: “web[0-9]+.lax.mysite.com”,<br>  “tagk”: “host”,<br>  “groupBy”: false<br>}</p>
+<h2 id="下面的例子使用了URI语法。"><a href="#下面的例子使用了URI语法。" class="headerlink" title="下面的例子使用了URI语法。"></a>下面的例子使用了URI语法。</h2><h3 id="literal-or"><a href="#literal-or" class="headerlink" title="literal_or"></a>literal_or</h3><p>取一个文本值或|管道分隔值列表，匹配区分大小写，并返回任何时间序列。这是一个非常高效的过滤器，它可以将字符串解析为uid，并将其发送到存储层进行预过滤。在SQL中，这类似于In或=谓词。</p>
+<pre><code>Examples
+  ● host=literal_or(web01|web02|web03)       In SQL: WHERE host IN (&apos;web01&apos;, &apos;web02&apos;, &apos;web03&apos;)
+  ● host=literal_or(web01)                   In SQL: WHERE host = &apos;web01&apos;
+</code></pre><h3 id="iteral-or"><a href="#iteral-or" class="headerlink" title="iteral_or"></a>iteral_or</h3><p>与literal_or相同，但不区分大小写。请注意，这并不像literal or那样高效，它必须从存储中处理所有的行。</p>
+<h3 id="not-literal-or"><a href="#not-literal-or" class="headerlink" title="not_literal_or"></a>not_literal_or</h3><p>区分大小写的literal_or,但返回不符合给定值列表的系列。它可以通过存储预先处理。</p>
+<h3 id="wildcard"><a href="#wildcard" class="headerlink" title="wildcard"></a>wildcard</h3><p>提供大小写敏感的postfix，前缀，infix和multi - infix过滤。通配符是星号(星号)*。可以使用多个通配符。如果只给出了星号，那么过滤器可以有效地返回任何包含标记键的时间序列(并且是一个可以预先处理的高效过滤器)。在SQL land中，类似于LIKE谓词，具有更大的灵活性。</p>
+<pre><code>Examples
+  ● host=wildcard(*mysite.com) In SQL: WHERE host=&apos;%mysite.com&apos;
+  ● host=wildcard(web*)
+  ● host=wildcard(web*mysite.com)
+  ● host=wildcard(web*mysite*)
+  ● host=wildcard(*) This is equivalent to the v1 basic group by operator and is efficient.
+</code></pre><h3 id="iwildcard"><a href="#iwildcard" class="headerlink" title="iwildcard"></a>iwildcard</h3><p>与wildcard相同，但不区分大小写。</p>
+<h3 id="regexp"><a href="#regexp" class="headerlink" title="regexp"></a>regexp</h3><p>使用POSIX兼容的正则表达式从存储中获取的过滤器。该过滤器使用Java内置的正则表达式操作。根据使用的查询方法，要小心避开特殊字符。</p>
+<pre><code>Examples
+  ● regexp(web.*) In SQL: WHERE host REGEXP &apos;web.*&apos;
+  ● regexp(web[0-9].mysite.com)
+</code></pre><h2 id="Loaded-Filters"><a href="#Loaded-Filters" class="headerlink" title="Loaded Filters"></a>Loaded Filters</h2><p>要在OpenTSDB 2.2中显示加载的过滤器，然后调用HTTP / api / config / filters接口。这将列出加载的插件以及描述和示例用法。</p>
+<h2 id="Plugins"><a href="#Plugins" class="headerlink" title="Plugins"></a>Plugins</h2><p>随着开发人员添加插件，我们将在这里列出它们。<br>要开发一个插件,只需扩展net.opentsdb.query.filter.TagVFilter类，在插件文档中创建JAR，并将其放入插件目录。开始时，TSD将搜索插件并加载它。如果执行时出现了错误，则TSD将不会启动并记录异常。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-日期和时间/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/13/Opentsdb原理-日期和时间/" itemprop="url">Opentsdb原理-日期和时间</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T14:14:35+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb原理-日期和时间/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb原理-日期和时间/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/13/Opentsdb原理-日期和时间/" class="leancloud_visitors" data-flag-title="Opentsdb原理-日期和时间">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>OpenTSDB在查询数据时支持一些日期和时间格式。支持通过GUI、CliQuery工具或HTTP API提交查询。每个查询都需要一个 start time 和一个可选的end time。如果未指定结束时间，则使用TSD正在运行的系统的当前时间。</p>
+<h2 id="相对时间"><a href="#相对时间" class="headerlink" title="相对时间"></a>相对时间</h2><p>如果您不知道请求的确切时间戳您可以提交过去相对于TSD正在运行的系统的时间。相对时间按照格式<amount> <time unit="">-ago 格式</time></amount></p>
+<pre><code>&lt;amount&gt;  是时间的数量单位；
+&lt;time unit&gt;是时间的单位,比如小时,天,等。
+</code></pre><p>例如,如果我们提供1h-ago而不指定结束时间。查询将返回数据从1小时前到当前时间。可能的时间单位包括:<br>  ● ms - Milliseconds<br>  ● s - Seconds<br>  ● m - Minutes<br>  ● h - Hours<br>  ● d - Days (24 hours)<br>  ● w - Weeks (7 days)<br>  ● n - Months (30 days)<br>  ● y - Years (365 days)<br>Note：<br>相对时间不考虑闰秒、闰年或时区。他们只是简单地计算过去从当前时间的秒数。</p>
+<h2 id="绝对的Unix时间"><a href="#绝对的Unix时间" class="headerlink" title="绝对的Unix时间"></a>绝对的Unix时间</h2><p>在内部，所有数据都与Unix(或POSIX)样式时间戳关联。<br>Unix时间定义为自1970年1月1日UTC时间以来的秒数。时间戳被表示为一个正整数，如1364410924，代表ISO 8601:2013 - 03 - 27t19:04 . 4z。</p>
+<p>由于调用OpenTSDB中的数据需要一个Unix时间戳，所以在查询中支持此格式是有意义的。因此，您可以为查询的开始或结束时间提供一个整数。<br>使用Unix时间戳的查询也可以简单地追加三位数来支持毫秒精度。例如，提供1364410924000的起始时间和1364410924250的结束时间将返回250毫秒的窗口内的数据。毫秒时间戳也可以提供一个周期，将秒从毫秒分隔为1364410924.250。任何带有13(或14)字符的整数都将被当作毫秒级的时间戳。任何少于等于10个字符的表示秒。毫秒只能提供3位数的精度。如果你的工具输出超过3位小数，你必须截断或绕过数值。</p>
+<h3 id="绝对的格式时间"><a href="#绝对的格式时间" class="headerlink" title="绝对的格式时间"></a>绝对的格式时间</h3><p>由于在您的头脑中计算Unix时间非常困难，OpenTSDB还支持人类可读的绝对日期和时间。支持的格式包括：<br>  ● yyyy/MM/dd-HH:mm:ss<br>  ● yyyy/MM/dd HH:mm:ss<br>  ● yyyy/MM/dd-HH:mm<br>  ● yyyy/MM/dd HH:mm<br>  ● yyyy/MM/dd<br>yyyy代表的是一个四位数的年份，例如2013年。MM代表了从01到12月的一个月。dd表示从当前月份的第几天，从01开始。HH表示24小时格式的一天，从00到23。mm代表从00到59的分钟，ss代表从00到59的秒。每个月、日、小时、分钟和秒数都必须以0表示，例如本月的第5天必须为05。在没有时间的情况下提供数据时，系统将假定给定的一天的午夜。<br>例如2013 / 01 / 23 - 12:50:42 或  2013 / 01 / 23。格式化时间由主机的默认时区转换为UTC。HTTP API查询可以接受用户提供的时区来覆盖本地区域。<br>Note：<br>在使用CliQuery工具时，您必须使用将日期与时间分隔开来的格式。这是因为命令行在空格上被分割，所以如果您在时间戳中放置一个空格，那么它将不能正确地解析执行。</p>
+<h3 id="时区"><a href="#时区" class="headerlink" title="时区"></a>时区</h3><p>当转换人类可读的时间戳时，OpenTSDB将从在TSD运行的系统中配置的时区转换为UTC。虽然许多服务器配置为UTC，但我们建议运行OpenTSDB的所有系统都使用UTC，但有时也使用一个本地时区。<br>通过查询字符串到HTTP API的查询可以指定一个带有时区标识字符串的tz参数，格式适用于运行TSD的系统的本地化设置。例如，我们可以指定tz = America / Los_Angeles将时间戳从洛杉矶本地时间转换为UTC。<br>或者，如果您无法更改系统时区，则可以通过配置文件配置 tsd.core.timezone。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-Metric和时间序列/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1731,298 +2132,6 @@ mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/26/Abird平台OLAP技术架构的一些思考-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/26/Abird平台OLAP技术架构的一些思考-1/" itemprop="url">Abird平台OLAP技术架构的一些思考(1)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-26T23:48:30+08:00">2018-02-26</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/26/Abird平台OLAP技术架构的一些思考-1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/26/Abird平台OLAP技术架构的一些思考-1/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/26/Abird平台OLAP技术架构的一些思考-1/" class="leancloud_visitors" data-flag-title="Abird平台OLAP技术架构的一些思考(1)">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>本文重点讲述abird平台下vpm项目的需求梳理和架构思考。vpm项目主要是优酷“用户体验数据”的多维度分析产品，旨在辅助业务方收集、展示、监控和处理用户体验问题，反应用户体验的一些通用指标诸如vv/uv/成功率/卡顿率/秒开率此类，此外，还有错误码分布、异常日志分析等功能。</p>
-<p>平台上OLAP场景大致分为两类：</p>
-<pre><code>临时查询：指用户通过手写SQL来完成一些临时的数据分析需求。这类需求的SQL形式多变、逻辑复杂，对响应时间没有严格的要求。
-固化查询：指对一些固化下来的取数、看数的需求，通过数据产品的形式提供给用户，从而提高数据分析和运营的效率。这类需求的SQL有固定的模式，对响应时间有比较高的要求。
-</code></pre><p>多数情况下，vpm项目下的用户体验多维分析属于固化查询，有既定需求形态和固定的查询模式，如大盘。特殊情况下有个别专项，实际上专项中也是把临时需求固化下来形成小的产品，并无真正意义上的临时查询。</p>
-<h2 id="现状"><a href="#现状" class="headerlink" title="现状"></a>现状</h2><p>从OLAP技术手段来看，我们一直采用MOLAP的实现方法，将细节数据和聚合后的数据均保存在cube中，以空间换效率，查询时效率高，但生成cube时需要时间和空间。这里针对离线和实时我们有两种实现，分别探讨如下：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/26/Abird平台OLAP技术架构的一些思考-1/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/02/13/Druid-生产部署/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/13/Druid-生产部署/" itemprop="url">Druid-生产部署</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-13T14:16:54+08:00">2018-02-13</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/13/Druid-生产部署/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/13/Druid-生产部署/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/13/Druid-生产部署/" class="leancloud_visitors" data-flag-title="Druid-生产部署">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2072,7 +2181,7 @@ mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
