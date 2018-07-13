@@ -100,27 +100,28 @@
 
 
   
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="外文翻译,Opentsdb," />
 
 
-<meta name="description" content="ObsBkTOzMN">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hubery&#39;s Polaris">
-<meta property="og:url" content="https://haibin.work/baidu_verify_ObsBkTOzMN.html">
+<meta name="description" content="当你通过第一章完成安装后，你可以在以下内容中学到如何向opentsdb存储数据并在GUI查询它们，以及生成图表。 创建你第一个度量信息MetricsMetrics需要在你开始存储数据之前注册，以避免不想要的数据以及输入错误。你可以通过配置文件配置Metrics自动创建。创建一个或多个Metrics，使用如下命令：mkmetric ./tsdb mkmetric mysql.bytes_receiv">
+<meta name="keywords" content="外文翻译,Opentsdb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Opentsdb-快速入门">
+<meta property="og:url" content="https://haibin.work/2018/07/13/Opentsdb-快速入门/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="ObsBkTOzMN">
+<meta property="og:description" content="当你通过第一章完成安装后，你可以在以下内容中学到如何向opentsdb存储数据并在GUI查询它们，以及生成图表。 创建你第一个度量信息MetricsMetrics需要在你开始存储数据之前注册，以避免不想要的数据以及输入错误。你可以通过配置文件配置Metrics自动创建。创建一个或多个Metrics，使用如下命令：mkmetric ./tsdb mkmetric mysql.bytes_receiv">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-03-08T06:08:03.278Z">
+<meta property="og:updated_time" content="2018-07-13T03:26:40.760Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hubery&#39;s Polaris">
-<meta name="twitter:description" content="ObsBkTOzMN">
+<meta name="twitter:title" content="Opentsdb-快速入门">
+<meta name="twitter:description" content="当你通过第一章完成安装后，你可以在以下内容中学到如何向opentsdb存储数据并在GUI查询它们，以及生成图表。 创建你第一个度量信息MetricsMetrics需要在你开始存储数据之前注册，以避免不想要的数据以及输入错误。你可以通过配置文件配置Metrics自动创建。创建一个或多个Metrics，使用如下命令：mkmetric ./tsdb mkmetric mysql.bytes_receiv">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/baidu_verify_ObsBkTOzMN.html"/>
+  <link rel="canonical" href="https://haibin.work/2018/07/13/Opentsdb-快速入门/"/>
 
 
 
@@ -129,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title> | Hubery's Polaris</title>
+  <title>Opentsdb-快速入门 | Hubery's Polaris</title>
   
 
 
@@ -309,33 +310,266 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb-快速入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline"></h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          ObsBkTOzMN
+          <h1 class="post-title" itemprop="name headline">Opentsdb-快速入门</h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T11:20:57+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb-快速入门/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb-快速入门/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/13/Opentsdb-快速入门/" class="leancloud_visitors" data-flag-title="Opentsdb-快速入门">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <p>当你通过第一章完成安装后，你可以在以下内容中学到如何向opentsdb存储数据并在GUI查询它们，以及生成图表。</p>
+<h2 id="创建你第一个度量信息Metrics"><a href="#创建你第一个度量信息Metrics" class="headerlink" title="创建你第一个度量信息Metrics"></a>创建你第一个度量信息Metrics</h2><p>Metrics需要在你开始存储数据之前注册，以避免不想要的数据以及输入错误。你可以通过配置文件配置Metrics自动创建。创建一个或多个Metrics，使用如下命令：mkmetric</p>
+<pre><code>./tsdb mkmetric mysql.bytes_received mysql.bytes_sent
+</code></pre><p>这会创建两个metrics，mysql.bytes_received和mysql.bytes_sent<br>对于新的标签，会在你第一次使用时自动注册。目前为止，opentsdb允许最多2^24=16,777,216个不同的Metrics，16,777,216个不同的tag name和16,777,216个不同的tag value。因为它们的每一个都是一个3bytes的UID，Metric names, tag names 和tag values有它们自己的UID空间，所以你每一个只能有16,777,216个。虽然这个值可以配置但目前并未开放，所以需要记住，对于大的站点的user id或者event id，这种方案是不可行的。</p>
+<h2 id="开始收集数据"><a href="#开始收集数据" class="headerlink" title="开始收集数据"></a>开始收集数据</h2><p>目前为止我们有了两个Metric，我们可以向TSD发送数据。我们写一个收集mysql数据的脚本并向TSD发送数据。</p>
+<pre><code>cat &gt;mysql-collector.sh &lt;&lt;\EOF
+#!/bin/bash
+set -e
+while true; do
+  mysql -u USER -pPASS --batch -N --execute &quot;SHOW STATUS LIKE &apos;bytes%&apos;&quot; \
+  | awk -F&quot;\t&quot; -v now=`date +%s` -v host=`hostname` \
+    &apos;{ print &quot;put mysql.&quot; tolower($1) &quot; &quot; now &quot; &quot; $2 &quot; host=&quot; host }&apos;
+  sleep 15
+done | nc -w 30 host.name.of.tsd PORT
+EOF
+chmod +x mysql-collector.sh
+nohup ./mysql-collector.sh &amp;
+</code></pre><p>每隔15秒，脚本从Mysql收集两条数据并发送给TSD。你可以设置更小的时间间隔获得更大的量级。这个脚本做了什么？如果你不是shell和awk的忠实粉，可能不太明白脚本的工作原理。但是这很简单：<br>set -e命令简单的要求bash执行遇到错误时退出。简化了错误处理。然后脚本进入无限循环。在一个循环里，我们查询mysql并接受两条记录：</p>
+<pre><code>$ mysql -u USER -pPASS --execute &quot;SHOW STATUS LIKE &apos;bytes%&apos;&quot;
++----------------+--      -----+
+| Variable_name  | Value |
++----------------+-------+
+| Bytes_received  | 133    |
+| Bytes_sent         | 190    |
++----------------+--      -----+
+</code></pre><p>–batch -N标签要求Mysql移除人机友好的标识所以我们不用手动过滤它。然后通过管道输出到awk，并告知使用tab分隔符 -F”\t”，因为–batch会使用该分隔符。然后我们创建两个变量，一个名为now，并通过当前时间戳初始化，另一个名为host，设置为当前机器的hostname，并且对于每一行，我们打印一条  put “mysql.”，然后跟一个小写的第一个值，然后是当前时间戳，然后是第二个值，另一个空格，并以host=hostname结尾。每15秒重复一次。nc -w 30为连接TSD设置了超时时间。注意这只是一个实例，实际实践时你可以使用Mysql收集器。</p>
+<p>如果你没有mysql_server用来监控，可以使用以下脚本收集linux server的负载信息。</p>
+<pre><code>cat &gt;loadavg-collector.sh &lt;&lt;\EOF
+#!/bin/bash
+set -e
+while true; do
+  awk -v now=`date +%s` -v host=`hostname` \
+  &apos;{ print &quot;put proc.loadavg.1m &quot; now &quot; &quot; $1 &quot; host=&quot; host;
+    print &quot;put proc.loadavg.5m &quot; now &quot; &quot; $2 &quot; host=&quot; host }&apos; /proc/loadavg
+  sleep 15
+done | nc -w 30 host.name.of.tsd PORT
+EOF
+chmod +x loadavg-collector.sh
+nohup ./loadavg-collector.sh &amp;
+</code></pre><p>这会存储从你服务器读取到的1分钟和5分钟的平均负载。</p>
+<pre><code>put proc.loadavg.1m 1288946927 0.36 host=foo
+put proc.loadavg.5m 1288946927 0.62 host=foo
+put proc.loadavg.1m 1288946942 0.43 host=foo
+put proc.loadavg.5m 1288946942 0.62 host=foo
+</code></pre><h2 id="批量导入"><a href="#批量导入" class="headerlink" title="批量导入"></a>批量导入</h2><p>想想一下，你有一个cron job收集每天或者每小时千兆字节的应用日志或者提取的数据。举个例子，你可能会某个时间请求应用的平均次数，你的cron job会计算30秒窗口的平均值，那么你的crontab输出可能如下所示：</p>
+<pre><code>1288900000 42 foo
+1288900000 51 bar
+1288900000 69 other
+1288900030 40 foo
+1288900030 59 bar
+1288900030 80 other
+</code></pre><p>第一列是一个时间戳，第二列是30秒窗口的平均延迟，第三列是请求的类型。如果你运行自己的cron job，一天就会有8640行记录。为了将其导入opentsdb，你需要将其输出调整为如下结构：</p>
+<pre><code>myservice.latency.avg 1288900000 42 reqtype=foo
+myservice.latency.avg 1288900000 51 reqtype=bar
+myservice.latency.avg 1288900000 69 reqtype=other
+myservice.latency.avg 1288900030 40 reqtype=foo
+myservice.latency.avg 1288900030 59 reqtype=bar
+myservice.latency.avg 1288900030 80 reqtype=other
+</code></pre><p>注意我们使用一个名为myservice.latency.avg的metric关联数据，并使用一个request type标签代表请求类型。你也可以添加一个主机名标签：host=foo。这样，就可以将每个服务器的数据划分。此外，为了批量导入你可以执行以下命令：</p>
+<pre><code>./tsdb import your-file
+</code></pre><p>如果你的数据过大，可以考虑先gzip压缩，可以通过管道命令gzip -9 &gt;output.gz代替直接写到文件。导入命令支持gzip文件并提高批量导入的性能。</p>
+<h2 id="自我监控"><a href="#自我监控" class="headerlink" title="自我监控"></a>自我监控</h2><p>每一个TSD都可以通过一个简单的命令导出当前状态。你可以收集这些状态并将其定时返回给TSD。第一步，创建必要的metric：</p>
+<pre><code>echo stats | nc -w 1 localhost 4242 \
+| awk &apos;{ print $1 }&apos; | sort -u \
+| xargs ./tsdb mkmetric
+</code></pre><p>这请求TSD的状态（确保在本地运行并监听4242端口），从状态中提取metric的名称并指定UID，然后你可以使用如下这个简单的脚本收集状态并存储到TSD中。</p>
+<pre><code>#!/bin/bash
+INTERVAL=15
+while :; do
+  echo stats || exit
+  sleep $INTERVAL
+done | nc -w 30 localhost $1 \
+    | sed &apos;s/^/put /&apos; \
+    | nc -w 30 localhost $1
+</code></pre><p>这样，你可以每15秒收集一次。</p>
+<h2 id="创建图表"><a href="#创建图表" class="headerlink" title="创建图表"></a>创建图表</h2><p>一旦你使用如上方法向TSD中写入了数据，你可以使用这些数据创建图表。用浏览器打开GUI界面。如果你的TSD在本地运行，那么访问：<a href="http://localhost:4242" target="_blank" rel="noopener">http://localhost:4242</a><br>第一步，选中一个指标并且将其放入metric box中，举个例子，proc.loadavg.1m。如你所见，该行会自动凸起并可以点击它们。然后点击from按钮，一个日期插件会显示出来，从昨天选择任意时间然后点击另一个按钮。到此为止，你会看到正在加载图表，在图表下方有简要说明。如果图表为空，可能未找到最近数据，点击 now刷新图表。这个初始化图表会聚合你所选中metric的一系列时间，试着点击左侧tags标签添加标签以筛选不同的host标签，从右侧添加值。在另一处点击你会看到图表重新绘制。</p>
+<p>原文地址：<a href="http://opentsdb.net/docs/build/html/user_guide/quickstart.html" target="_blank" rel="noopener">http://opentsdb.net/docs/build/html/user_guide/quickstart.html</a></p>
+
       
     </div>
     
     
     
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/外文翻译/" rel="tag"># 外文翻译</a>
+          
+            <a href="/tags/Opentsdb/" rel="tag"># Opentsdb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/13/Opentsdb-配置/" rel="next" title="Opentsdb-配置">
+                <i class="fa fa-chevron-left"></i> Opentsdb-配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/13/Opentsdb-写数据/" rel="prev" title="Opentsdb-写数据">
+                Opentsdb-写数据 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -370,8 +604,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -485,6 +728,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建你第一个度量信息Metrics"><span class="nav-number">1.</span> <span class="nav-text">创建你第一个度量信息Metrics</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始收集数据"><span class="nav-number">2.</span> <span class="nav-text">开始收集数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#批量导入"><span class="nav-number">3.</span> <span class="nav-text">批量导入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自我监控"><span class="nav-number">4.</span> <span class="nav-text">自我监控</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建图表"><span class="nav-number">5.</span> <span class="nav-text">创建图表</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

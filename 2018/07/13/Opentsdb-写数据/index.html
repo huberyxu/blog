@@ -103,25 +103,25 @@
   <meta name="keywords" content="外文翻译,Opentsdb," />
 
 
-<meta name="description" content="环境OpenTSDB可从源码编译或者包安装，详见github运行要求Linux系统java1.6以上Hbase 0.92以上GnuPlot4.2以上 安装第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。如果不能连接zookeep">
+<meta name="description" content="你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。 命名schame许多metrics的管理者为其时间序列提供单一命名。举个例子，系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver0">
 <meta name="keywords" content="外文翻译,Opentsdb">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Opentsdb-安装">
-<meta property="og:url" content="https://haibin.work/2018/07/13/Opentsdb-安装/index.html">
+<meta property="og:title" content="Opentsdb-写数据">
+<meta property="og:url" content="https://haibin.work/2018/07/13/Opentsdb-写数据/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="环境OpenTSDB可从源码编译或者包安装，详见github运行要求Linux系统java1.6以上Hbase 0.92以上GnuPlot4.2以上 安装第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。如果不能连接zookeep">
+<meta property="og:description" content="你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。 命名schame许多metrics的管理者为其时间序列提供单一命名。举个例子，系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver0">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-13T03:12:09.580Z">
+<meta property="og:updated_time" content="2018-07-13T05:04:49.629Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Opentsdb-安装">
-<meta name="twitter:description" content="环境OpenTSDB可从源码编译或者包安装，详见github运行要求Linux系统java1.6以上Hbase 0.92以上GnuPlot4.2以上 安装第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。如果不能连接zookeep">
+<meta name="twitter:title" content="Opentsdb-写数据">
+<meta name="twitter:description" content="你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。 命名schame许多metrics的管理者为其时间序列提供单一命名。举个例子，系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver0">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/2018/07/13/Opentsdb-安装/"/>
+  <link rel="canonical" href="https://haibin.work/2018/07/13/Opentsdb-写数据/"/>
 
 
 
@@ -130,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title>Opentsdb-安装 | Hubery's Polaris</title>
+  <title>Opentsdb-写数据 | Hubery's Polaris</title>
   
 
 
@@ -324,7 +324,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb-安装/">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb-写数据/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="xuhaibin">
@@ -341,7 +341,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Opentsdb-安装</h1>
+          <h1 class="post-title" itemprop="name headline">Opentsdb-写数据</h1>
         
 
         <div class="post-meta">
@@ -353,7 +353,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T10:58:51+08:00">2018-07-13</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T11:27:20+08:00">2018-07-13</time>
             
 
             
@@ -389,8 +389,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2018/07/13/Opentsdb-安装/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb-安装/" itemprop="commentCount"></span>
+                <a href="/2018/07/13/Opentsdb-写数据/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb-写数据/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -398,7 +398,7 @@
 
           
           
-             <span id="/2018/07/13/Opentsdb-安装/" class="leancloud_visitors" data-flag-title="Opentsdb-安装">
+             <span id="/2018/07/13/Opentsdb-写数据/" class="leancloud_visitors" data-flag-title="Opentsdb-写数据">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -429,26 +429,68 @@
       
 
       
-        <h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>OpenTSDB可从源码编译或者包安装，详见github<br>运行要求<br>Linux系统<br>java1.6以上<br>Hbase 0.92以上<br>GnuPlot4.2以上</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>第一步，启动Hbase。如果你刚接触HBase和OpenTSDB，建议使用单机模式启动运行以方便测试。<br>启动OpenTSDB之前，确保zookeeper可用，可以通过telnet localhost 2181命令查看状态。<br>如果不能连接zookeeper，检查Ips或者host  name以解决hbase对zookeeper的强制依赖。<br>如果hbase启动，可以选择从包安装，或者使用GIT或者从tar包安装。</p>
-<p>从源码编译：<br>Compilation requirements include:<br>  ● A Linux system<br>  ● Java Development Kit 1.6 or later<br>  ● GnuPlot 4.2 or later<br>  ● Autotools<br>  ● Make<br>  ● Python<br>  ● Git<br>  ● An Internet connection<br>命令：</p>
-<pre><code>git clone git://github.com/OpenTSDB/opentsdb.git
-cd opentsdb
-./build.sh
-make install
-</code></pre><h2 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h2><p>安装完成后你可以在hbase实例之上运行opentsdb，第一步你要在hbase上创建必要的表。有一个简单的脚本能完成这件事并可以指定是否压缩：</p>
-<pre><code>env COMPRESSION=NONE HBASE_HOME=path/to/hbase-0.94.X ./src/create_table.sh
-</code></pre><p>此处，COMPRESSION有如下选项：none，lzo，gzip，snappy，该脚本创建如下表：tsdb，tsdb-uid，tsdb-tree，和tsdb-meta，如果你只是测试opentsdb，暂时无需考虑压缩。生产环境下，确保使用可用压缩以避免存储灾难。</p>
-<h2 id="启动TSD"><a href="#启动TSD" class="headerlink" title="启动TSD"></a>启动TSD</h2><p>opentsdb2.3版本维护一个配置文件，由daemon和命令行工具共享。如果你从源码编译，需要copy ./src/opentsdb.conf到指定目录，并且做如下配置，其中必要的是：</p>
-<p>  ● tsd.http.cachedir - 临时文件路径<br>  ● tsd.http.staticroot - 静态GUI文件路径 ./build/staticroot<br>  ● tsd.storage.hbase.zk_quorum - 如果HBase和zookeeper不是运行在同一台机，在此处指定地址和端口号。</p>
-<p>配置好以后，可通过如下命令启动：</p>
-<pre><code>./build/tsdb tsd
-</code></pre><p>或者，你可以用如下命令创建临时目录并在一行命令中指定：</p>
-<pre><code>tsdtmp=${TMPDIR-&apos;/tmp&apos;}/tsd    # For best performance, make sure
-mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
-./build/tsdb tsd --port=4242 --staticroot=build/staticroot --cachedir=&quot;$tsdtmp&quot; --zkquorum=myhost:2181
-</code></pre><p>之后，你可以通过 <a href="http://127.0.0.1:4242" target="_blank" rel="noopener">http://127.0.0.1:4242</a> 访问TSD的web界面<br>注意：<br>当你通过GUI生成一个图形时，cache directory用来存放生成的临时文件。这些文件需要定期清理。opentsdb并未做这件事，但提供了一天清理一次的脚本<br>    tools/clean_cache.sh</p>
-<p>原文地址：<a href="http://opentsdb.net/docs/build/html/installation.html" target="_blank" rel="noopener">http://opentsdb.net/docs/build/html/installation.html</a></p>
+        <p>你可能立刻想写一批数据到TSD中，但并不能充分发挥OpenTSDB的优势和灵活性。你要想停下来思考一下如何命名schame，然后，通过telnet或者http apis或者其它存在的工具如“tcollector”向OpenTSDB推送数据。</p>
+<h2 id="命名schame"><a href="#命名schame" class="headerlink" title="命名schame"></a>命名schame</h2><p>许多metrics的管理者为其时间序列提供单一命名。<br>举个例子，系统管理员习惯于RRD风格的系统可能会这样为metric命名webserver01.sys.cpu.0.user。这个名字告诉我们，这是一系列在webserver1主机上的0cpu的用户使用记录。如果你只接收指定web server的cpu用户使用时间，那么这么写是没问题的。<br>但是如果该webserver有64颗cpu并且你想计算它们的平均使用时间呢？有些系统允许你使用诸如webserver01.sys.cpu.<em>.user的通配符来读取64个不同的文件并且聚合其结果。或者你可以记录一个新的度量名为webserver01.sys.cpu.user.all来代表同样的聚合计算，但这意味着你必须记录“64+1”次记录。如果你有上千个web server并且你想计算他们的cpu平均使用时间呢？你可以使用如 </em>.sys.cpu.*.user<br>并且系统打开64,000个文件，聚合计算并返回结果。或者你可以起一个进程预处理这些数据并存入webservers.sys.cpu.user.all。<br>Opentsdb引入标签来实现不同的处理方式，每个系列的数据都有一个metric名称，但它更通用，有些东西可以在时间序列上共享，换句话说，标签name/value对的结合使用似的查询更灵活，聚合计算高效。<br>注意：<br>在Opentsdb中每个时间序列必须有至少一个标签。<br>用刚才得metric webserver01.sys.cpu.0.user举例，在OpenTSDB中，可能为会变成：sys.cpu.user host=webserver01, cpu=0。现在，如果我们想查询特定的cpu核，我们可以这样写查询：sum:sys.cpu.user{host=webserver01,cpu=42}.<br>如果想查询所有核，我们可以简单的移除掉cpu标签：sum:sys.cpu.user{host=webserver01}，如果我们想计算所有服务器的所有cpu核，我们可以简单的写成：sum:sys.cpu.user。这些数据会一个接一个的全部存储为sys.cpu.user的时间序列，所以聚合起来非常高效。opentsdb为尽可能快的聚合查询所设计，使用户可以从高层入手并深度挖掘数据详细信息。</p>
+<a id="more"></a>
+<h2 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h2><p>尽管标签模式非常灵活，但如果你不明白Opentsdb的查询方式还是会出现一些问题，所以需要一些提前考虑。举个例子我们要查询这个：sum:sys.cpu.user{host=webserver01}.我们记录了webserver01的64个时间序列，每一个时间序列代表一个cpu核。当我们发起这个查询，所有64个sys.cpu.user的时间序列都被查询出来，求平均，然后返回一系列数据。比如说对于这个1356998400这个时间戳是个50的结果，如果我们迁移到另一个系统预先计算了sys.cpu.user host=webserver01这个值并将其写入了Opentsdb，如果我们在执行相同的查询，那么我们会得到1356998400时间处为100的这个结果。发生了什么？<br>Opentsdb聚合了所有64个时间序列，存储如下：</p>
+<pre><code>sys.cpu.user host=webserver01        1356998400  50
+sys.cpu.user host=webserver01,cpu=0  1356998400  1
+sys.cpu.user host=webserver01,cpu=1  1356998400  0
+sys.cpu.user host=webserver01,cpu=2  1356998400  2
+sys.cpu.user host=webserver01,cpu=3  1356998400  0
+...
+sys.cpu.user host=webserver01,cpu=63 1356998400  1
+</code></pre><p>Opentsdb在查询时如果不指定标签，则自动聚合所有的时间序列，如果指定一个或多个标签，则由“聚合所有”变为匹配当前标签，聚合并忽略其他标签。如果查询 </p>
+<pre><code>sum:sys.cpu.user{host=webserver01}
+</code></pre><p>我们可能包括<br>sys.cpu.user host=webserver01,cpu=0<br>以及<br>sys.cpu.user host=webserver01,cpu=0,manufacturer=Intel,<br>sys.cpu.user host=webserver01,foo=bar<br>和sys.cpu.user host=webserver01,cpu=0,datacenter=lax,department=ops.<br>这个示例的目的是想说明：小心命名schame。</p>
+<h2 id="时间序列基数"><a href="#时间序列基数" class="headerlink" title="时间序列基数"></a>时间序列基数</h2><p>命名schame一个关键的方面就是时间序列的基数。<br>基数是指独一无二的item的集合数量。在opentsdb中，表示为与metric相关联的items的数量，比如，所有可能的标签名称和标签值组合。以及独一无二的metric的名称。基数之所有重要有以下两个原因：<br>限制的IDs（UIDs）<br>对于metric，tag name，tag value的指定是有数量限制的。默认地，每个类型有2^24个。举例来说，如果你运行一个十分火爆的web服务，并且向追踪客户端的ip作为标签，web.app.hits clientip=38.26.34.10，那么你很快就会到达瓶颈。此外，这种方式会创建很稀松的时间序列，而且用户可能只是偶尔访问你的应用甚至某些特定的ip再也不会访问了。<br>其实UID的限制并不是一个问题，然而，一个标签值的UID可能会与标签名分离。如果你使用数字类型标识标签值，该数字可以只指定一个UID但是多个标签名会指向它。举例来说，如果你指定UID表示一个数字2，我们可以存储这些标签对：cpu=2, interface=2, hdd=2 and fan=2仅消耗了一个标签值的UID和4个标签名的UID<br>如果你认为UID的限制会影响你，首先考虑你想执行的查询。如果我们观察上述web.app.hits的例子，你可能会只关心hits的总数而少有关心个别ip的hits。在这个例子中，你可以将ip地址存储一个注解。这样你既能优化基数又能满足需求，你需要使用另外的脚本来查询个别ip的hits值。（注意：未来版本会支持）<br>如果你非要超过这个限制，你可以增加UID的字节数，从3bytes增加到8bytes。这个需要修改源码重新编译，部署你自定义的TSD并获取数据。并且保持自定义部分与未来的版本合并。<br>警告：<br>如果需要增加这个值，必须确保新建TSD，之前3bytes的与新的并不相容。</p>
+<h2 id="查询速度"><a href="#查询速度" class="headerlink" title="查询速度"></a>查询速度</h2><p>基数同样影响查询速度，所以思考你比较频繁的查询场景并为其优化你的schame。OpenTSDB每小时的时间序列会创建一行。如果我们有一个一个cpu的主机，并且每秒写入sys.cpu.user host=webserver01,cpu=0，写入一天，这会产生24行数据一共86400个点位数据。如果我们有8核cpu那就是192行和691,200个点位数据。这对于类似</p>
+<pre><code>start=1d-ago&amp;m=avg:sys.cpu.user{host=webserver01}
+</code></pre><p>这种求cpu使用率的平均值和sum值看起来很不错，这个查询会遍历192行并且会将其聚合到一个时间序列里。<br>然而如果我们有20,000台主机，每一个有8核cpu呢？这样我们由于host基数较大每天就有3，800，000行和1，728，000，00个点位数据。查询webserver01的cpu平均使用效率就会变低，因为需要从3800000行中筛选出192行（对于OpenTsdb2.2版本，你可以指定标签cpu=*或者模糊过滤来快速跳过不必要的行）<br>这种命名好处是你的数据会有很深的粒度，可以存储每个cpu的metric。你可以简单的创建一个查询，查询所有机器所有cpu的平均使用率</p>
+<pre><code>start=1d-ago&amp;m=avg:sys.cpu.user
+</code></pre><p>然而查询效率会随着过滤的行数增加而增加。这并不是Opentsdb才有的问题，而是所有数据库的通病。<br>有以下几种处理基数的方式：</p>
+<ol>
+<li>预聚合——在上面sys.cpu.user的例子中，你通常只关心每台主机的平均cpu使用，而不是每核cpu的使用。尽管数据采集器可以在发送时使用标签分割开的每核cpu的值，但也可以发送额外的点位数据如：sys.cpu.user.avg host=webserver01。<br>这样一个完整的分割序列仅需要24行，对于20000台主机也仅需扫描48万行。查询响应速度会大大提高并且你仍然保留了数据的原始粒度。</li>
+<li>转换成Metric——如果你只需要关注个别主机而不需要聚合所有主机值呢？在这种情境下，你可以转换hostname为metric，我们前面的例子可以变成sys.cpu.user.websvr01 cpu=0.使用这种schema查询每天有192行，效率更高。然而这样对host做聚合查询需要查询多次。</li>
+</ol>
+<p>结论:<br>当你设计你的schema时，牢记一下几点：</p>
+<ol>
+<li>让你的命名尽可能一致以减少重复，如使用相同的metric，tag names以及tag values</li>
+<li>对每个metric使用相同的数值和标签类型。不要保存my.metric host=foo and my.metric datacenter=lga.</li>
+<li>根据常用查询优化schema</li>
+<li>思考你会如何查询</li>
+<li>不要使用太多标签，尽可能使用小数值，通常最多4,5个（Opentsdb默认支持最多8个tag）</li>
+</ol>
+<h2 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h2><p>每个时间序列需要以下数据：<br>metric——一个时间序列通用的名字如: sys.cpu.user, stock.quote or env.probe.temp.<br>timestamp——一个Unix时间戳，每秒或者每毫秒的数据标识<br>value——存储某个时间点上具体的数值，可以是int类型或者float类型<br>tag(s)——一个key/value对的标签标识。每个metric至少有一个</p>
+<h3 id="时间戳"><a href="#时间戳" class="headerlink" title="时间戳"></a>时间戳</h3><p>数据可以每秒或者每毫秒写入Opentsdb中。时间戳必须是整数类型并且不能超过13位数（见下面第一个Note）。毫秒值必须是这种格式：1364410924250并且最后三位表示毫秒值。应用如果产生超过13位数的时间戳（如比毫秒的粒度更细）必须约入13位数否则会发生错误。<br>如果是秒级的时间戳则保存为2bytes，如果是毫秒级的时间戳则保存为4bytes。因此如果你不需要毫秒级的解决方案，建议你提交时使用10位数的时间戳以节省空间。并且注意避免混用两种时间戳，这样做会使你查询效率降低。<br>Note:<br>当通过telnet接口写数据时，timestamp格式会写成：1364410924.250，最后三位小数代表毫秒值。时间戳如果通过/api/put的HTTP端口发送则必须是整数类型不能存在小数。毫秒级的时间戳只能通过/api/query提取或者客户端命令行工具。详见query/index。<br>Note:<br>提供毫秒级的解决方案是没必要的。Opentsdb能支持到秒级的写入，而且，毫秒级的写入在长期运行的应用中，会产生大量的数据</p>
+<h3 id="Metrics-and-Tags"><a href="#Metrics-and-Tags" class="headerlink" title="Metrics and Tags"></a>Metrics and Tags</h3><p>metric和tag values遵循以下规则：<br>１.　字符串大小写敏感，如”Sys.Cpu.User”和”sys.cpu.user”是不同的。<br>２.　不支持空格<br>３.　仅支持一下字符：a-z,A-Z,0-9,’-_./‘或者unicode字符<br>metric和tags并未限制长度，但应尽可能短</p>
+<p>整数值<br>如果put命令未解析到（.）小数点，则会认为是整数。整数存储为可变长度，所以大小可能是1bytes到8bytes。这意味着整数类型的大小范围是：-9,223,372,036,854,775,808到9,223,372,036,854,775,807。整数类型不能出现逗号或者其他字符类型。比如，要存储最大的数值，必须是9223372036854775807。</p>
+<p>浮点值<br>如果put命令解析到（.）小数点，则会认为是浮点类型。目前在2.4以及之后的版本，所有的浮点类型都存储为单精度4bytes，双精度8bytes。无穷大或者非数值类型会发生错误。<br>Note:<br>虽然opentsdb支持浮点类型，但并不适合存储高精度类型比如货币，如存储15.2会返回15.199999809265137.</p>
+<p>顺序<br>不像其他的解决方案，opentsdb会按照你想要的顺序写入数据。这给写数据到TSD提供了很高的灵活性，允许系统自行处理当前数据然后导入历史值。</p>
+<h2 id="数据重复"><a href="#数据重复" class="headerlink" title="数据重复"></a>数据重复</h2><p>向Opentsdb中写数据，在小时区间内是幂等的。这就是说你在1356998400这个时间写入值42，稍后再重复写入也没什么不妥。但如果已写入的数据进行过压缩，当查询该行时会抛出异常。如果你试图在同一个时间戳处写入两个不同的值，那么查询时将会抛出一个数据重复的异常。这是因为整数类型的1,2,4,8bytes长度编码不同造成的，以及浮点类型。如果第一次写入整数类型第二次写入浮点类型， 将会抛出一个数据重复异常。如果两次都是整数类型或者浮点类型并且长度相同时，并不会出现任何问题而只是覆盖，前提是该行未进行压缩。<br>在大多数情况下，如果发生重复数据写入通常是进程重启或者脚本出现bug。Opentsdb将在查询时出现重复数据而抛出异常。<br>Opentsdb2.1之后你可以通过设置last-write-wins启用，设置tsd.storage.fix_duplicates为true。如果启用这个开关，在查询时，最近的数据记录将会被返回而非抛出异常。并在日志中记录警告信息。如果启用压缩，则原始的数据将会被最近的值重写。</p>
+<h2 id="Input方法"><a href="#Input方法" class="headerlink" title="Input方法"></a>Input方法</h2><p>目前有三种方法向Opentsdb导入数据：telnet api，http api以及从文件批量导入。你可以使用opentsdb提供的工具，如果你可以承担风险，也可以使用jar包。<br>警告：<br>不要试图直接向Hbase中写入数据，会造成数据混乱。<br>Note：<br>如果tad.mode被设置成ro（read only）而不是rw（read write）。那么TSD将不能接受RPC调用。telnet风格的调用会抛出异常，http调用会返回404。然而java api仍然可以写入。</p>
+<h3 id="Telnet"><a href="#Telnet" class="headerlink" title="Telnet"></a>Telnet</h3><p>最简单的方法开始opentsdb就是使用命令行的telnet，连接TSD并且使用put命令进入。如果你正在写程序，打开一个socket，打印一下字符串，格式如下：<br>put <metric> <timestamp> <value> <tagk1=tagv1[ tagk2="tagv2" ...tagkn="tagvN]"><br>比如：<br>put sys.cpu.user 1356998400 42.5 host=webserver01 cpu=0<br>每一个put仅能发送一条数据。不要忘记在结尾输入换行符 “\n”</tagk1=tagv1[></value></timestamp></metric></p>
+<h3 id="Http-API"><a href="#Http-API" class="headerlink" title="Http API"></a>Http API</h3><p>2.0之后的版本，数据可以通过HTTP支持的 序列化 插件发送。多数情况下，不相关的数据可以通过同一个HTTP post提交。详见../api_http/put。</p>
+<h3 id="批量导入"><a href="#批量导入" class="headerlink" title="批量导入"></a>批量导入</h3><p>如果你需要从别的系统中或者需要回填历史数据，可以使用import工具。详见cli/import。</p>
+<h2 id="写入性能"><a href="#写入性能" class="headerlink" title="写入性能"></a>写入性能</h2><p>Opentsdb支持每秒百万级别的写入，搭载在常用的服务器上。然而，如果使用单机版的HBase虚机，结果可能会大失所望，每秒只能写入几百的数据。如果你需要扩大集群规模需要做以下几件事：</p>
+<h3 id="UID分配"><a href="#UID分配" class="headerlink" title="UID分配"></a>UID分配</h3><p>第一个关键点是“UID”的分配。不论是metric还是tag name/tag value都要在存储之前分配UID。举例来说，metric sys.cpu.user可能会被指定UID为000001在第一次写入TSD时。这种分配会耗费大量的时间，因为它要获取可用的UID，生成UID到name的映射，生成name到UID的映射，以及写入数据点的rowkey中。UID将会存储在TSD的缓存中以便下次查询时快速查找。<br>因此，我们推荐你为metric/tag name/ tag value预分配UID。如果你按上面提到的命名schema的方式，你会知道许多可以分配的UID。你可以使用CLI工具cli/mkmetric, cli/uid或者HTTP API ../api_http/uid/index来执行预分配。每次你要创建批量metric或者tags时，都要考虑预定义，否则将会陷入很大的性能困境。<br>Note：<br>每次启动TSD时，都要加载所有UID到缓存中，所以启动会慢。</p>
+<h3 id="随机Metric-UID分配"><a href="#随机Metric-UID分配" class="headerlink" title="随机Metric UID分配"></a>随机Metric UID分配</h3><p>从2.2版本之后，你可以指定随机UIDs以避免region server的热点问题。因为metric的UID是作为rowkey的起始位置的。如果你个新的数据集创建，没采用这种方式时，至少region分裂，都要集中到一台机器上。<br>通过修改tsd.core.uid.random_metrics的值你可以随时指定是否使用随机metric UID。然而还是推荐你通过全部的metric空间预分裂TSDB的表。举例来说，如果你使用默认的metric UID长度为3bytes，因此你会有16,777,215个值。如果你已经在TSDB中存在数据了，还想选择使用随机uids，那么你可能向创建一个新的region。<br>当创建随机UID是，TSDB会尝试十次避免碰撞。因此，随着分配的指标的数量增加，碰撞的次数和覆盖的几率会因重试而降低。如果您启用了随机id并继续添加更多的度量标准，那么您可能希望增加度量uid上的字节数。请注意，UID更改并不是向后兼容的，因此您必须创建一个新表并迁移您的旧数据。</p>
+<h3 id="加盐"><a href="#加盐" class="headerlink" title="加盐"></a>加盐</h3><p>在2.2中，支持大幅增加跨区域服务器的写分布。当启用时，配置的字节数被预置到每个rowkey中。然后将标签的每一个度量和组合都放入一个“桶”中，其中的ID被写入到salt字节中。随着时间序列在已配置的bucket计数中被分割，从而路由到不同的区域和不同的服务器，特别是对于高基数度量(具有大量标记组合的那些)，分布得到了改进。例如，如果没有salting，一个包含100万系列的度量标准将被写入单个服务器上的单个区域。在启用了salting和一个20个桶大小的情况下，这个系列将在20个区域(如果集群有这么多主机)上拆分，每个区域有50,000个系列。<br>警告：<br>因为salting修改了存储格式，所以不能随意地启用或禁用salting。如果已有数据，则必须启动一个新的数据表，并将数据从旧表迁移到新的数据表。不能从以前版本的OpenTSDB读取盐的数据。<br>要启用salting，您必须修改配置文件参数tsd.storage.salt.width和可选地tsd.storage.salt.buckets。我们建议将盐的宽度设置为1，并根据集群中区域服务器数量的因素确定桶数。注意，在查询时，TSD将检查tsd.storage.salt.buckets个桶数的扫描仪来获取数据。适当数量的桶必须通过实验来确定，因为在某些时候查询性能可能会受到影响，因为有太多的扫描器打开并对结果进行了排序。在未来，盐的宽度和桶可能是可配置的，但我们不想让人们在事故和丢失数据的情况下改变设置。</p>
+<h3 id="追加"><a href="#追加" class="headerlink" title="追加"></a>追加</h3><p>在2.2版本中，现在支持通过appends向HBase列进行写入。这可以提高读和写的性能，因为tsd将不再在每个小时的末尾维护一个行记录队列来进行压缩，从而防止在HBase中进行大规模的读取和重写操作。但是由于在HBase中应用程序的方式，在region servers上增加了CPU利用率、存储文件大小和HDFS流量。确保密切监视HBase服务器。在读取时，每一行只返回一个列，类似于post - tsd - compaction行。但是请注意，如果是tsd.storage.repair_appends在启用时，当一个列具有重复或非顺序数据时，它将被重新写入HBase。同样，具有许多重复或排序问题的列可能会减缓查询效率，因为它们必须在响应调用者之前解决。可以在任何时候启用和禁用Appends。但是，在2.2之前的OpenTSDB版本将跳过这个值。</p>
+<h3 id="预分裂HBase-Regions"><a href="#预分裂HBase-Regions" class="headerlink" title="预分裂HBase Regions"></a>预分裂HBase Regions</h3><p>如果你采用预分裂region的方式，不论你是在一个独立的服务器上进行测试或者运行一个完整的集群，那么您将看到更好的性能。HBase Region处理一个行键范围，本质上是一个文件。当您第一次创建tsdb表并开始编写数据时，所有这些数据点都被发送到一个服务器上的这个文件。当一个区域被填满时，HBase会自动将其分割成不同的文件，并将其移动到集群中的其他服务器，但当这种情况发生时，tsd不能写入该区域，并且必须缓冲数据点。因此，如果您可以在开始编写之前预先分配多个region，则tsd可以将数据发送到多个文件或服务器，您可以立即利用线性可伸缩性。<br>预分割您的tsdb表区域的最简单方法是估计你将记录的度量名称的数量。如果您已经设计了一个命名模式，那么您应该有一个很好的想法。假设我们在系统中跟踪4000个指标，这并不是说有4000个时间序列，因为我们还没有计算标签，只是一些度量名称，比如“sys.cpu.user”。数据点是用行键写的，其中metric的UID包括第一个字节，默认情况下是3个字节。第一个metric将被分配一个UID为000001作为十六进制编码值。第4000个度量将在十六进制中有一个UID为000FA0。您可以在HBase Book的脚本中使用这些作为开始和结束键，将您的表分割成多个区域。根据每个指标的时间序列，256个区域可能是个好起点。<br>TODO -包括用于预分解的脚本。<br>上面的简单拆分方法假定每个度量(即相当一致的基数)的时间序列大致相等。例如，UID为000001的度规可能有200个时间序列，而000FA0有大约150个。如果你有一个很宽的时间序列，例如000001有10,000个时间序列，而000FA0只有2个，你可能需要开发一个更复杂的分割算法。但别太担心分裂。如上所述，HBase将为您自动分割区域，因此随着时间的推移，数据将相当均匀地分布。</p>
+<h3 id="分布式HBase"><a href="#分布式HBase" class="headerlink" title="分布式HBase"></a>分布式HBase</h3><p>HBase将以独立模式运行，在此模式下将使用本地文件系统来存储文件。它仍将使用多个region，底层磁盘或raid阵列仍然能支持它。您肯定希望在HBase下有一个RAID阵列，这样如果驱动器失败，您可以在不丢失数据的情况下替换它。这种设置适合于测试或非常小的安装，您应该能够写入每秒数千个数据点。<br>然而，如果您想要真正的吞吐量和可伸缩性，您就必须设置一个Hadoop和HBase集群，并拥有多个服务器。在分布式的安装中，HDFS管理Region文件，自动将副本分发到不同的服务器以进行容错。HBase将Region分配给不同的服务器，OpenTSDB的客户端将把数据点发送到存储它们的特定服务器。现在，您可以在多个服务器之间扩展操作，提高性能和存储空间。如果您需要更多的吞吐量或存储，只需添加节点或磁盘。<br>有很多方法可以设置Hadoop / HBase集群，以及大量的各种调优调整，因此可以在谷歌搜索并询问用户组的建议。一般性的建议包括：</p>
+<ol>
+<li>为name node指定一对高内存、低磁盘空间服务器。使用像心率和起搏器这样的高可用性。</li>
+<li>在至少3个服务器上设置Zookeeper，用于容错。他们必须有大量的RAM和一个相当快的磁盘来写日志。在小集群上，这些可以在namenode服务器上运行。</li>
+<li>对于HDFS数据节点做JBOD（Just a Bunch Of Disks）</li>
+<li>HBase regon服务器可以与HDFS datanode搭配</li>
+<li>服务器之间至少有1个Gbps链接，10 Gbps(千兆比特每秒)更可取。</li>
+<li>将集群保存在一个数据中心中</li>
+</ol>
+<h3 id="多TSD"><a href="#多TSD" class="headerlink" title="多TSD"></a>多TSD</h3><p>单个TSD每秒可以处理数千个写入。但是，如果您有许多资源，最好通过运行多个tsd，并使用负载平衡器(如清漆或DNS轮询)来分配写操作。当集群专注于OpenTSDB时，许多用户在HBase region服务器上使用colocate TSDs。</p>
+<h3 id="持久连接"><a href="#持久连接" class="headerlink" title="持久连接"></a>持久连接</h3><p>在tsd中启用keep- alives，并确保您所使用的任何应用程序都可以打开它们的连接，而不是打开和关闭每个写入。有关详细信息请参阅configuration。</p>
+<h3 id="禁用元数据和实时发布"><a href="#禁用元数据和实时发布" class="headerlink" title="禁用元数据和实时发布"></a>禁用元数据和实时发布</h3><p>OpenTSDB 2.0引入了元数据来跟踪系统中的数据类型。在启用跟踪时，每次写入的每个数据点一个计数器递增，以及新的uid或时间序列都将生成元数据。数据可能被推到搜索引擎或通过树生成代码。这些过程在TSD中需要更大的内存，并可能影响吞吐量。默认情况下，跟踪是禁用的，所以在启用该特性之前进行测试。<br>2.0还引入了一个实时发布插件，在那里输入的数据点可以在排队等待存储后立即发送到另一个目的地。这是默认禁用的，所以在部署之前测试您感兴趣的插件。</p>
+<p>原文地址：<a href="http://opentsdb.net/docs/build/html/user_guide/writing/index.html" target="_blank" rel="noopener">http://opentsdb.net/docs/build/html/user_guide/writing/index.html</a></p>
 
       
     </div>
@@ -481,8 +523,8 @@ mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/02/26/Abird平台OLAP技术架构的一些思考-2/" rel="next" title="Abird平台OLAP技术架构的一些思考(2)">
-                <i class="fa fa-chevron-left"></i> Abird平台OLAP技术架构的一些思考(2)
+              <a href="/2018/07/13/Opentsdb-快速入门/" rel="next" title="Opentsdb-快速入门">
+                <i class="fa fa-chevron-left"></i> Opentsdb-快速入门
               </a>
             
           </div>
@@ -490,10 +532,6 @@ mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/07/13/Opentsdb-配置/" rel="prev" title="Opentsdb-配置">
-                Opentsdb-配置 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -681,7 +719,7 @@ mkdir -p &quot;$tsdtmp&quot;             # your temporary directory uses tmpfs
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境"><span class="nav-number">1.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建表"><span class="nav-number">3.</span> <span class="nav-text">创建表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动TSD"><span class="nav-number">4.</span> <span class="nav-text">启动TSD</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#命名schame"><span class="nav-number">1.</span> <span class="nav-text">命名schame</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聚合"><span class="nav-number">2.</span> <span class="nav-text">聚合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间序列基数"><span class="nav-number">3.</span> <span class="nav-text">时间序列基数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询速度"><span class="nav-number">4.</span> <span class="nav-text">查询速度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据模型"><span class="nav-number">5.</span> <span class="nav-text">数据模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#时间戳"><span class="nav-number">5.1.</span> <span class="nav-text">时间戳</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Metrics-and-Tags"><span class="nav-number">5.2.</span> <span class="nav-text">Metrics and Tags</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据重复"><span class="nav-number">6.</span> <span class="nav-text">数据重复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Input方法"><span class="nav-number">7.</span> <span class="nav-text">Input方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Telnet"><span class="nav-number">7.1.</span> <span class="nav-text">Telnet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Http-API"><span class="nav-number">7.2.</span> <span class="nav-text">Http API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#批量导入"><span class="nav-number">7.3.</span> <span class="nav-text">批量导入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入性能"><span class="nav-number">8.</span> <span class="nav-text">写入性能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UID分配"><span class="nav-number">8.1.</span> <span class="nav-text">UID分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#随机Metric-UID分配"><span class="nav-number">8.2.</span> <span class="nav-text">随机Metric UID分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加盐"><span class="nav-number">8.3.</span> <span class="nav-text">加盐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#追加"><span class="nav-number">8.4.</span> <span class="nav-text">追加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预分裂HBase-Regions"><span class="nav-number">8.5.</span> <span class="nav-text">预分裂HBase Regions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分布式HBase"><span class="nav-number">8.6.</span> <span class="nav-text">分布式HBase</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多TSD"><span class="nav-number">8.7.</span> <span class="nav-text">多TSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#持久连接"><span class="nav-number">8.8.</span> <span class="nav-text">持久连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#禁用元数据和实时发布"><span class="nav-number">8.9.</span> <span class="nav-text">禁用元数据和实时发布</span></a></li></ol></li></ol></div>
             
 
           </div>
