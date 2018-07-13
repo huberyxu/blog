@@ -472,6 +472,613 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-查询示例/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/13/Opentsdb原理-查询示例/" itemprop="url">Opentsdb原理-查询示例</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T17:40:29+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb原理-查询示例/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb原理-查询示例/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/13/Opentsdb原理-查询示例/" class="leancloud_visitors" data-flag-title="Opentsdb原理-查询示例">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>以下使用示例数据集的说明查询模式。我们将说明可能遇到的一些常见查询类型，以便您了解查询系统的工作方式。示例集中的每个时间序列仅存储一个数据点，并且UID已被截断为单个字节以使其更易于读取。示例数据集是使用HTTP API查询的所有Metric，仅显示 m= 部分。有关详细信息，请参阅 /api/ query。<br>如果您使用的是CLI工具，则查询格式会略有不同，请阅读特定命令的文档。</p>
+<h2 id="示例数据"><a href="#示例数据" class="headerlink" title="示例数据"></a>示例数据</h2>
+<p>注意：<br>这不一定是设置指标和标签的最佳方式，而是用于说明查询系统的工作原理。特别地，TS＃4和5虽然是合法的时间序列，但可能会破坏你的查询，除非你知道它们是如何工作的。通常，尝试为每个时间序列保持相同数量和类型的标记。</p>
+<h2 id="底层原理"><a href="#底层原理" class="headerlink" title="底层原理"></a>底层原理</h2><p>您可能想要了解OpenTSDB如何在此处存储时间序列数据：存储章节。否则，请记住存储中的每一行都有一个格式化的唯一键：</p>
+<pre><code>&lt;metricID&gt;&lt;normalized_timestamp&gt;&lt;tagkID1&gt;&lt;tagvID1&gt;[...&lt;tagkIDN&gt;&lt;tagvIDN&gt;]
+</code></pre><p>上面的数据表将存储为:</p>
+<pre><code>01&lt;ts&gt;0101
+01&lt;ts&gt;01010306
+01&lt;ts&gt;02040101
+01&lt;ts&gt;02040102
+01&lt;ts&gt;02040103
+01&lt;ts&gt;02050101
+01&lt;ts&gt;02050102
+02&lt;ts&gt;02040101
+02&lt;ts&gt;02040102
+</code></pre><p>当您查询OpenTSDB时，这是在幕后发生的事情:</p>
+<ol>
+<li>解析并验证查询以确保格式正确并且存在metric，tag name和tag value。如果系统中不存在该metric，tag name或tag value，则会返回错误。</li>
+<li>然后它为底层存储系统设置Scanner<br> 如果查询没有任何标记或标记值，那么它将获取与<metricid> <timestamp>匹配的任何数据行，因此如果您有特定metric的大量时间序列，则可能会有很多，很多行。<br> 如果查询确实定义了一个或多个tag，那么它仍将扫描与<metricid> <timestamp>匹配的所有行，但还会执行正则表达式以仅返回包含所请求标记的行。</timestamp></metricid></timestamp></metricid></li>
+<li>如果需要的话, 一旦返回了所有数据, OpenTSDB就会将其分组(group)，</li>
+<li>如果请求下采样，则使用适当的聚合器将每个单独的时间序列下采样到较小的时间跨度中</li>
+<li>然后使用特定聚合函数聚合每组数据</li>
+<li>如果检测到rate标志，则将调整每个聚合值以获得速率</li>
+<li>返回结果给调用者</li>
+</ol>
+<h2 id="查询一-一个Metric的所有时间序列"><a href="#查询一-一个Metric的所有时间序列" class="headerlink" title="查询一: 一个Metric的所有时间序列"></a>查询一: 一个Metric的所有时间序列</h2><pre><code>m=sum:cpu.system
+</code></pre><p>这是最简单的查询。 TSDB将设置Scanner以获取<start>和<end>之间的metric UID为01的所有数据点。结果将是时间序列＃1到＃7汇总在一起的单个数据集。如果给定metric有数千个唯一tagkv，则它们将全部累加到一个时间序列中。</end></start></p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {},
+        &quot;aggregated_tags&quot;: [
+            &quot;host&quot;
+        ],
+        &quot;tsuids&quot;: [
+            &quot;010101&quot;,
+            &quot;0101010306&quot;,
+            &quot;0102050101&quot;,
+            &quot;0102040101&quot;,
+            &quot;0102040102&quot;,
+            &quot;0102040103&quot;,
+            &quot;0102050102&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 130.29999923706055
+        }
+    }
+]
+</code></pre><h2 id="查询二-Tag过滤"><a href="#查询二-Tag过滤" class="headerlink" title="查询二: Tag过滤"></a>查询二: Tag过滤</h2><p>通常聚合metric的所有时间序列并不是特别有用。相反，我们可以通过筛选包含特定 tagk / tagv 对组合的时间序列来深入挖掘。只需将它们放在花括号中：</p>
+<pre><code>m=sum:cpu.system{host=web01}
+</code></pre><p>这将返回时间序列＃1，＃4，＃5和＃6的汇总序列，因为它们是包含host = web01的唯一时间序列。</p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;010101&quot;,
+            &quot;0101010306&quot;,
+            &quot;0102040101&quot;,
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 63.59999942779541
+        }
+    }
+]
+</code></pre><h2 id="查询三-指定时间序列"><a href="#查询三-指定时间序列" class="headerlink" title="查询三: 指定时间序列"></a>查询三: 指定时间序列</h2><p>如果你想要一个特定的时间表怎么办？您必须包含每个tag name和相应的tag value。</p>
+<pre><code>m=sum:cpu.system{host=web01,dc=lax}
+</code></pre><p>这将仅返回时间序列＃6中的数据。</p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;lax&quot;,
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 15.199999809265137
+        }
+    }
+]
+</code></pre><p>注意：<br>这是tag schema的缺陷。假设您想从时间序列＃4中获取数据。使用当前系统，无法做到。如果你这样查询m=sum:cpu.system{host=web01}，以期这样仅会返回#4。然而，正如我们所见会返回#1, #4, #5 and #6的聚合值。为防止出现这种情况，您需要在＃4中添加另一个标记，以区别于该组中的其他时间序列。或者，如果您已经提交，则可以使用TSUID查询。</p>
+<h2 id="查询四-指定TSUID"><a href="#查询四-指定TSUID" class="headerlink" title="查询四: 指定TSUID"></a>查询四: 指定TSUID</h2><p>如果您知道要检索的时间序列的确切TSUID，则可以像这样简单地查询：</p>
+<pre><code>tsuids=sum:0102040102
+</code></pre><p>结果将是您请求的时间序列:</p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;lax&quot;,
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 15.199999809265137
+        }
+    }
+]
+</code></pre><h2 id="查询五-多TSUID查询"><a href="#查询五-多TSUID查询" class="headerlink" title="查询五: 多TSUID查询"></a>查询五: 多TSUID查询</h2><p>您还可以在同一查询中聚合多个TSUID，前提是它们有相同的metric。如果您尝试聚合多个metric，API将会报错。</p>
+<pre><code>tsuids=sum:0102040101,0102050101
+
+[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [
+            &quot;dc&quot;
+        ],
+        &quot;tsuids&quot;: [
+            &quot;0102040101&quot;,
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 33.19999980926514
+        }
+    }
+]
+</code></pre><h2 id="查询六-Grouping"><a href="#查询六-Grouping" class="headerlink" title="查询六: Grouping"></a>查询六: Grouping</h2><pre><code>m=sum:cpu.system{host=*}
+
+*（星号）是一个分组运算符，它将为给定的标记名称的每个唯一值返回一个数据集。
+</code></pre><p>包含给定metric和给定tag name的每个时间序列，无论其他tag name或tag value如何，都将聚合在结果中。在对各个时间序列结果进行分组后，它们将被聚合并返回。</p>
+<p>上面的例子，我们将会三组数据返回：</p>
+<pre><code>Group    Time Series Included
+web01    #1, #4, #5, #6
+web02    #2, #7
+web03    #3
+</code></pre><p>TSDB发现了7个包含“host”标签的总时间序列。该标记有3个唯一值（web01，web02和web03）。</p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;010101&quot;,
+            &quot;0101010306&quot;,
+            &quot;0102040101&quot;,
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 63.59999942779541
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web02&quot;
+        },
+        &quot;aggregated_tags&quot;: [
+            &quot;dc&quot;
+        ],
+        &quot;tsuids&quot;: [
+            &quot;0102040102&quot;,
+            &quot;0102050102&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 24.199999809265137
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;dal&quot;,
+            &quot;host&quot;: &quot;web03&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102040103&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 42.5
+        }
+    }
+]
+</code></pre><h2 id="查询七-Group-and-Filter"><a href="#查询七-Group-and-Filter" class="headerlink" title="查询七: Group and Filter"></a>查询七: Group and Filter</h2><p>注意，在示例＃2中，web01组包括时间序列＃4和＃5。我们可以通过指定第二个标记来过滤掉那些：</p>
+<pre><code>m=sum:cpu.nice{host=*,dc=dal}
+</code></pre><p>现在我们只得到＃1 - ＃3的结果，但我们过滤了dc = lax值。</p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;dal&quot;,
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102040101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 18
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;dal&quot;,
+            &quot;host&quot;: &quot;web02&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102040102&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 9
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;dal&quot;,
+            &quot;host&quot;: &quot;web03&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102040103&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 42.5
+        }
+    }
+]
+</code></pre><h2 id="查询八-Group-With-OR"><a href="#查询八-Group-With-OR" class="headerlink" title="查询八: Group With OR"></a>查询八: Group With OR</h2><pre><code>*运算符是贪婪的，将返回分配给标记名称的所有值。如果您只想要几个标记值，则可以使用| （管道）达成。
+m=sum:cpu.nice{host=web01|web02}
+这将找到包含“web01”或“web02”的“主机”值的所有时间序列，然后按值分组，类似于*运算符。
+</code></pre><p>这次我们的分组看起来像这样：</p>
+<pre><code>Group    Time Series Included
+web01    #1, #4, #5, #6
+web02    #2, #7
+
+[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;010101&quot;,
+            &quot;0101010306&quot;,
+            &quot;0102040101&quot;,
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 63.59999942779541
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web02&quot;
+        },
+        &quot;aggregated_tags&quot;: [
+            &quot;dc&quot;
+        ],
+        &quot;tsuids&quot;: [
+            &quot;0102040102&quot;,
+            &quot;0102050102&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 24.199999809265137
+        }
+    }
+]
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-查询性能/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/13/Opentsdb原理-查询性能/" itemprop="url">Opentsdb原理-查询性能</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T17:12:55+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb原理-查询性能/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb原理-查询性能/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/13/Opentsdb原理-查询性能/" class="leancloud_visitors" data-flag-title="Opentsdb原理-查询性能">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>查询性能对任何数据库系统都至关重要。此页面列出了一些常见的OpenTSDB问题以及提高查询性能的步骤。</p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><p>此时，OpenTSDB没有内置缓存（除了内置GUI，将缓存PNG图像文件60秒）。因此，我们依赖于底层数据库的缓存。<br>在HBase（最普遍的OpenTSDB后端存储）中，存在块缓存的概念，它将在写入和/或读取时在内存中存储行和列的块。一个较好的入门教程是 Nick Dimiduck’s Block Cache 101。设置缓存的一个好方法是使用BucketCache并相当大地调整L1缓存的大小，以便它充当写缓存并将大部分最近的数据保存在内存中。然后，当用户运行查询时，L2缓存可以将经常查询的数据保存在内存中。</p>
+<p>仔细观察您所在region的服务器是否有GC暂停。用户通常在堆外模式下运行bucket缓存，但在Java和JNI在堆外内存之间读写时，仍然需要付出序列化的代价。</p>
+<p>此外，请确保在HBase表上启用了压缩。块使用表中指定的压缩算法存储在内存中，因此您可以在缓存中容纳比未压缩更多的压缩块。</p>
+<h2 id="一个可优化的查询"><a href="#一个可优化的查询" class="headerlink" title="一个可优化的查询"></a>一个可优化的查询</h2><p>如果您通常在查询中查找高基数（即很多tag value）的时间序列，请确保使用版本2.3或更高版本并启用了explicitTags。<br>因为查询必须列出与您要查找的数据相关联的所有tag key，我们将在HBase上启用特殊过滤器，这将有助于减少扫描的行数。See Query Filters for details.</p>
+<p>或者，如果在metric名称中存放高基数的tag，这将大大减少在查询时扫描的数据量并提高性能。有关更多信息，请参阅《写数据》章节</p>
+<h2 id="高基数查询"><a href="#高基数查询" class="headerlink" title="高基数查询"></a>高基数查询</h2><p>对于将多个时间序列聚合在一起的查询，提高性能的最佳方法是在启用了salting的情况下运行OpenTSDB 2.2或更高版本，并在HBase集群中运行多个region服务器。这将并行执行查询，从每个区域服务器获取数据子集并合并结果。例如，对于单个region服务器，查询可能需要10秒才能完成。当使用salting将相同数据写入5个region服务器时，相同的查询应该花费大约2秒，即最慢region服务器响应所花费的时间。合并集合通常是比重较小的时间。</p>
+<h2 id="大跨度的时间范围查询"><a href="#大跨度的时间范围查询" class="headerlink" title="大跨度的时间范围查询"></a>大跨度的时间范围查询</h2><p>如果在TSD和消费应用程序（例如UI或API客户端）之间观察到瓶颈，那么宽时间跨度（例如数月或数年）的查询可以从下采样中优化。使用下采样器将减少TSD序列化并发送给用户的数据量。</p>
+<p>但是，如果瓶颈在存储（HBase）和TSD之间，那么最好的解决方案是使用OpenTSDB 2.4或更高版本writing rolled-up汇总数据。这需要外部系统来计算基于时间的汇总并将其写入存储。或者，UI或API客户端可以针对较小的时间跨度对多个TSD执行多个查询，并将结果合并在一起。在未来，我们计划直接向TSD添加此类功能。</p>
+<h2 id="通用优化方法"><a href="#通用优化方法" class="headerlink" title="通用优化方法"></a>通用优化方法</h2><p>以下几项供参考：</p>
+<h3 id="多个读TSD"><a href="#多个读TSD" class="headerlink" title="多个读TSD"></a>多个读TSD</h3><p>运行专用于读取数据的多个TSD，并在其前置负载均衡。这是运行OpenTSDB时最常见设置，也可以完成在不关闭整个系统的情况下轮换TSD升级。</p>
+<h3 id="优化存储"><a href="#优化存储" class="headerlink" title="优化存储"></a>优化存储</h3><p>HBase有许多可以调整的参数，一般来说，OpenTSDB的大部分瓶颈都来自HBase。确保监视服务器，尤其是队列，缓存，响应时间，CPU和GC。</p>
+<h3 id="规范使用"><a href="#规范使用" class="headerlink" title="规范使用"></a>规范使用</h3><p>没有数据库系统可以免受长时间运行或资源占用查询的影响。要求用户以较小的时间范围（例如1小时）开始，并逐渐增加其时间范围。<br>然而，让用户理解基数的概念以及如何查询high_cardinality_tag_key = * 可能并不合适</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-下采样/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1633,411 +2240,6 @@ Interpolation——一种处理丢失值的方法，比如时间序列A在T1时�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb-快速入门/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/13/Opentsdb-快速入门/" itemprop="url">Opentsdb-快速入门</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T11:20:57+08:00">2018-07-13</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/07/13/Opentsdb-快速入门/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb-快速入门/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/07/13/Opentsdb-快速入门/" class="leancloud_visitors" data-flag-title="Opentsdb-快速入门">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>当你通过第一章完成安装后，你可以在以下内容中学到如何向opentsdb存储数据并在GUI查询它们，以及生成图表。</p>
-<h2 id="创建你第一个度量信息Metrics"><a href="#创建你第一个度量信息Metrics" class="headerlink" title="创建你第一个度量信息Metrics"></a>创建你第一个度量信息Metrics</h2><p>Metrics需要在你开始存储数据之前注册，以避免不想要的数据以及输入错误。你可以通过配置文件配置Metrics自动创建。创建一个或多个Metrics，使用如下命令：mkmetric</p>
-<pre><code>./tsdb mkmetric mysql.bytes_received mysql.bytes_sent
-</code></pre><p>这会创建两个metrics，mysql.bytes_received和mysql.bytes_sent<br>对于新的标签，会在你第一次使用时自动注册。目前为止，opentsdb允许最多2^24=16,777,216个不同的Metrics，16,777,216个不同的tag name和16,777,216个不同的tag value。因为它们的每一个都是一个3bytes的UID，Metric names, tag names 和tag values有它们自己的UID空间，所以你每一个只能有16,777,216个。虽然这个值可以配置但目前并未开放，所以需要记住，对于大的站点的user id或者event id，这种方案是不可行的。</p>
-<h2 id="开始收集数据"><a href="#开始收集数据" class="headerlink" title="开始收集数据"></a>开始收集数据</h2><p>目前为止我们有了两个Metric，我们可以向TSD发送数据。我们写一个收集mysql数据的脚本并向TSD发送数据。</p>
-<pre><code>cat &gt;mysql-collector.sh &lt;&lt;\EOF
-#!/bin/bash
-set -e
-while true; do
-  mysql -u USER -pPASS --batch -N --execute &quot;SHOW STATUS LIKE &apos;bytes%&apos;&quot; \
-  | awk -F&quot;\t&quot; -v now=`date +%s` -v host=`hostname` \
-    &apos;{ print &quot;put mysql.&quot; tolower($1) &quot; &quot; now &quot; &quot; $2 &quot; host=&quot; host }&apos;
-  sleep 15
-done | nc -w 30 host.name.of.tsd PORT
-EOF
-chmod +x mysql-collector.sh
-nohup ./mysql-collector.sh &amp;
-</code></pre><p>每隔15秒，脚本从Mysql收集两条数据并发送给TSD。你可以设置更小的时间间隔获得更大的量级。这个脚本做了什么？如果你不是shell和awk的忠实粉，可能不太明白脚本的工作原理。但是这很简单：<br>set -e命令简单的要求bash执行遇到错误时退出。简化了错误处理。然后脚本进入无限循环。在一个循环里，我们查询mysql并接受两条记录：</p>
-<pre><code>$ mysql -u USER -pPASS --execute &quot;SHOW STATUS LIKE &apos;bytes%&apos;&quot;
-+----------------+--      -----+
-| Variable_name  | Value |
-+----------------+-------+
-| Bytes_received  | 133    |
-| Bytes_sent         | 190    |
-+----------------+--      -----+
-</code></pre><p>–batch -N标签要求Mysql移除人机友好的标识所以我们不用手动过滤它。然后通过管道输出到awk，并告知使用tab分隔符 -F”\t”，因为–batch会使用该分隔符。然后我们创建两个变量，一个名为now，并通过当前时间戳初始化，另一个名为host，设置为当前机器的hostname，并且对于每一行，我们打印一条  put “mysql.”，然后跟一个小写的第一个值，然后是当前时间戳，然后是第二个值，另一个空格，并以host=hostname结尾。每15秒重复一次。nc -w 30为连接TSD设置了超时时间。注意这只是一个实例，实际实践时你可以使用Mysql收集器。</p>
-<p>如果你没有mysql_server用来监控，可以使用以下脚本收集linux server的负载信息。</p>
-<pre><code>cat &gt;loadavg-collector.sh &lt;&lt;\EOF
-#!/bin/bash
-set -e
-while true; do
-  awk -v now=`date +%s` -v host=`hostname` \
-  &apos;{ print &quot;put proc.loadavg.1m &quot; now &quot; &quot; $1 &quot; host=&quot; host;
-    print &quot;put proc.loadavg.5m &quot; now &quot; &quot; $2 &quot; host=&quot; host }&apos; /proc/loadavg
-  sleep 15
-done | nc -w 30 host.name.of.tsd PORT
-EOF
-chmod +x loadavg-collector.sh
-nohup ./loadavg-collector.sh &amp;
-</code></pre><p>这会存储从你服务器读取到的1分钟和5分钟的平均负载。</p>
-<pre><code>put proc.loadavg.1m 1288946927 0.36 host=foo
-put proc.loadavg.5m 1288946927 0.62 host=foo
-put proc.loadavg.1m 1288946942 0.43 host=foo
-put proc.loadavg.5m 1288946942 0.62 host=foo
-</code></pre><h2 id="批量导入"><a href="#批量导入" class="headerlink" title="批量导入"></a>批量导入</h2><p>想想一下，你有一个cron job收集每天或者每小时千兆字节的应用日志或者提取的数据。举个例子，你可能会某个时间请求应用的平均次数，你的cron job会计算30秒窗口的平均值，那么你的crontab输出可能如下所示：</p>
-<pre><code>1288900000 42 foo
-1288900000 51 bar
-1288900000 69 other
-1288900030 40 foo
-1288900030 59 bar
-1288900030 80 other
-</code></pre><p>第一列是一个时间戳，第二列是30秒窗口的平均延迟，第三列是请求的类型。如果你运行自己的cron job，一天就会有8640行记录。为了将其导入opentsdb，你需要将其输出调整为如下结构：</p>
-<pre><code>myservice.latency.avg 1288900000 42 reqtype=foo
-myservice.latency.avg 1288900000 51 reqtype=bar
-myservice.latency.avg 1288900000 69 reqtype=other
-myservice.latency.avg 1288900030 40 reqtype=foo
-myservice.latency.avg 1288900030 59 reqtype=bar
-myservice.latency.avg 1288900030 80 reqtype=other
-</code></pre><p>注意我们使用一个名为myservice.latency.avg的metric关联数据，并使用一个request type标签代表请求类型。你也可以添加一个主机名标签：host=foo。这样，就可以将每个服务器的数据划分。此外，为了批量导入你可以执行以下命令：</p>
-<pre><code>./tsdb import your-file
-</code></pre><p>如果你的数据过大，可以考虑先gzip压缩，可以通过管道命令gzip -9 &gt;output.gz代替直接写到文件。导入命令支持gzip文件并提高批量导入的性能。</p>
-<h2 id="自我监控"><a href="#自我监控" class="headerlink" title="自我监控"></a>自我监控</h2><p>每一个TSD都可以通过一个简单的命令导出当前状态。你可以收集这些状态并将其定时返回给TSD。第一步，创建必要的metric：</p>
-<pre><code>echo stats | nc -w 1 localhost 4242 \
-| awk &apos;{ print $1 }&apos; | sort -u \
-| xargs ./tsdb mkmetric
-</code></pre><p>这请求TSD的状态（确保在本地运行并监听4242端口），从状态中提取metric的名称并指定UID，然后你可以使用如下这个简单的脚本收集状态并存储到TSD中。</p>
-<pre><code>#!/bin/bash
-INTERVAL=15
-while :; do
-  echo stats || exit
-  sleep $INTERVAL
-done | nc -w 30 localhost $1 \
-    | sed &apos;s/^/put /&apos; \
-    | nc -w 30 localhost $1
-</code></pre><p>这样，你可以每15秒收集一次。</p>
-<h2 id="创建图表"><a href="#创建图表" class="headerlink" title="创建图表"></a>创建图表</h2><p>一旦你使用如上方法向TSD中写入了数据，你可以使用这些数据创建图表。用浏览器打开GUI界面。如果你的TSD在本地运行，那么访问：<a href="http://localhost:4242" target="_blank" rel="noopener">http://localhost:4242</a><br>第一步，选中一个指标并且将其放入metric box中，举个例子，proc.loadavg.1m。如你所见，该行会自动凸起并可以点击它们。然后点击from按钮，一个日期插件会显示出来，从昨天选择任意时间然后点击另一个按钮。到此为止，你会看到正在加载图表，在图表下方有简要说明。如果图表为空，可能未找到最近数据，点击 now刷新图表。这个初始化图表会聚合你所选中metric的一系列时间，试着点击左侧tags标签添加标签以筛选不同的host标签，从右侧添加值。在另一处点击你会看到图表重新绘制。</p>
-<p>原文地址：<a href="http://opentsdb.net/docs/build/html/user_guide/quickstart.html" target="_blank" rel="noopener">http://opentsdb.net/docs/build/html/user_guide/quickstart.html</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb-配置/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="xuhaibin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hubery's Polaris">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/13/Opentsdb-配置/" itemprop="url">Opentsdb-配置</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T11:12:20+08:00">2018-07-13</time>
-            
-
-            
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/07/13/Opentsdb-配置/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb-配置/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/07/13/Opentsdb-配置/" class="leancloud_visitors" data-flag-title="Opentsdb-配置">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>OpenTSDB可以通过本地系统的文件进行配置，通过命令行参数或组合，或者两者兼而有之。<br>配置文件<br>配置文件符合Java属性规范。配置名称是小写的，带点字符串，没有空格。每个名称后面跟着一个等号，然后是属性的值。所有OpenTSDB属性从tsd开始。#注释。例如:</p>
-<pre><code># List of Zookeeper hosts that manage the HBase cluster
-tsd.storage.hbase.zk_quorum = 192.168.1.100
-</code></pre><p>将配置TSD连接到192.168.1.100的Zookeeper。<br>当组合配置文件和命令行参数时，处理顺序如下:</p>
-<ol>
-<li>加载默认值加载配置文件值</li>
-<li>配置文件参数加载，覆盖默认值</li>
-<li>命令行参数加载，覆盖配置文件参数和默认参数<br>文件路径<br>可以使用- config命令行参数指定配置文件的完整路径。否则，如果没有指定，OpenTSDB和一些命令行工具将尝试在以下位置搜索一个有效的配置文件:<br>● ./opentsdb.conf<br>● /etc/opentsdb.conf<br>● /etc/opentsdb/opentsdb.conf<br>● /opt/opentsdb/opentsdb.conf<br>如果无法找到有效的配置文件，且不设置所需的属性，则TSD将不会启动。请参阅下面的属性表，以获得所需配置设置的列表。<br>参数<br>下面是所有工具的配置选项表。在应用时，将提供相应的命令行覆盖。请注意，单个命令行工具可能有它们自己的值，所以请参阅它们的文档以了解详细信息。</li>
-</ol>
-<p><a href="http://opentsdb.net/docs/build/html/user_guide/configuration.html" target="_blank" rel="noopener">http://opentsdb.net/docs/build/html/user_guide/configuration.html</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2087,7 +2289,7 @@ tsd.storage.hbase.zk_quorum = 192.168.1.100
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

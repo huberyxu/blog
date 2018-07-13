@@ -100,26 +100,28 @@
 
 
   
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="外文翻译,Opentsdb," />
 
 
-<meta name="description" content="I do not know go where, but I have been on the road.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hubery&#39;s Polaris">
-<meta property="og:url" content="https://haibin.work/archives/2018/page/2/index.html">
+<meta name="description" content="以下使用示例数据集的说明查询模式。我们将说明可能遇到的一些常见查询类型，以便您了解查询系统的工作方式。示例集中的每个时间序列仅存储一个数据点，并且UID已被截断为单个字节以使其更易于读取。示例数据集是使用HTTP API查询的所有Metric，仅显示 m= 部分。有关详细信息，请参阅 /api/ query。如果您使用的是CLI工具，则查询格式会略有不同，请阅读特定命令的文档。 示例数据 注意：这">
+<meta name="keywords" content="外文翻译,Opentsdb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Opentsdb原理-查询示例">
+<meta property="og:url" content="https://haibin.work/2018/07/13/Opentsdb原理-查询示例/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="I do not know go where, but I have been on the road.">
+<meta property="og:description" content="以下使用示例数据集的说明查询模式。我们将说明可能遇到的一些常见查询类型，以便您了解查询系统的工作方式。示例集中的每个时间序列仅存储一个数据点，并且UID已被截断为单个字节以使其更易于读取。示例数据集是使用HTTP API查询的所有Metric，仅显示 m= 部分。有关详细信息，请参阅 /api/ query。如果您使用的是CLI工具，则查询格式会略有不同，请阅读特定命令的文档。 示例数据 注意：这">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-13T10:16:58.780Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hubery&#39;s Polaris">
-<meta name="twitter:description" content="I do not know go where, but I have been on the road.">
+<meta name="twitter:title" content="Opentsdb原理-查询示例">
+<meta name="twitter:description" content="以下使用示例数据集的说明查询模式。我们将说明可能遇到的一些常见查询类型，以便您了解查询系统的工作方式。示例集中的每个时间序列仅存储一个数据点，并且UID已被截断为单个字节以使其更易于读取。示例数据集是使用HTTP API查询的所有Metric，仅显示 m= 部分。有关详细信息，请参阅 /api/ query。如果您使用的是CLI工具，则查询格式会略有不同，请阅读特定命令的文档。 示例数据 注意：这">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/archives/2018/page/2/"/>
+  <link rel="canonical" href="https://haibin.work/2018/07/13/Opentsdb原理-查询示例/"/>
 
 
 
@@ -128,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title>归档 | Hubery's Polaris</title>
+  <title>Opentsdb原理-查询示例 | Hubery's Polaris</title>
   
 
 
@@ -185,7 +187,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -306,417 +308,475 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
+  <div id="posts" class="posts-expand">
+    
 
-      
-      <span class="archive-page-counter">
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-查询示例/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
         
         
+          <h1 class="post-title" itemprop="name headline">Opentsdb原理-查询示例</h1>
         
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T17:40:29+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
           
-        
-        um..! 目前共计 23 篇日志。 继续努力。
-      </span>
-      
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
 
-      
-
-        
-        
-        
-
-        
+                
+                
+              
+            </span>
           
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2018">2018</h1>
-          </div>
-        
-        
 
-        
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb原理-查询示例/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb原理-查询示例/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+          
+          
+             <span id="/2018/07/13/Opentsdb原理-查询示例/" class="leancloud_visitors" data-flag-title="Opentsdb原理-查询示例">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
 
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/07/13/Opentsdb-配置/" itemprop="url">
-              
-                <span itemprop="name">Opentsdb-配置</span>
-              
-            </a>
-        
-      </h2>
+          
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-07-13T11:12:20+08:00"
-              content="2018-07-13" >
-          07-13
-        </time>
-      </div>
+          
 
-    </header>
-  </article>
+          
 
+        </div>
+      </header>
+    
 
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/07/13/Opentsdb-安装/" itemprop="url">
-              
-                <span itemprop="name">Opentsdb-安装</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-07-13T10:58:51+08:00"
-              content="2018-07-13" >
-          07-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/26/Abird平台OLAP技术架构的一些思考-2/" itemprop="url">
-              
-                <span itemprop="name">Abird平台OLAP技术架构的一些思考(2)</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-26T23:48:37+08:00"
-              content="2018-02-26" >
-          02-26
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
 
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/26/Abird平台OLAP技术架构的一些思考-1/" itemprop="url">
-              
-                <span itemprop="name">Abird平台OLAP技术架构的一些思考(1)</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-26T23:48:30+08:00"
-              content="2018-02-26" >
-          02-26
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
+        <p>以下使用示例数据集的说明查询模式。我们将说明可能遇到的一些常见查询类型，以便您了解查询系统的工作方式。示例集中的每个时间序列仅存储一个数据点，并且UID已被截断为单个字节以使其更易于读取。示例数据集是使用HTTP API查询的所有Metric，仅显示 m= 部分。有关详细信息，请参阅 /api/ query。<br>如果您使用的是CLI工具，则查询格式会略有不同，请阅读特定命令的文档。</p>
+<h2 id="示例数据"><a href="#示例数据" class="headerlink" title="示例数据"></a>示例数据</h2>
+<p>注意：<br>这不一定是设置指标和标签的最佳方式，而是用于说明查询系统的工作原理。特别地，TS＃4和5虽然是合法的时间序列，但可能会破坏你的查询，除非你知道它们是如何工作的。通常，尝试为每个时间序列保持相同数量和类型的标记。</p>
+<h2 id="底层原理"><a href="#底层原理" class="headerlink" title="底层原理"></a>底层原理</h2><p>您可能想要了解OpenTSDB如何在此处存储时间序列数据：存储章节。否则，请记住存储中的每一行都有一个格式化的唯一键：</p>
+<pre><code>&lt;metricID&gt;&lt;normalized_timestamp&gt;&lt;tagkID1&gt;&lt;tagvID1&gt;[...&lt;tagkIDN&gt;&lt;tagvIDN&gt;]
+</code></pre><p>上面的数据表将存储为:</p>
+<pre><code>01&lt;ts&gt;0101
+01&lt;ts&gt;01010306
+01&lt;ts&gt;02040101
+01&lt;ts&gt;02040102
+01&lt;ts&gt;02040103
+01&lt;ts&gt;02050101
+01&lt;ts&gt;02050102
+02&lt;ts&gt;02040101
+02&lt;ts&gt;02040102
+</code></pre><p>当您查询OpenTSDB时，这是在幕后发生的事情:</p>
+<ol>
+<li>解析并验证查询以确保格式正确并且存在metric，tag name和tag value。如果系统中不存在该metric，tag name或tag value，则会返回错误。</li>
+<li>然后它为底层存储系统设置Scanner<br> 如果查询没有任何标记或标记值，那么它将获取与<metricid> <timestamp>匹配的任何数据行，因此如果您有特定metric的大量时间序列，则可能会有很多，很多行。<br> 如果查询确实定义了一个或多个tag，那么它仍将扫描与<metricid> <timestamp>匹配的所有行，但还会执行正则表达式以仅返回包含所请求标记的行。</timestamp></metricid></timestamp></metricid></li>
+<li>如果需要的话, 一旦返回了所有数据, OpenTSDB就会将其分组(group)，</li>
+<li>如果请求下采样，则使用适当的聚合器将每个单独的时间序列下采样到较小的时间跨度中</li>
+<li>然后使用特定聚合函数聚合每组数据</li>
+<li>如果检测到rate标志，则将调整每个聚合值以获得速率</li>
+<li>返回结果给调用者</li>
+</ol>
+<h2 id="查询一-一个Metric的所有时间序列"><a href="#查询一-一个Metric的所有时间序列" class="headerlink" title="查询一: 一个Metric的所有时间序列"></a>查询一: 一个Metric的所有时间序列</h2><pre><code>m=sum:cpu.system
+</code></pre><p>这是最简单的查询。 TSDB将设置Scanner以获取<start>和<end>之间的metric UID为01的所有数据点。结果将是时间序列＃1到＃7汇总在一起的单个数据集。如果给定metric有数千个唯一tagkv，则它们将全部累加到一个时间序列中。</end></start></p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {},
+        &quot;aggregated_tags&quot;: [
+            &quot;host&quot;
+        ],
+        &quot;tsuids&quot;: [
+            &quot;010101&quot;,
+            &quot;0101010306&quot;,
+            &quot;0102050101&quot;,
+            &quot;0102040101&quot;,
+            &quot;0102040102&quot;,
+            &quot;0102040103&quot;,
+            &quot;0102050102&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 130.29999923706055
+        }
+    }
+]
+</code></pre><h2 id="查询二-Tag过滤"><a href="#查询二-Tag过滤" class="headerlink" title="查询二: Tag过滤"></a>查询二: Tag过滤</h2><p>通常聚合metric的所有时间序列并不是特别有用。相反，我们可以通过筛选包含特定 tagk / tagv 对组合的时间序列来深入挖掘。只需将它们放在花括号中：</p>
+<pre><code>m=sum:cpu.system{host=web01}
+</code></pre><p>这将返回时间序列＃1，＃4，＃5和＃6的汇总序列，因为它们是包含host = web01的唯一时间序列。</p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;010101&quot;,
+            &quot;0101010306&quot;,
+            &quot;0102040101&quot;,
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 63.59999942779541
+        }
+    }
+]
+</code></pre><h2 id="查询三-指定时间序列"><a href="#查询三-指定时间序列" class="headerlink" title="查询三: 指定时间序列"></a>查询三: 指定时间序列</h2><p>如果你想要一个特定的时间表怎么办？您必须包含每个tag name和相应的tag value。</p>
+<pre><code>m=sum:cpu.system{host=web01,dc=lax}
+</code></pre><p>这将仅返回时间序列＃6中的数据。</p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;lax&quot;,
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 15.199999809265137
+        }
+    }
+]
+</code></pre><p>注意：<br>这是tag schema的缺陷。假设您想从时间序列＃4中获取数据。使用当前系统，无法做到。如果你这样查询m=sum:cpu.system{host=web01}，以期这样仅会返回#4。然而，正如我们所见会返回#1, #4, #5 and #6的聚合值。为防止出现这种情况，您需要在＃4中添加另一个标记，以区别于该组中的其他时间序列。或者，如果您已经提交，则可以使用TSUID查询。</p>
+<h2 id="查询四-指定TSUID"><a href="#查询四-指定TSUID" class="headerlink" title="查询四: 指定TSUID"></a>查询四: 指定TSUID</h2><p>如果您知道要检索的时间序列的确切TSUID，则可以像这样简单地查询：</p>
+<pre><code>tsuids=sum:0102040102
+</code></pre><p>结果将是您请求的时间序列:</p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;lax&quot;,
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 15.199999809265137
+        }
+    }
+]
+</code></pre><h2 id="查询五-多TSUID查询"><a href="#查询五-多TSUID查询" class="headerlink" title="查询五: 多TSUID查询"></a>查询五: 多TSUID查询</h2><p>您还可以在同一查询中聚合多个TSUID，前提是它们有相同的metric。如果您尝试聚合多个metric，API将会报错。</p>
+<pre><code>tsuids=sum:0102040101,0102050101
 
-        
-        
-        
+[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [
+            &quot;dc&quot;
+        ],
+        &quot;tsuids&quot;: [
+            &quot;0102040101&quot;,
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 33.19999980926514
+        }
+    }
+]
+</code></pre><h2 id="查询六-Grouping"><a href="#查询六-Grouping" class="headerlink" title="查询六: Grouping"></a>查询六: Grouping</h2><pre><code>m=sum:cpu.system{host=*}
 
-        
-        
+*（星号）是一个分组运算符，它将为给定的标记名称的每个唯一值返回一个数据集。
+</code></pre><p>包含给定metric和给定tag name的每个时间序列，无论其他tag name或tag value如何，都将聚合在结果中。在对各个时间序列结果进行分组后，它们将被聚合并返回。</p>
+<p>上面的例子，我们将会三组数据返回：</p>
+<pre><code>Group    Time Series Included
+web01    #1, #4, #5, #6
+web02    #2, #7
+web03    #3
+</code></pre><p>TSDB发现了7个包含“host”标签的总时间序列。该标记有3个唯一值（web01，web02和web03）。</p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;010101&quot;,
+            &quot;0101010306&quot;,
+            &quot;0102040101&quot;,
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 63.59999942779541
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web02&quot;
+        },
+        &quot;aggregated_tags&quot;: [
+            &quot;dc&quot;
+        ],
+        &quot;tsuids&quot;: [
+            &quot;0102040102&quot;,
+            &quot;0102050102&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 24.199999809265137
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;dal&quot;,
+            &quot;host&quot;: &quot;web03&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102040103&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 42.5
+        }
+    }
+]
+</code></pre><h2 id="查询七-Group-and-Filter"><a href="#查询七-Group-and-Filter" class="headerlink" title="查询七: Group and Filter"></a>查询七: Group and Filter</h2><p>注意，在示例＃2中，web01组包括时间序列＃4和＃5。我们可以通过指定第二个标记来过滤掉那些：</p>
+<pre><code>m=sum:cpu.nice{host=*,dc=dal}
+</code></pre><p>现在我们只得到＃1 - ＃3的结果，但我们过滤了dc = lax值。</p>
+<pre><code>[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;dal&quot;,
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102040101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 18
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;dal&quot;,
+            &quot;host&quot;: &quot;web02&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102040102&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 9
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;dc&quot;: &quot;dal&quot;,
+            &quot;host&quot;: &quot;web03&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;0102040103&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 42.5
+        }
+    }
+]
+</code></pre><h2 id="查询八-Group-With-OR"><a href="#查询八-Group-With-OR" class="headerlink" title="查询八: Group With OR"></a>查询八: Group With OR</h2><pre><code>*运算符是贪婪的，将返回分配给标记名称的所有值。如果您只想要几个标记值，则可以使用| （管道）达成。
+m=sum:cpu.nice{host=web01|web02}
+这将找到包含“web01”或“web02”的“主机”值的所有时间序列，然后按值分组，类似于*运算符。
+</code></pre><p>这次我们的分组看起来像这样：</p>
+<pre><code>Group    Time Series Included
+web01    #1, #4, #5, #6
+web02    #2, #7
 
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-生产部署/" itemprop="url">
-              
-                <span itemprop="name">Druid-生产部署</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:16:54+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
+[
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web01&quot;
+        },
+        &quot;aggregated_tags&quot;: [],
+        &quot;tsuids&quot;: [
+            &quot;010101&quot;,
+            &quot;0101010306&quot;,
+            &quot;0102040101&quot;,
+            &quot;0102050101&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 63.59999942779541
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;cpu.system&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web02&quot;
+        },
+        &quot;aggregated_tags&quot;: [
+            &quot;dc&quot;
+        ],
+        &quot;tsuids&quot;: [
+            &quot;0102040102&quot;,
+            &quot;0102050102&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1346846400&quot;: 24.199999809265137
+        }
+    }
+]
+</code></pre>
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-性能/" itemprop="url">
-              
-                <span itemprop="name">Druid-性能</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:10:47+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-查询Api/" itemprop="url">
-              
-                <span itemprop="name">Druid-查询Api</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:05:15+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-存储格式/" itemprop="url">
-              
-                <span itemprop="name">Druid-存储格式</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T13:14:28+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/12/Druid-架构/" itemprop="url">
-              
-                <span itemprop="name">Druid-架构</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-12T18:45:38+08:00"
-              content="2018-02-12" >
-          02-12
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/12/Druid-背景/" itemprop="url">
-              
-                <span itemprop="name">Druid-背景</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-12T18:45:30+08:00"
-              content="2018-02-12" >
-          02-12
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
     </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/外文翻译/" rel="tag"># 外文翻译</a>
+          
+            <a href="/tags/Opentsdb/" rel="tag"># Opentsdb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/13/Opentsdb原理-查询性能/" rel="next" title="Opentsdb原理-查询性能">
+                <i class="fa fa-chevron-left"></i> Opentsdb原理-查询性能
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
-
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/2018/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/archives/2018/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/2018/page/3/">3</a><a class="extend next" rel="next" href="/archives/2018/page/3/"><i class="fa fa-angle-right"></i></a>
-  </nav>
+  </article>
 
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -739,8 +799,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -854,6 +923,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#示例数据"><span class="nav-number">1.</span> <span class="nav-text">示例数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#底层原理"><span class="nav-number">2.</span> <span class="nav-text">底层原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询一-一个Metric的所有时间序列"><span class="nav-number">3.</span> <span class="nav-text">查询一: 一个Metric的所有时间序列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询二-Tag过滤"><span class="nav-number">4.</span> <span class="nav-text">查询二: Tag过滤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询三-指定时间序列"><span class="nav-number">5.</span> <span class="nav-text">查询三: 指定时间序列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询四-指定TSUID"><span class="nav-number">6.</span> <span class="nav-text">查询四: 指定TSUID</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询五-多TSUID查询"><span class="nav-number">7.</span> <span class="nav-text">查询五: 多TSUID查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询六-Grouping"><span class="nav-number">8.</span> <span class="nav-text">查询六: Grouping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询七-Group-and-Filter"><span class="nav-number">9.</span> <span class="nav-text">查询七: Group and Filter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询八-Group-With-OR"><span class="nav-number">10.</span> <span class="nav-text">查询八: Group With OR</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -998,6 +1083,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
 
   
 

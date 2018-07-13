@@ -100,26 +100,28 @@
 
 
   
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="外文翻译,Opentsdb," />
 
 
-<meta name="description" content="I do not know go where, but I have been on the road.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hubery&#39;s Polaris">
-<meta property="og:url" content="https://haibin.work/archives/2018/page/2/index.html">
+<meta name="description" content="查询性能对任何数据库系统都至关重要。此页面列出了一些常见的OpenTSDB问题以及提高查询性能的步骤。 缓存此时，OpenTSDB没有内置缓存（除了内置GUI，将缓存PNG图像文件60秒）。因此，我们依赖于底层数据库的缓存。在HBase（最普遍的OpenTSDB后端存储）中，存在块缓存的概念，它将在写入和/或读取时在内存中存储行和列的块。一个较好的入门教程是 Nick Dimiduck’s Blo">
+<meta name="keywords" content="外文翻译,Opentsdb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Opentsdb原理-查询性能">
+<meta property="og:url" content="https://haibin.work/2018/07/13/Opentsdb原理-查询性能/index.html">
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
-<meta property="og:description" content="I do not know go where, but I have been on the road.">
+<meta property="og:description" content="查询性能对任何数据库系统都至关重要。此页面列出了一些常见的OpenTSDB问题以及提高查询性能的步骤。 缓存此时，OpenTSDB没有内置缓存（除了内置GUI，将缓存PNG图像文件60秒）。因此，我们依赖于底层数据库的缓存。在HBase（最普遍的OpenTSDB后端存储）中，存在块缓存的概念，它将在写入和/或读取时在内存中存储行和列的块。一个较好的入门教程是 Nick Dimiduck’s Blo">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-13T09:41:40.340Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hubery&#39;s Polaris">
-<meta name="twitter:description" content="I do not know go where, but I have been on the road.">
+<meta name="twitter:title" content="Opentsdb原理-查询性能">
+<meta name="twitter:description" content="查询性能对任何数据库系统都至关重要。此页面列出了一些常见的OpenTSDB问题以及提高查询性能的步骤。 缓存此时，OpenTSDB没有内置缓存（除了内置GUI，将缓存PNG图像文件60秒）。因此，我们依赖于底层数据库的缓存。在HBase（最普遍的OpenTSDB后端存储）中，存在块缓存的概念，它将在写入和/或读取时在内存中存储行和列的块。一个较好的入门教程是 Nick Dimiduck’s Blo">
 
 
 
 
 
 
-  <link rel="canonical" href="https://haibin.work/archives/2018/page/2/"/>
+  <link rel="canonical" href="https://haibin.work/2018/07/13/Opentsdb原理-查询性能/"/>
 
 
 
@@ -128,7 +130,7 @@
     sidebar: "",
   };
 </script>
-  <title>归档 | Hubery's Polaris</title>
+  <title>Opentsdb原理-查询性能 | Hubery's Polaris</title>
   
 
 
@@ -185,7 +187,7 @@
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -306,417 +308,216 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
+  <div id="posts" class="posts-expand">
+    
 
-      
-      <span class="archive-page-counter">
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-查询性能/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
         
         
+          <h1 class="post-title" itemprop="name headline">Opentsdb原理-查询性能</h1>
         
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T17:12:55+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
           
-        
-        um..! 目前共计 23 篇日志。 继续努力。
-      </span>
-      
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
 
-      
-
-        
-        
-        
-
-        
+                
+                
+              
+            </span>
           
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2018">2018</h1>
-          </div>
-        
-        
 
-        
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb原理-查询性能/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb原理-查询性能/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+          
+          
+             <span id="/2018/07/13/Opentsdb原理-查询性能/" class="leancloud_visitors" data-flag-title="Opentsdb原理-查询性能">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
 
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/07/13/Opentsdb-配置/" itemprop="url">
-              
-                <span itemprop="name">Opentsdb-配置</span>
-              
-            </a>
-        
-      </h2>
+          
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-07-13T11:12:20+08:00"
-              content="2018-07-13" >
-          07-13
-        </time>
-      </div>
+          
 
-    </header>
-  </article>
+          
 
+        </div>
+      </header>
+    
 
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/07/13/Opentsdb-安装/" itemprop="url">
-              
-                <span itemprop="name">Opentsdb-安装</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-07-13T10:58:51+08:00"
-              content="2018-07-13" >
-          07-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/26/Abird平台OLAP技术架构的一些思考-2/" itemprop="url">
-              
-                <span itemprop="name">Abird平台OLAP技术架构的一些思考(2)</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-26T23:48:37+08:00"
-              content="2018-02-26" >
-          02-26
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
 
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/26/Abird平台OLAP技术架构的一些思考-1/" itemprop="url">
-              
-                <span itemprop="name">Abird平台OLAP技术架构的一些思考(1)</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-26T23:48:30+08:00"
-              content="2018-02-26" >
-          02-26
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+      
+        <p>查询性能对任何数据库系统都至关重要。此页面列出了一些常见的OpenTSDB问题以及提高查询性能的步骤。</p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><p>此时，OpenTSDB没有内置缓存（除了内置GUI，将缓存PNG图像文件60秒）。因此，我们依赖于底层数据库的缓存。<br>在HBase（最普遍的OpenTSDB后端存储）中，存在块缓存的概念，它将在写入和/或读取时在内存中存储行和列的块。一个较好的入门教程是 Nick Dimiduck’s Block Cache 101。设置缓存的一个好方法是使用BucketCache并相当大地调整L1缓存的大小，以便它充当写缓存并将大部分最近的数据保存在内存中。然后，当用户运行查询时，L2缓存可以将经常查询的数据保存在内存中。</p>
+<p>仔细观察您所在region的服务器是否有GC暂停。用户通常在堆外模式下运行bucket缓存，但在Java和JNI在堆外内存之间读写时，仍然需要付出序列化的代价。</p>
+<p>此外，请确保在HBase表上启用了压缩。块使用表中指定的压缩算法存储在内存中，因此您可以在缓存中容纳比未压缩更多的压缩块。</p>
+<h2 id="一个可优化的查询"><a href="#一个可优化的查询" class="headerlink" title="一个可优化的查询"></a>一个可优化的查询</h2><p>如果您通常在查询中查找高基数（即很多tag value）的时间序列，请确保使用版本2.3或更高版本并启用了explicitTags。<br>因为查询必须列出与您要查找的数据相关联的所有tag key，我们将在HBase上启用特殊过滤器，这将有助于减少扫描的行数。See Query Filters for details.</p>
+<p>或者，如果在metric名称中存放高基数的tag，这将大大减少在查询时扫描的数据量并提高性能。有关更多信息，请参阅《写数据》章节</p>
+<h2 id="高基数查询"><a href="#高基数查询" class="headerlink" title="高基数查询"></a>高基数查询</h2><p>对于将多个时间序列聚合在一起的查询，提高性能的最佳方法是在启用了salting的情况下运行OpenTSDB 2.2或更高版本，并在HBase集群中运行多个region服务器。这将并行执行查询，从每个区域服务器获取数据子集并合并结果。例如，对于单个region服务器，查询可能需要10秒才能完成。当使用salting将相同数据写入5个region服务器时，相同的查询应该花费大约2秒，即最慢region服务器响应所花费的时间。合并集合通常是比重较小的时间。</p>
+<h2 id="大跨度的时间范围查询"><a href="#大跨度的时间范围查询" class="headerlink" title="大跨度的时间范围查询"></a>大跨度的时间范围查询</h2><p>如果在TSD和消费应用程序（例如UI或API客户端）之间观察到瓶颈，那么宽时间跨度（例如数月或数年）的查询可以从下采样中优化。使用下采样器将减少TSD序列化并发送给用户的数据量。</p>
+<p>但是，如果瓶颈在存储（HBase）和TSD之间，那么最好的解决方案是使用OpenTSDB 2.4或更高版本writing rolled-up汇总数据。这需要外部系统来计算基于时间的汇总并将其写入存储。或者，UI或API客户端可以针对较小的时间跨度对多个TSD执行多个查询，并将结果合并在一起。在未来，我们计划直接向TSD添加此类功能。</p>
+<h2 id="通用优化方法"><a href="#通用优化方法" class="headerlink" title="通用优化方法"></a>通用优化方法</h2><p>以下几项供参考：</p>
+<h3 id="多个读TSD"><a href="#多个读TSD" class="headerlink" title="多个读TSD"></a>多个读TSD</h3><p>运行专用于读取数据的多个TSD，并在其前置负载均衡。这是运行OpenTSDB时最常见设置，也可以完成在不关闭整个系统的情况下轮换TSD升级。</p>
+<h3 id="优化存储"><a href="#优化存储" class="headerlink" title="优化存储"></a>优化存储</h3><p>HBase有许多可以调整的参数，一般来说，OpenTSDB的大部分瓶颈都来自HBase。确保监视服务器，尤其是队列，缓存，响应时间，CPU和GC。</p>
+<h3 id="规范使用"><a href="#规范使用" class="headerlink" title="规范使用"></a>规范使用</h3><p>没有数据库系统可以免受长时间运行或资源占用查询的影响。要求用户以较小的时间范围（例如1小时）开始，并逐渐增加其时间范围。<br>然而，让用户理解基数的概念以及如何查询high_cardinality_tag_key = * 可能并不合适</p>
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-生产部署/" itemprop="url">
-              
-                <span itemprop="name">Druid-生产部署</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:16:54+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-性能/" itemprop="url">
-              
-                <span itemprop="name">Druid-性能</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:10:47+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-查询Api/" itemprop="url">
-              
-                <span itemprop="name">Druid-查询Api</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T14:05:15+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/13/Druid-存储格式/" itemprop="url">
-              
-                <span itemprop="name">Druid-存储格式</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-13T13:14:28+08:00"
-              content="2018-02-13" >
-          02-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/12/Druid-架构/" itemprop="url">
-              
-                <span itemprop="name">Druid-架构</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-12T18:45:38+08:00"
-              content="2018-02-12" >
-          02-12
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/02/12/Druid-背景/" itemprop="url">
-              
-                <span itemprop="name">Druid-背景</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-02-12T18:45:30+08:00"
-              content="2018-02-12" >
-          02-12
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
     </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/外文翻译/" rel="tag"># 外文翻译</a>
+          
+            <a href="/tags/Opentsdb/" rel="tag"># Opentsdb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/13/Opentsdb原理-下采样/" rel="next" title="Opentsdb原理-下采样">
+                <i class="fa fa-chevron-left"></i> Opentsdb原理-下采样
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/13/Opentsdb原理-查询示例/" rel="prev" title="Opentsdb原理-查询示例">
+                Opentsdb原理-查询示例 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
-
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/2018/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/archives/2018/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/2018/page/3/">3</a><a class="extend next" rel="next" href="/archives/2018/page/3/"><i class="fa fa-angle-right"></i></a>
-  </nav>
+  </article>
 
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -739,8 +540,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -854,6 +664,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-number">1.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个可优化的查询"><span class="nav-number">2.</span> <span class="nav-text">一个可优化的查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高基数查询"><span class="nav-number">3.</span> <span class="nav-text">高基数查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大跨度的时间范围查询"><span class="nav-number">4.</span> <span class="nav-text">大跨度的时间范围查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用优化方法"><span class="nav-number">5.</span> <span class="nav-text">通用优化方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多个读TSD"><span class="nav-number">5.1.</span> <span class="nav-text">多个读TSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化存储"><span class="nav-number">5.2.</span> <span class="nav-text">优化存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#规范使用"><span class="nav-number">5.3.</span> <span class="nav-text">规范使用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -998,6 +824,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
 
   
 
