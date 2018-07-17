@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":true},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '1B20LSB7DA',
+      apiKey: 'cb5111c2a9732bac0fdb7bbe694ee29b',
+      indexName: 'my-blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="外文翻译,Opentsdb," />
+
+
+<meta name="description" content="随着OpenTSDB 2.2版本的出现，我们现在可以围绕查询提供大量细节，因此我们专注于提高灵活性和性能。查询详细信息包括发出请求的人（通过headers和socket），响应是什么（HTTP状态代码和/或异常）以及TSD采取的各种进程的时间安排。 每个HTTP查询都可以包含一些这样的细节如原始查询，需使用showSummary和showQuery参数的添加计时信息。其他详细信息可以在 /api/">
+<meta name="keywords" content="外文翻译,Opentsdb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Opentsdb原理-查询细节与状态">
+<meta property="og:url" content="https://haibin.work/2018/07/13/Opentsdb原理-查询细节与状态/index.html">
+<meta property="og:site_name" content="Hubery&#39;s Polaris">
+<meta property="og:description" content="随着OpenTSDB 2.2版本的出现，我们现在可以围绕查询提供大量细节，因此我们专注于提高灵活性和性能。查询详细信息包括发出请求的人（通过headers和socket），响应是什么（HTTP状态代码和/或异常）以及TSD采取的各种进程的时间安排。 每个HTTP查询都可以包含一些这样的细节如原始查询，需使用showSummary和showQuery参数的添加计时信息。其他详细信息可以在 /api/">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-查询细节与状态/table-1.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-查询细节与状态/table-2.png">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-查询细节与状态/table-3.png">
+<meta property="og:updated_time" content="2018-07-17T06:50:40.313Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Opentsdb原理-查询细节与状态">
+<meta name="twitter:description" content="随着OpenTSDB 2.2版本的出现，我们现在可以围绕查询提供大量细节，因此我们专注于提高灵活性和性能。查询详细信息包括发出请求的人（通过headers和socket），响应是什么（HTTP状态代码和/或异常）以及TSD采取的各种进程的时间安排。 每个HTTP查询都可以包含一些这样的细节如原始查询，需使用showSummary和showQuery参数的添加计时信息。其他详细信息可以在 /api/">
+<meta name="twitter:image" content="https://haibin.work/2018/07/13/Opentsdb原理-查询细节与状态/table-1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://haibin.work/2018/07/13/Opentsdb原理-查询细节与状态/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Opentsdb原理-查询细节与状态 | Hubery's Polaris</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?92a992cb3216db3ae047b55a58b2d111";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hubery's Polaris</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/13/Opentsdb原理-查询细节与状态/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Opentsdb原理-查询细节与状态</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-13T18:19:59+08:00">2018-07-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/13/Opentsdb原理-查询细节与状态/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/13/Opentsdb原理-查询细节与状态/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/13/Opentsdb原理-查询细节与状态/" class="leancloud_visitors" data-flag-title="Opentsdb原理-查询细节与状态">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>随着OpenTSDB 2.2版本的出现，我们现在可以围绕查询提供大量细节，因此我们专注于提高灵活性和性能。查询详细信息包括发出请求的人（通过headers和socket），响应是什么（HTTP状态代码和/或异常）以及TSD采取的各种进程的时间安排。</p>
+<p>每个HTTP查询都可以包含一些这样的细节如原始查询，需使用showSummary和showQuery参数的添加计时信息。其他详细信息可以在 /api/stats/query的输出中找到，包括标题，状态和异常。并且可以通过日志配置将完整详细信息（除了实际结果数据）记录到磁盘。</p>
+<h2 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h2><p>此部分是用户请求的查询序列化。在日志和统计信息页面中，有包含完整查询的计时和全局选项。返回内容包括子查询（metric和filter）以用于标识查询内容，以及关联的结果集（例如如果您使用两个不同的聚合器请求两次相同的metric，则需要知道哪个数据集对应于哪个聚合器）。</p>
+<p>对于字段及其含义，请参阅/ api / query。关于字段的一些内容如下:</p>
+<ol>
+<li>tags应具有与filters数组具有group_by条目相同的条目数。这是由于向后兼容2.1和1.0。旧样式查询将转换为筛选查询并以相同方式运行。</li>
+<li>此处可能会显示许多额外字段，其默认值为null。</li>
+<li>您可以将查询复制并粘贴到POST客户端以执行并找出返回的数据</li>
+</ol>
+<a id="more"></a>
+<p>示例：</p>
+<pre><code>{
+      &quot;start&quot;: &quot;1455531250181&quot;,
+      &quot;end&quot;: null,
+      &quot;timezone&quot;: null,
+      &quot;options&quot;: null,
+      &quot;padding&quot;: false,
+      &quot;queries&quot;: [{
+              &quot;aggregator&quot;: &quot;zimsum&quot;,
+              &quot;metric&quot;: &quot;tsd.connectionmgr.bytes.written&quot;,
+              &quot;tsuids&quot;: null,
+              &quot;downsample&quot;: &quot;1m-avg&quot;,
+              &quot;rate&quot;: true,
+              &quot;filters&quot;: [{
+                      &quot;tagk&quot;: &quot;colo&quot;,
+                      &quot;filter&quot;: &quot;*&quot;,
+                      &quot;group_by&quot;: true,
+                      &quot;type&quot;: &quot;wildcard&quot;
+              }, {
+                      &quot;tagk&quot;: &quot;env&quot;,
+                      &quot;filter&quot;: &quot;prod&quot;,
+                      &quot;group_by&quot;: true,
+                      &quot;type&quot;: &quot;literal_or&quot;
+              }, {
+                      &quot;tagk&quot;: &quot;role&quot;,
+                      &quot;filter&quot;: &quot;frontend&quot;,
+                      &quot;group_by&quot;: true,
+                      &quot;type&quot;: &quot;literal_or&quot;
+              }],
+              &quot;rateOptions&quot;: {
+                      &quot;counter&quot;: true,
+                      &quot;counterMax&quot;: 9223372036854775807,
+                      &quot;resetValue&quot;: 1,
+                      &quot;dropResets&quot;: false
+              },
+              &quot;tags&quot;: {
+                      &quot;role&quot;: &quot;literal_or(frontend)&quot;,
+                      &quot;env&quot;: &quot;literal_or(prod)&quot;,
+                      &quot;colo&quot;: &quot;wildcard(*)&quot;
+              }
+      }, {
+              &quot;aggregator&quot;: &quot;zimsum&quot;,
+              &quot;metric&quot;: &quot;tsd.hbase.rpcs.cumulative_bytes_received&quot;,
+              &quot;tsuids&quot;: null,
+              &quot;downsample&quot;: &quot;1m-avg&quot;,
+              &quot;rate&quot;: true,
+              &quot;filters&quot;: [{
+                      &quot;tagk&quot;: &quot;colo&quot;,
+                      &quot;filter&quot;: &quot;*&quot;,
+                      &quot;group_by&quot;: true,
+                      &quot;type&quot;: &quot;wildcard&quot;
+              }, {
+                      &quot;tagk&quot;: &quot;env&quot;,
+                      &quot;filter&quot;: &quot;prod&quot;,
+                      &quot;group_by&quot;: true,
+                      &quot;type&quot;: &quot;literal_or&quot;
+              }, {
+                      &quot;tagk&quot;: &quot;role&quot;,
+                      &quot;filter&quot;: &quot;frontend&quot;,
+                      &quot;group_by&quot;: true,
+                      &quot;type&quot;: &quot;literal_or&quot;
+              }],
+              &quot;rateOptions&quot;: {
+                      &quot;counter&quot;: true,
+                      &quot;counterMax&quot;: 9223372036854775807,
+                      &quot;resetValue&quot;: 1,
+                      &quot;dropResets&quot;: false
+              },
+              &quot;tags&quot;: {
+                      &quot;role&quot;: &quot;literal_or(frontend)&quot;,
+                      &quot;env&quot;: &quot;literal_or(prod)&quot;,
+                      &quot;colo&quot;: &quot;wildcard(*)&quot;
+              }
+      }],
+      &quot;delete&quot;: false,
+      &quot;noAnnotations&quot;: false,
+      &quot;globalAnnotations&quot;: false,
+      &quot;showTSUIDs&quot;: false,
+      &quot;msResolution&quot;: false,
+      &quot;showQuery&quot;: false,
+      &quot;showStats&quot;: false,
+      &quot;showSummary&quot;: false
+}
+</code></pre><h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><p>如果查询失败，则此字段将包括消息字符串和用于精确定位的堆栈信息的第一行。如果查询成功，则此字段将为null。<br>示例：</p>
+<pre><code>&quot;exception&quot;: &quot;No such name for &apos;metrics&apos;: &apos;nosuchmetric&apos; net.opentsdb.uid.UniqueId$1GetIdCB.call(UniqueId.java:315)&quot;
+</code></pre><h2 id="用户"><a href="#用户" class="headerlink" title="用户"></a>用户</h2><p>为了将来使用，此字段可用于从查询中提取用户信息，并帮助调试使用TSD的用户。修改TSD代码以从HTTP头中提取用户相当容易。</p>
+<h2 id="请求头"><a href="#请求头" class="headerlink" title="请求头"></a>请求头</h2><p>这是使用HTTP请求发送的请求头内容。在未做太多安全处理时，Cookie头字段包含用户可识别或安全信息的情况下使用星号进行模糊处理。<br>每个请求都不同，因此请在HTTP RFC或Web浏览器或客户端文档中查找头部信息。</p>
+<p>示例：</p>
+<pre><code>&quot;requestHeaders&quot;: {
+    &quot;Accept-Language&quot;: &quot;en-US,en;q=0.8&quot;,
+    &quot;Host&quot;: &quot;tsdhost:4242&quot;,
+    &quot;Content-Length&quot;: &quot;440&quot;,
+    &quot;Referer&quot;: &quot;http://tsdhost:8080/dashboard/db/tsdfrontend&quot;,
+    &quot;Accept-Encoding&quot;: &quot;gzip, deflate&quot;,
+    &quot;X-Forwarded-For&quot;: &quot;192.168.0.2&quot;,
+    &quot;User-Agent&quot;: &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36&quot;,
+    &quot;Origin&quot;: &quot;http://tsdhost:8080&quot;,
+    &quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,
+    &quot;Accept&quot;: &quot;application/json, text/plain, */*&quot;
+}
+</code></pre><h2 id="HttpResponse"><a href="#HttpResponse" class="headerlink" title="HttpResponse"></a>HttpResponse</h2><p>该字段包含数字HTTP响应代码和文本内容。</p>
+<p>示例：</p>
+<pre><code>&quot;httpResponse&quot;: {
+        &quot;code&quot;: 200,
+        &quot;reasonPhrase&quot;: &quot;OK&quot;
+}
+</code></pre><h2 id="其他字段"><a href="#其他字段" class="headerlink" title="其他字段"></a>其他字段</h2><p>日志文件和统计信息页面的输出包括具有单个值的其他字段，如下所示：</p>
+<img src="/2018/07/13/Opentsdb原理-查询细节与状态/table-1.png">
+<h2 id="状态"><a href="#状态" class="headerlink" title="状态"></a>状态</h2><p>每个查询周围都有许多统计信息，并且会随着时间的推移添加更多统计信息。测量各种级别的细节，包括：</p>
+<ol>
+<li>Global ——与整个查询有关的度量标准，包括每个子查询的最大和平均时间</li>
+<li>Per-Sub Query ——与单个子查询有关的度量（可能存在多个），包括Scanner的最大和平均时间。</li>
+<li>Per-Scanner ——每个Scanner相关的Metrics（启用Salting时很有用）</li>
+</ol>
+<p>全局统计信息将打印到统计信息页面的标准日志。当showSummary启用时，查询日志和API中可以看到子查询和Scanner的详细信息。较低级别的计时统计数据汇总为较高级别的最大值和平均值。每个低级别的计数器也会在高级别进行汇总，因此您将在每个级别看到相同的计数器指标。下面显示统计和部分表格</p>
+<img src="/2018/07/13/Opentsdb原理-查询细节与状态/table-2.png">
+<img src="/2018/07/13/Opentsdb原理-查询细节与状态/table-3.png">
+<p>示例:</p>
+<pre><code>{
+      &quot;statsSummary&quot;: {
+              &quot;avgAggregationTime&quot;: 3.784976,
+              &quot;avgHBaseTime&quot;: 8.530751,
+              &quot;avgQueryScanTime&quot;: 10.964149,
+              &quot;avgScannerTime&quot;: 8.588306,
+              &quot;avgScannerUidToStringTime&quot;: 0.0,
+              &quot;avgSerializationTime&quot;: 3.809661,
+              &quot;emittedDPs&quot;: 1256,
+              &quot;maxAggregationTime&quot;: 3.759478,
+              &quot;maxHBaseTime&quot;: 9.904215,
+              &quot;maxQueryScanTime&quot;: 10.320964,
+              &quot;maxScannerUidtoStringTime&quot;: 0.0,
+              &quot;maxSerializationTime&quot;: 3.779712,
+              &quot;maxUidToStringTime&quot;: 0.197926,
+              &quot;processingPreWriteTime&quot;: 20.170205,
+              &quot;queryIdx_00&quot;: {
+                      &quot;aggregationTime&quot;: 3.784976,
+                      &quot;avgHBaseTime&quot;: 8.849337,
+                      &quot;avgScannerTime&quot;: 8.908597,
+                      &quot;avgScannerUidToStringTime&quot;: 0.0,
+                      &quot;emittedDPs&quot;: 628,
+                      &quot;groupByTime&quot;: 0.0,
+                      &quot;maxHBaseTime&quot;: 9.904215,
+                      &quot;maxScannerUidtoStringTime&quot;: 0.0,
+                      &quot;queryIndex&quot;: 0,
+                      &quot;queryScanTime&quot;: 10.964149,
+                      &quot;saltScannerMergeTime&quot;: 0.128234,
+                      &quot;scannerStats&quot;: {
+                              &quot;scannerIdx_00&quot;: {
+                                      &quot;compactionTime&quot;: 0.048703,
+                                      &quot;hbaseTime&quot;: 8.844783,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[0, 0, 2, 88, 86, -63, -25, -16], stop_key=[0, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.899045,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_01&quot;: {
+                                      &quot;compactionTime&quot;: 0.066892,
+                                      &quot;hbaseTime&quot;: 8.240165,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[1, 0, 2, 88, 86, -63, -25, -16], stop_key=[1, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.314855,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_02&quot;: {
+                                      &quot;compactionTime&quot;: 0.01298,
+                                      &quot;hbaseTime&quot;: 8.462203,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[2, 0, 2, 88, 86, -63, -25, -16], stop_key=[2, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.478315,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_03&quot;: {
+                                      &quot;compactionTime&quot;: 0.036998,
+                                      &quot;hbaseTime&quot;: 9.862741,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[3, 0, 2, 88, 86, -63, -25, -16], stop_key=[3, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 9.904215,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_04&quot;: {
+                                      &quot;compactionTime&quot;: 0.058698,
+                                      &quot;hbaseTime&quot;: 9.523481,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[4, 0, 2, 88, 86, -63, -25, -16], stop_key=[4, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 9.587324,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_05&quot;: {
+                                      &quot;compactionTime&quot;: 0.041017,
+                                      &quot;hbaseTime&quot;: 9.757787,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[5, 0, 2, 88, 86, -63, -25, -16], stop_key=[5, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 9.802395,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_06&quot;: {
+                                      &quot;compactionTime&quot;: 0.062371,
+                                      &quot;hbaseTime&quot;: 9.332585,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[6, 0, 2, 88, 86, -63, -25, -16], stop_key=[6, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 9.40264,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_07&quot;: {
+                                      &quot;compactionTime&quot;: 0.063974,
+                                      &quot;hbaseTime&quot;: 8.195105,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[7, 0, 2, 88, 86, -63, -25, -16], stop_key=[7, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.265713,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_08&quot;: {
+                                      &quot;compactionTime&quot;: 0.062196,
+                                      &quot;hbaseTime&quot;: 8.21871,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[8, 0, 2, 88, 86, -63, -25, -16], stop_key=[8, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.287582,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_09&quot;: {
+                                      &quot;compactionTime&quot;: 0.051666,
+                                      &quot;hbaseTime&quot;: 7.790636,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[9, 0, 2, 88, 86, -63, -25, -16], stop_key=[9, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 7.849597,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_10&quot;: {
+                                      &quot;compactionTime&quot;: 0.036429,
+                                      &quot;hbaseTime&quot;: 7.6472,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[10, 0, 2, 88, 86, -63, -25, -16], stop_key=[10, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 7.689386,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_11&quot;: {
+                                      &quot;compactionTime&quot;: 0.044493,
+                                      &quot;hbaseTime&quot;: 7.897932,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[11, 0, 2, 88, 86, -63, -25, -16], stop_key=[11, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 7.94793,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_12&quot;: {
+                                      &quot;compactionTime&quot;: 0.025362,
+                                      &quot;hbaseTime&quot;: 9.30409,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[12, 0, 2, 88, 86, -63, -25, -16], stop_key=[12, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 9.332411,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_13&quot;: {
+                                      &quot;compactionTime&quot;: 0.057429,
+                                      &quot;hbaseTime&quot;: 9.215958,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[13, 0, 2, 88, 86, -63, -25, -16], stop_key=[13, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 9.278104,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_14&quot;: {
+                                      &quot;compactionTime&quot;: 0.102855,
+                                      &quot;hbaseTime&quot;: 9.598685,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[14, 0, 2, 88, 86, -63, -25, -16], stop_key=[14, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 9.712258,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_15&quot;: {
+                                      &quot;compactionTime&quot;: 0.0727,
+                                      &quot;hbaseTime&quot;: 9.273193,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[15, 0, 2, 88, 86, -63, -25, -16], stop_key=[15, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 9.35403,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_16&quot;: {
+                                      &quot;compactionTime&quot;: 0.025867,
+                                      &quot;hbaseTime&quot;: 9.011146,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[16, 0, 2, 88, 86, -63, -25, -16], stop_key=[16, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 9.039663,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_17&quot;: {
+                                      &quot;compactionTime&quot;: 0.066071,
+                                      &quot;hbaseTime&quot;: 9.175692,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[17, 0, 2, 88, 86, -63, -25, -16], stop_key=[17, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 9.24738,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_18&quot;: {
+                                      &quot;compactionTime&quot;: 0.090249,
+                                      &quot;hbaseTime&quot;: 8.730833,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[18, 0, 2, 88, 86, -63, -25, -16], stop_key=[18, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.831461,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_19&quot;: {
+                                      &quot;compactionTime&quot;: 0.039327,
+                                      &quot;hbaseTime&quot;: 8.903825,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[19, 0, 2, 88, 86, -63, -25, -16], stop_key=[19, 0, 2, 88, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.947639,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              }
+                      },
+                      &quot;serializationTime&quot;: 3.809661,
+                      &quot;successfulScan&quot;: 20,
+                      &quot;uidPairsResolved&quot;: 0,
+                      &quot;uidToStringTime&quot;: 0.197926
+              },
+              &quot;queryIdx_01&quot;: {
+                      &quot;aggregationTime&quot;: 3.73398,
+                      &quot;avgHBaseTime&quot;: 8.212164,
+                      &quot;avgScannerTime&quot;: 8.268015,
+                      &quot;avgScannerUidToStringTime&quot;: 0.0,
+                      &quot;emittedDPs&quot;: 628,
+                      &quot;groupByTime&quot;: 0.0,
+                      &quot;maxHBaseTime&quot;: 8.986041,
+                      &quot;maxScannerUidtoStringTime&quot;: 0.0,
+                      &quot;queryIndex&quot;: 1,
+                      &quot;queryScanTime&quot;: 9.67778,
+                      &quot;saltScannerMergeTime&quot;: 0.095797,
+                      &quot;scannerStats&quot;: {
+                              &quot;scannerIdx_00&quot;: {
+                                      &quot;compactionTime&quot;: 0.054894,
+                                      &quot;hbaseTime&quot;: 8.708179,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[0, 0, 2, 76, 86, -63, -25, -16], stop_key=[0, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.770252,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_01&quot;: {
+                                      &quot;compactionTime&quot;: 0.055956,
+                                      &quot;hbaseTime&quot;: 8.666615,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[1, 0, 2, 76, 86, -63, -25, -16], stop_key=[1, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.730629,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_02&quot;: {
+                                      &quot;compactionTime&quot;: 0.011224,
+                                      &quot;hbaseTime&quot;: 8.474637,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[2, 0, 2, 76, 86, -63, -25, -16], stop_key=[2, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.487582,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_03&quot;: {
+                                      &quot;compactionTime&quot;: 0.081926,
+                                      &quot;hbaseTime&quot;: 8.894951,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[3, 0, 2, 76, 86, -63, -25, -16], stop_key=[3, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.986041,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_04&quot;: {
+                                      &quot;compactionTime&quot;: 0.01882,
+                                      &quot;hbaseTime&quot;: 8.209866,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[4, 0, 2, 76, 86, -63, -25, -16], stop_key=[4, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.231502,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_05&quot;: {
+                                      &quot;compactionTime&quot;: 0.056902,
+                                      &quot;hbaseTime&quot;: 8.709846,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[5, 0, 2, 76, 86, -63, -25, -16], stop_key=[5, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.772216,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_06&quot;: {
+                                      &quot;compactionTime&quot;: 0.131424,
+                                      &quot;hbaseTime&quot;: 8.033916,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[6, 0, 2, 76, 86, -63, -25, -16], stop_key=[6, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.181117,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_07&quot;: {
+                                      &quot;compactionTime&quot;: 0.022517,
+                                      &quot;hbaseTime&quot;: 8.006976,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[7, 0, 2, 76, 86, -63, -25, -16], stop_key=[7, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.032073,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_08&quot;: {
+                                      &quot;compactionTime&quot;: 0.011527,
+                                      &quot;hbaseTime&quot;: 8.591358,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[8, 0, 2, 76, 86, -63, -25, -16], stop_key=[8, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.604491,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_09&quot;: {
+                                      &quot;compactionTime&quot;: 0.162222,
+                                      &quot;hbaseTime&quot;: 8.25452,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[9, 0, 2, 76, 86, -63, -25, -16], stop_key=[9, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.435525,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_10&quot;: {
+                                      &quot;compactionTime&quot;: 0.033886,
+                                      &quot;hbaseTime&quot;: 7.973254,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[10, 0, 2, 76, 86, -63, -25, -16], stop_key=[10, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.011236,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_11&quot;: {
+                                      &quot;compactionTime&quot;: 0.039491,
+                                      &quot;hbaseTime&quot;: 7.959601,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[11, 0, 2, 76, 86, -63, -25, -16], stop_key=[11, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.003249,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_12&quot;: {
+                                      &quot;compactionTime&quot;: 0.107793,
+                                      &quot;hbaseTime&quot;: 8.177353,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[12, 0, 2, 76, 86, -63, -25, -16], stop_key=[12, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.298284,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_13&quot;: {
+                                      &quot;compactionTime&quot;: 0.020697,
+                                      &quot;hbaseTime&quot;: 8.124243,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[13, 0, 2, 76, 86, -63, -25, -16], stop_key=[13, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.147879,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_14&quot;: {
+                                      &quot;compactionTime&quot;: 0.033261,
+                                      &quot;hbaseTime&quot;: 8.145149,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[14, 0, 2, 76, 86, -63, -25, -16], stop_key=[14, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.182331,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_15&quot;: {
+                                      &quot;compactionTime&quot;: 0.057804,
+                                      &quot;hbaseTime&quot;: 8.17854,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[15, 0, 2, 76, 86, -63, -25, -16], stop_key=[15, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.243458,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_16&quot;: {
+                                      &quot;compactionTime&quot;: 0.01212,
+                                      &quot;hbaseTime&quot;: 8.070582,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[16, 0, 2, 76, 86, -63, -25, -16], stop_key=[16, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 8.084813,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_17&quot;: {
+                                      &quot;compactionTime&quot;: 0.036777,
+                                      &quot;hbaseTime&quot;: 7.919167,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[17, 0, 2, 76, 86, -63, -25, -16], stop_key=[17, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 7.959645,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_18&quot;: {
+                                      &quot;compactionTime&quot;: 0.048097,
+                                      &quot;hbaseTime&quot;: 7.87351,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[18, 0, 2, 76, 86, -63, -25, -16], stop_key=[18, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 7.926318,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              },
+                              &quot;scannerIdx_19&quot;: {
+                                      &quot;compactionTime&quot;: 0.0,
+                                      &quot;hbaseTime&quot;: 7.271033,
+                                      &quot;scannerId&quot;: &quot;Scanner(table=\&quot;tsdb\&quot;, start_key=[19, 0, 2, 76, 86, -63, -25, -16], stop_key=[19, 0, 2, 76, 86, -62, 4, 16], columns={\&quot;t\&quot;}, populate_blockcache=true, max_num_rows=128, max_num_kvs=4096, region=null, filter=KeyRegexpFilter(\&quot;(?s)^.{8}(?:.{7})*\\Q\u0000\u0000\u0005\\E(?:\\Q\u0000\u0000\u00006\\E)(?:.{7})*$\&quot;, ISO-8859-1), scanner_id=0x0000000000000000)&quot;,
+                                      &quot;scannerTime&quot;: 7.271664,
+                                      &quot;scannerUidToStringTime&quot;: 0.0,
+                                      &quot;successfulScan&quot;: 1,
+                                      &quot;uidPairsResolved&quot;: 0
+                              }
+                      },
+                      &quot;serializationTime&quot;: 3.749764,
+                      &quot;successfulScan&quot;: 20,
+                      &quot;uidPairsResolved&quot;: 0,
+                      &quot;uidToStringTime&quot;: 0.162088
+              },
+              &quot;successfulScan&quot;: 40,
+              &quot;uidPairsResolved&quot;: 0
+      }
+}
+</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/外文翻译/" rel="tag"># 外文翻译</a>
+          
+            <a href="/tags/Opentsdb/" rel="tag"># Opentsdb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/13/Opentsdb原理-查询示例/" rel="next" title="Opentsdb原理-查询示例">
+                <i class="fa fa-chevron-left"></i> Opentsdb原理-查询示例
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/14/Opentsdb原理-上卷和预计算/" rel="prev" title="Opentsdb原理-上卷和预计算">
+                Opentsdb原理-上卷和预计算 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+      <div id="sidebar-dimmer"></div>
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">xuhaibin</p>
+              <p class="site-description motion-element" itemprop="description">I do not know go where, but I have been on the road.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/huberyxu" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hubery.xhb@alibaba-inc.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://plus.google.com/yourname" target="_blank" title="Google"><i class="fa fa-fw fa-google"></i>Google</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/hubery.xhb" target="_blank" title="Twitter"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.facebook.com/hubery.xhb" target="_blank" title="FB Page"><i class="fa fa-fw fa-facebook"></i>FB Page</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查询"><span class="nav-number">1.</span> <span class="nav-text">查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常"><span class="nav-number">2.</span> <span class="nav-text">异常</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户"><span class="nav-number">3.</span> <span class="nav-text">用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求头"><span class="nav-number">4.</span> <span class="nav-text">请求头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HttpResponse"><span class="nav-number">5.</span> <span class="nav-text">HttpResponse</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他字段"><span class="nav-number">6.</span> <span class="nav-text">其他字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#状态"><span class="nav-number">7.</span> <span class="nav-text">状态</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuhaibin</span>
+
+  
+
+  
+</div>
+
+
+
+
+  
+
+
+
+
+
+
+  <div class="theme-info">
+
+  </div>
+
+
+
+<span id="busuanzi_container_site_pv">
+    总访问量 <span id="busuanzi_value_site_pv"></span> 次
+</span>
+|
+<span id="busuanzi_container_site_uv">
+    总访客数 <span id="busuanzi_value_site_uv"></span> 人
+</span>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'A44F4QuQJqe0hgrsrL2WszOz-gzGzoHsz',
+        appKey: 'W95w5b2Al6fPP8CRkpRgIrYJ',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("A44F4QuQJqe0hgrsrL2WszOz-gzGzoHsz", "W95w5b2Al6fPP8CRkpRgIrYJ");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

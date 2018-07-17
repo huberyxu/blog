@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.3" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.0.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":true},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '1B20LSB7DA',
+      apiKey: 'cb5111c2a9732bac0fdb7bbe694ee29b',
+      indexName: 'my-blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="外文翻译,Opentsdb," />
+
+
+<meta name="description" content="虽然TSDB只要空间足够会存储原始的全明细数据，但对较大时间跨度或许多标签组合的查询都会非常痛苦。此类查询可能需要很长时间才能完成，或者在最坏的情况下，会因内存不足而终止TSD。从OpenTSDB 2.4开始，一组新的API允许存储和查询较低明细度的数据，以便更快地响应这些查询。此页面将概述上卷和预聚合的内容，它们在TSDB中的工作方式以及如何最好地使用它们。请参阅API的部分以了解具体的实现细节">
+<meta name="keywords" content="外文翻译,Opentsdb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Opentsdb原理-上卷和预计算">
+<meta property="og:url" content="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/index.html">
+<meta property="og:site_name" content="Hubery&#39;s Polaris">
+<meta property="og:description" content="虽然TSDB只要空间足够会存储原始的全明细数据，但对较大时间跨度或许多标签组合的查询都会非常痛苦。此类查询可能需要很长时间才能完成，或者在最坏的情况下，会因内存不足而终止TSD。从OpenTSDB 2.4开始，一组新的API允许存储和查询较低明细度的数据，以便更快地响应这些查询。此页面将概述上卷和预聚合的内容，它们在TSDB中的工作方式以及如何最好地使用它们。请参阅API的部分以了解具体的实现细节">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/table-1.png">
+<meta property="og:image" content="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/table-2.png">
+<meta property="og:image" content="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/table-3.png">
+<meta property="og:image" content="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/table-4.png">
+<meta property="og:image" content="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/table-5.png">
+<meta property="og:image" content="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/table-6.png">
+<meta property="og:image" content="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/table-7.png">
+<meta property="og:image" content="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/table-8.png">
+<meta property="og:updated_time" content="2018-07-17T09:42:09.825Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Opentsdb原理-上卷和预计算">
+<meta name="twitter:description" content="虽然TSDB只要空间足够会存储原始的全明细数据，但对较大时间跨度或许多标签组合的查询都会非常痛苦。此类查询可能需要很长时间才能完成，或者在最坏的情况下，会因内存不足而终止TSD。从OpenTSDB 2.4开始，一组新的API允许存储和查询较低明细度的数据，以便更快地响应这些查询。此页面将概述上卷和预聚合的内容，它们在TSDB中的工作方式以及如何最好地使用它们。请参阅API的部分以了解具体的实现细节">
+<meta name="twitter:image" content="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/table-1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Opentsdb原理-上卷和预计算 | Hubery's Polaris</title>
+  
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?92a992cb3216db3ae047b55a58b2d111";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hubery's Polaris</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://haibin.work/2018/07/14/Opentsdb原理-上卷和预计算/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="xuhaibin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hubery's Polaris">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Opentsdb原理-上卷和预计算</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-14T21:14:32+08:00">2018-07-14</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Opentsdb/" itemprop="url" rel="index"><span itemprop="name">Opentsdb</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/14/Opentsdb原理-上卷和预计算/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2018/07/14/Opentsdb原理-上卷和预计算/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/14/Opentsdb原理-上卷和预计算/" class="leancloud_visitors" data-flag-title="Opentsdb原理-上卷和预计算">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>虽然TSDB只要空间足够会存储原始的全明细数据，但对较大时间跨度或许多标签组合的查询都会非常痛苦。此类查询可能需要很长时间才能完成，或者在最坏的情况下，会因内存不足而终止TSD。从OpenTSDB 2.4开始，一组新的API允许存储和查询较低明细度的数据，以便更快地响应这些查询。此页面将概述上卷和预聚合的内容，它们在TSDB中的工作方式以及如何最好地使用它们。请参阅API的部分以了解具体的实现细节</p>
+<p>注意：<br>OpenTSDB本身不会计算和存储汇总或预聚合数据。有多种方法可以计算结果，但根据比例和精度要求，它们都有其优点和缺点。请参阅生成上卷和预聚合部分，了解如何创建此数据。</p>
+<h2 id="示例数据"><a href="#示例数据" class="headerlink" title="示例数据"></a>示例数据</h2><p>为了帮助描述较低明细度的数据，让我们看一些完整的明细（也称为原始数据）示例数据。第一个表定义了带有快捷标识符的时间序列。</p>
+<img src="/2018/07/14/Opentsdb原理-上卷和预计算/table-1.png">
+<p>请注意，它们都具有相同的metric和interface tag，但host和colo不同。</p>
+<p>接下来是以15分钟为间隔写入的一些数据：</p>
+<a id="more"></a>
+<img src="/2018/07/14/Opentsdb原理-上卷和预计算/table-2.png">
+<p>请注意，这些数据集缺少某些数据点。让我们先看看上卷。</p>
+<h2 id="上卷"><a href="#上卷" class="headerlink" title="上卷"></a>上卷</h2><p>在OpenTSDB中，“上卷”被定义为随时间聚合的时间序列。它也可以称为“基于时间的聚合”。上卷有助于解决查看宽时间跨度的问题。例如，如果您每60秒写一个数据点并查询一年的数据，则时间序列将返回超过525k个数据点。绘制许多数据点会非常混乱。相反，您可能希望查看较低明细度的数据，例如1小时数据，其中您只需绘制大约8k的值。然后，您可以识别异常并下钻更精细的明细数据。</p>
+<p>如果您有使用OpenTSDB查询数据，您可能熟悉将每个时间序列聚合为较小或较低明细度的下采样器。上卷实质上是存储在系统中的下采样器的结果，并且随意调用。每个上卷（或下采样器）都需要两条信息：</p>
+<ol>
+<li>Interval ——“上卷”新值的时间间隔。例如，1h表示1小时数据，1d表示1天数据。</li>
+<li>Aggregation Function ——对底层值执行了什么方法以获得新值。例如。 sum，max</li>
+</ol>
+<p>注意：<br>存储上卷时，最好避免使用average，median或deviation等函数。在执行进一步的下采样或分组聚合时，这些值变得毫无意义。相反，总是存储sum和count要好得多，至少可以在查询时计算平均值。有关更多信息，请参阅以下部分。<br>上卷数据点的时间戳应定位在上卷间隔的顶部。例如。如果上卷间隔为1小时，则它包含1小时的数据，并且应该定位到小时的顶部。由于所有时间戳都是以Unix Epoch格式编写的，定义为UTC时区，这将是一小时UTC时间的开始。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>正如上述的示例数据，我们计算count/sum并且时间间隔为1h。</p>
+<img src="/2018/07/14/Opentsdb原理-上卷和预计算/table-3.png">
+<p>请注意，无论何时出现“bucket”区间中的第一个数据点，所有时间戳都会与小时的顶部对齐。另请注意，如果间隔中缺失数据点，则计数较低。通常，您应该在存储上卷时为每个时间序列计算和存储MAX，MIN，SUM和COUNT。</p>
+<h3 id="上卷均值示例"><a href="#上卷均值示例" class="headerlink" title="上卷均值示例"></a>上卷均值示例</h3><p>当启用上卷并且您从OpenTSDB请求具有avg函数的下采样器时，TSD将扫描存储以获取SUM和COUNT值。然后迭代数据准确计算平均值。<br>count和sum值的时间戳必须匹配。然而，如果缺少SUM的COUNT值，则该SUM将从结果中踢出。从上面的示例中选择以下示例，我们现在丢失了ts2中的COUNT点。</p>
+<img src="/2018/07/14/Opentsdb原理-上卷和预计算/table-4.png">
+<p>得到的2小时下采样查询的平均值如下所示：</p>
+<img src="/2018/07/14/Opentsdb原理-上卷和预计算/table-5.png">
+<h2 id="预聚合"><a href="#预聚合" class="headerlink" title="预聚合"></a>预聚合</h2><p>虽然上卷有助于广泛的时间跨度查询，但如果metric具有高基数（即给定度量标准的唯一时间序列数），则仍会遇到小范围的查询性能问题。在上面的示例中，我们有4个Web服务器。但是我们说我们有10,000台服务器。获取接口流量的总和或平均值可能相当慢。如果用户经常通过聚合计算这样的大集合来获取结果，那么直接存储聚合结果并获取少量数据是有意义的。</p>
+<p>与上卷不同，预聚合只需要一条额外的信息：</p>
+<ol>
+<li>Aggregation Function ——对底层值执行了什么算术以获得新值。例如sum/max</li>
+</ol>
+<p>在OpenTSDB中，与其他时间序列不同的是预聚合有特殊的tag。默认tag key是_aggregate（可通过tsd.rollups.agg_tag_key配置）。然后，用于生成数据的聚合函数以大写形式存储在tag value中。让我们看一个例子：</p>
+<img src="/2018/07/14/Opentsdb原理-上卷和预计算/table-6.png">
+<p>请注意，这些时间序列已经删除掉了host和interface。这是因为，在聚合过程中，host和interface的多个不同值已经累计在这个新时间序列中，所以将它们作为标签也没有意义了。另请注意，我们在存储的数据中注入了新的_aggregate标记。查询现在可以通过指定_aggregate值来访问此数据。</p>
+<p>注意：<br>启用上卷后，如果您计划使用预聚合，则可能需要通过让TSDB自动注入_aggregate = RAW来帮助区分原始数据和预聚合。只需将tsd.rollups.tag_raw设置配置为true即可。</p>
+<p>得到如下结果集：</p>
+<img src="/2018/07/14/Opentsdb原理-上卷和预计算/table-7.png">
+<p>由于我们通过执行聚合组（按colo分组），我们从原始数据集中获取每个时间戳的值。在这种情况下，我们不会进行下采样或执行上卷。</p>
+<p>注意：<br>与汇总一样，在编写预聚合时，最好避免使用 average, median or deviation等函数。只需存储sum、count</p>
+<h2 id="上卷、预计算"><a href="#上卷、预计算" class="headerlink" title="上卷、预计算"></a>上卷、预计算</h2><p>虽然预聚合肯定有助于高维度基数的指标，但用户可能仍希望要求广泛的时间跨度然后又会很慢。值得庆幸的是，您可以像原始数据一样上卷预聚合数据。只需生成预聚合，然后使用上面的信息将其上卷。</p>
+<h3 id="生成上卷、预计算"><a href="#生成上卷、预计算" class="headerlink" title="生成上卷、预计算"></a>生成上卷、预计算</h3><p>目前，TSD不会为您生成上卷或预聚合数据。主要原因是OpenTSDB旨在处理大量的时间序列数据，因此各个TSD专注于尽可能快地将数据存入存储。</p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>由于TSD的（基本上）无状态特性，它们可能不具有可用于执行预聚合的全套数据。例如，我们的样本ts1数据可以写入TSD_A，而ts2写入TSD_B。如果不从存储中读取数据，也不能执行适当的分组。我们也不知道我们应该在什么时候进行预聚合。我们可以等待1分钟并预聚合数据，但会错过那一分钟后发生的任何事情。或者我们可以等待一个小时，对预聚合的查询将不会包含最后一小时的数据。如果数据延迟会发生什么？</p>
+<p>此外，对于上卷，根据用户如何将数据写入TSD，对于ts1，我们可能会收到TSD_A上的12:15数据点，但12:30值会到达TSD_B，因此整个小时都不完整。窗口的限制仍然适用于上卷。</p>
+<h3 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h3><p>使用上卷和预聚合进行一些分析时需要在各种权衡之间进行选择。由于一些OpenTSDB用户已经有了计算此类数据的方法，我们只需提供API来存储和查询。但是，这里有一些关于如何自己计算这些的技巧。</p>
+<h4 id="批处理"><a href="#批处理" class="headerlink" title="批处理"></a>批处理</h4><p>其他时间序列数据库常用的一种方法是在延迟一段时间后从数据库中读取数据，计算pre-aggs和roll-up，然后写入它们。这是解决问题的最简单方法，适用于小规模。但是仍然存在一些问题：</p>
+<ol>
+<li>随着数据的增长，生成roll-up的查询也会增长到查询负载影响写入和用户查询性能的程度。即使在HBase下启用数据压缩时，OpenTSDB会遇到同样的问题。</li>
+<li>此外，随着数据的增长，更多的数据意味着批处理时间更长，必须在多个worker之间进行分片，这可能会很难协调和排除故障。</li>
+<li>除非采用某种跟踪方法来触发旧数据执行新批处理，否则可能无法聚合延迟或历史数据。</li>
+</ol>
+<p>一些改进批处理的方法包括：</p>
+<ol>
+<li>从备份系统中读取，例如如果设置HBase备份，则可以让用户查询主系统然后从备份存储读取并计算聚合结果。</li>
+<li>从其他可选存储读取。一个示例是将所有数据镜像到另一个存储（例如HDFS），并针对该数据运行批处理作业。</li>
+</ol>
+<h4 id="Queueing-on-TSDs"><a href="#Queueing-on-TSDs" class="headerlink" title="Queueing on TSDs"></a>Queueing on TSDs</h4><p>某些数据库使用的另一个选项是将进程内存中的所有数据在队列缓存，并在经过配置的时间窗口后写入结果。但由于TSD是无状态的，并且通常用户在其TSD之前放置负载均衡器，因此单个TSD可能无法全面了解要计算的汇总或预收集（如上所述）。要使此方法起作用，上游收集器必须将计算所需的所有数据路由到特定TSD。这不是一项艰巨的任务，但面临的问题包括:</p>
+<ol>
+<li>有足够的RAM或磁盘空间来为每个TSD存储本地数据</li>
+<li>如果TSD进程终止，您将丢失聚合的数据，或者必须从存储中恢复。</li>
+<li>无论何时进行聚合计算，原始数据的总写入吞吐量都会受到影响。</li>
+<li>您仍然有迟到/历史数据问题。</li>
+<li>由于TSDB是基于JVM的，因此将所有数据保存在RAM中然后运行GC会受到影响。很严重。 （落磁盘更好，但是你会遇到IO问题）</li>
+</ol>
+<p>总的来说，写入是使用队列缓存并聚合计算是一个bad idea。尽量避免。</p>
+<h4 id="流计算"><a href="#流计算" class="headerlink" title="流计算"></a>流计算</h4><p>处理上卷和预聚合的更好方法是将数据路由到流处理系统，在那里可以近乎实时地处理数据并写入TSD。它类似于TSD上的queueing，但是使用流处理框架之一（Storm，Flink，Spark等）来处理消息路由和内存存储。然后，您只需编写一些代码来计算聚合，并在窗口通过后将数据吐出。</p>
+<p>这是许多下一代监控解决方案所青睐的，例如雅虎的解决方案。雅虎正致力于为需要大规模监控的其他人开源他们的流处理系统，并将其整齐地插入TSDB。</p>
+<p>虽然流处理更好，但仍然有问题需要处理：</p>
+<ol>
+<li>确保流计算足够的资源</li>
+<li>流计算worker失败需从存储重启</li>
+<li>必须处理延迟/历史数据。</li>
+</ol>
+<h4 id="Share"><a href="#Share" class="headerlink" title="Share"></a>Share</h4><p>如果您有用于计算聚合的工作代码，请与OpenTSDB组共享。如果您的解决方案是开源的，我们可以将其合并到OpenTSDB生态系统中。</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>对于Opentsdb 2.4，roll-up由opentsdb.conf中的配置项tsd.rollups.config启用。此键的值必须是带引号转义的JSON字符串，不带换行符，或者最好是包含配置的JSON文件的路径。文件名必须以.json结尾，如rollup_config.json中所示。<br>JSON配置应如下所示：</p>
+<pre><code>{
+      &quot;aggregationIds&quot;: {
+              &quot;sum&quot;: 0,
+              &quot;count&quot;: 1,
+              &quot;min&quot;: 2,
+              &quot;max&quot;: 3
+      },
+      &quot;intervals&quot;: [{
+              &quot;table&quot;: &quot;tsdb&quot;,
+              &quot;preAggregationTable&quot;: &quot;tsdb-preagg&quot;,
+              &quot;interval&quot;: &quot;1m&quot;,
+              &quot;rowSpan&quot;: &quot;1h&quot;,
+              &quot;defaultInterval&quot;: true
+      }, {
+              &quot;table&quot;: &quot;tsdb-rollup-1h&quot;,
+              &quot;preAggregationTable&quot;: &quot;tsdb-rollup-preagg-1h&quot;,
+              &quot;interval&quot;: &quot;1h&quot;,
+              &quot;rowSpan&quot;: &quot;1d&quot;
+      }]
+}
+</code></pre><p>两个顶级字段包括：</p>
+<ol>
+<li>aggregationIds ——OpenTSDB聚合函数名称映射到用于压缩存储的数字标识符。</li>
+<li>intervals ——包含表名的一个或多个时间间隔列表</li>
+</ol>
+<h3 id="aggregationIds"><a href="#aggregationIds" class="headerlink" title="aggregationIds"></a>aggregationIds</h3><p>聚合ID映射用于通过数字ID预先填充每种类型的数据而不是拼写出完整聚合函数名称来减少存储。例如。如果我们用COUNT作为每列的前缀：对于我们可以使用ID保存的每个值（或压缩列），这是6个字节。</p>
+<p>ID必须是0到127之间的整数。这意味着我们每个时间间隔最多可以存储128个不同的聚合id。在映射中可以仅提供每个数值的一个ID，并且可以仅给出每种类型的一个聚合函数。如果函数名称未映射到OpenTSDB支持的聚合函数，则启动时将抛出异常。同样，必须至少给出一个聚合才能启动TSD。</p>
+<p>注意：<br>一旦开始写入数据，就无法更改聚合ID。如果更改映射，则可能会返回不正确的数据，或者查询和写入可能会失败。您可以在将来添加函数，但永远不要更改映射。</p>
+<h3 id="intervals"><a href="#intervals" class="headerlink" title="intervals"></a>intervals</h3><p>每个intervals对象都定义了表路由，以便rollup和pre-aggregate时写入和查询数据。intervals有两种类型：</p>
+<ol>
+<li>Default ——这是定义的默认原始数据OpenTSDB表“defaultInterval”：true。对于现有安装，是tsdb表或tsd.storage.hbase.data_table中定义内容。时间间隔默认为OpenTSDB 1h ，并以给定的精度和时间戳存储数据。每个TSD只能配置一个默认值。</li>
+<li>Rollup Interval ——“defaultInterval”默认为false。这些是汇总表，值被定义为时间间隔的边界。</li>
+</ol>
+<p>应定义以下字段：</p>
+<img src="/2018/07/14/Opentsdb原理-上卷和预计算/table-8.png">
+<p>在存储中，rollup的写入类似于原始数据，因为每行都有一个基本时间戳，每个数据点都是该基准时间的偏移量。每个偏移量都是基准时间的增量，而不是实际偏移量。例如，如果一行存储1天的1小时数据，则最多可存在24个偏移。<br>偏移0将映射到行的午夜，偏移5将映射到6AM。因为汇总偏移量是以14-bits编码的，如果一行中存储的间隔太多，则TSD启动时会引发错误。<br>注意：<br>将数据写入TSD后，请勿更改间隔宽度或行间距以进行汇总间隔。这可能导致垃圾数据和查询失败。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/外文翻译/" rel="tag"># 外文翻译</a>
+          
+            <a href="/tags/Opentsdb/" rel="tag"># Opentsdb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/13/Opentsdb原理-查询细节与状态/" rel="next" title="Opentsdb原理-查询细节与状态">
+                <i class="fa fa-chevron-left"></i> Opentsdb原理-查询细节与状态
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+      <div id="sidebar-dimmer"></div>
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">xuhaibin</p>
+              <p class="site-description motion-element" itemprop="description">I do not know go where, but I have been on the road.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/huberyxu" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hubery.xhb@alibaba-inc.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://plus.google.com/yourname" target="_blank" title="Google"><i class="fa fa-fw fa-google"></i>Google</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/hubery.xhb" target="_blank" title="Twitter"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.facebook.com/hubery.xhb" target="_blank" title="FB Page"><i class="fa fa-fw fa-facebook"></i>FB Page</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#示例数据"><span class="nav-number">1.</span> <span class="nav-text">示例数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#上卷"><span class="nav-number">2.</span> <span class="nav-text">上卷</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#示例"><span class="nav-number">2.1.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上卷均值示例"><span class="nav-number">2.2.</span> <span class="nav-text">上卷均值示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#预聚合"><span class="nav-number">3.</span> <span class="nav-text">预聚合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#上卷、预计算"><span class="nav-number">4.</span> <span class="nav-text">上卷、预计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成上卷、预计算"><span class="nav-number">4.1.</span> <span class="nav-text">生成上卷、预计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">4.2.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决"><span class="nav-number">4.3.</span> <span class="nav-text">解决</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#批处理"><span class="nav-number">4.3.1.</span> <span class="nav-text">批处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Queueing-on-TSDs"><span class="nav-number">4.3.2.</span> <span class="nav-text">Queueing on TSDs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#流计算"><span class="nav-number">4.3.3.</span> <span class="nav-text">流计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Share"><span class="nav-number">4.3.4.</span> <span class="nav-text">Share</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置"><span class="nav-number">5.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#aggregationIds"><span class="nav-number">5.1.</span> <span class="nav-text">aggregationIds</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#intervals"><span class="nav-number">5.2.</span> <span class="nav-text">intervals</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xuhaibin</span>
+
+  
+
+  
+</div>
+
+
+
+
+  
+
+
+
+
+
+
+  <div class="theme-info">
+
+  </div>
+
+
+
+<span id="busuanzi_container_site_pv">
+    总访问量 <span id="busuanzi_value_site_pv"></span> 次
+</span>
+|
+<span id="busuanzi_container_site_uv">
+    总访客数 <span id="busuanzi_value_site_uv"></span> 人
+</span>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.3"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'A44F4QuQJqe0hgrsrL2WszOz-gzGzoHsz',
+        appKey: 'W95w5b2Al6fPP8CRkpRgIrYJ',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("A44F4QuQJqe0hgrsrL2WszOz-gzGzoHsz", "W95w5b2Al6fPP8CRkpRgIrYJ");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

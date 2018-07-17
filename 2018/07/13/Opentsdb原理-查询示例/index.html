@@ -111,10 +111,12 @@
 <meta property="og:site_name" content="Hubery&#39;s Polaris">
 <meta property="og:description" content="以下使用示例数据集的说明查询模式。我们将说明可能遇到的一些常见查询类型，以便您了解查询系统的工作方式。示例集中的每个时间序列仅存储一个数据点，并且UID已被截断为单个字节以使其更易于读取。示例数据集是使用HTTP API查询的所有Metric，仅显示 m= 部分。有关详细信息，请参阅 /api/ query。如果您使用的是CLI工具，则查询格式会略有不同，请阅读特定命令的文档。 示例数据 注意：这">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-13T10:16:58.780Z">
+<meta property="og:image" content="https://haibin.work/2018/07/13/Opentsdb原理-查询示例/table-1.png">
+<meta property="og:updated_time" content="2018-07-17T06:50:26.931Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Opentsdb原理-查询示例">
 <meta name="twitter:description" content="以下使用示例数据集的说明查询模式。我们将说明可能遇到的一些常见查询类型，以便您了解查询系统的工作方式。示例集中的每个时间序列仅存储一个数据点，并且UID已被截断为单个字节以使其更易于读取。示例数据集是使用HTTP API查询的所有Metric，仅显示 m= 部分。有关详细信息，请参阅 /api/ query。如果您使用的是CLI工具，则查询格式会略有不同，请阅读特定命令的文档。 示例数据 注意：这">
+<meta name="twitter:image" content="https://haibin.work/2018/07/13/Opentsdb原理-查询示例/table-1.png">
 
 
 
@@ -430,8 +432,9 @@
 
       
         <p>以下使用示例数据集的说明查询模式。我们将说明可能遇到的一些常见查询类型，以便您了解查询系统的工作方式。示例集中的每个时间序列仅存储一个数据点，并且UID已被截断为单个字节以使其更易于读取。示例数据集是使用HTTP API查询的所有Metric，仅显示 m= 部分。有关详细信息，请参阅 /api/ query。<br>如果您使用的是CLI工具，则查询格式会略有不同，请阅读特定命令的文档。</p>
-<h2 id="示例数据"><a href="#示例数据" class="headerlink" title="示例数据"></a>示例数据</h2>
+<h2 id="示例数据"><a href="#示例数据" class="headerlink" title="示例数据"></a>示例数据</h2><img src="/2018/07/13/Opentsdb原理-查询示例/table-1.png">
 <p>注意：<br>这不一定是设置指标和标签的最佳方式，而是用于说明查询系统的工作原理。特别地，TS＃4和5虽然是合法的时间序列，但可能会破坏你的查询，除非你知道它们是如何工作的。通常，尝试为每个时间序列保持相同数量和类型的标记。</p>
+<a id="more"></a>
 <h2 id="底层原理"><a href="#底层原理" class="headerlink" title="底层原理"></a>底层原理</h2><p>您可能想要了解OpenTSDB如何在此处存储时间序列数据：存储章节。否则，请记住存储中的每一行都有一个格式化的唯一键：</p>
 <pre><code>&lt;metricID&gt;&lt;normalized_timestamp&gt;&lt;tagkID1&gt;&lt;tagvID1&gt;[...&lt;tagkIDN&gt;&lt;tagvIDN&gt;]
 </code></pre><p>上面的数据表将存储为:</p>
@@ -747,6 +750,10 @@ web02    #2, #7
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/07/13/Opentsdb原理-查询细节与状态/" rel="prev" title="Opentsdb原理-查询细节与状态">
+                Opentsdb原理-查询细节与状态 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -824,7 +831,7 @@ web02    #2, #7
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">23</span>
+                    <span class="site-state-item-count">25</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
